@@ -46,54 +46,57 @@ extern "C"
     #include "cmdutils.h"
 }
 
-#include <assert.h>
-
 const char program_name[] = "ffplay";
 const int program_birth_year = 2003;
 
-#define MAX_QUEUE_SIZE (15 * 1024 * 1024)
-#define MIN_FRAMES 25
-#define EXTERNAL_CLOCK_MIN_FRAMES 2
-#define EXTERNAL_CLOCK_MAX_FRAMES 10
+constexpr uint32_t MAX_QUEUE_SIZE = (15 * 1024 * 1024);
+constexpr uint32_t MIN_FRAMES = 25;
+constexpr uint32_t EXTERNAL_CLOCK_MIN_FRAMES = 2;
+constexpr uint32_t EXTERNAL_CLOCK_MAX_FRAMES = 10;
 
 /* Minimum SDL audio buffer size, in samples. */
-#define SDL_AUDIO_MIN_BUFFER_SIZE 512
+constexpr uint32_t SDL_AUDIO_MIN_BUFFER_SIZE = 512;
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
-#define SDL_AUDIO_MAX_CALLBACKS_PER_SEC 30
+constexpr uint32_t SDL_AUDIO_MAX_CALLBACKS_PER_SEC = 30;
 
 /* Step size for volume control in dB */
-#define SDL_VOLUME_STEP (0.75)
+constexpr double SDL_VOLUME_STEP = (0.75);
 
 /* no AV sync correction is done if below the minimum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MIN 0.04
+constexpr double AV_SYNC_THRESHOLD_MIN = 0.04;
 /* AV sync correction is done if above the maximum AV sync threshold */
-#define AV_SYNC_THRESHOLD_MAX 0.1
+constexpr double AV_SYNC_THRESHOLD_MAX = 0.1;
 /* If a frame duration is longer than this, it will not be duplicated to compensate AV sync */
-#define AV_SYNC_FRAMEDUP_THRESHOLD 0.1
+constexpr double AV_SYNC_FRAMEDUP_THRESHOLD = 0.1;
 /* no AV correction is done if too big error */
-#define AV_NOSYNC_THRESHOLD 10.0
+constexpr double AV_NOSYNC_THRESHOLD = 10.0;
 
 /* maximum audio speed change to get correct sync */
-#define SAMPLE_CORRECTION_PERCENT_MAX 10
+constexpr uint32_t SAMPLE_CORRECTION_PERCENT_MAX = 10;
 
 /* external clock speed adjustment constants for realtime sources based on buffer fullness */
-#define EXTERNAL_CLOCK_SPEED_MIN  0.900
-#define EXTERNAL_CLOCK_SPEED_MAX  1.010
-#define EXTERNAL_CLOCK_SPEED_STEP 0.001
+constexpr double EXTERNAL_CLOCK_SPEED_MIN = 0.900;
+constexpr double EXTERNAL_CLOCK_SPEED_MAX = 1.010;
+constexpr double EXTERNAL_CLOCK_SPEED_STEP = 0.001;
 
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
-#define AUDIO_DIFF_AVG_NB   20
+constexpr uint32_t AUDIO_DIFF_AVG_NB = 20;
 
 /* polls for possible required screen refresh at least this often, should be less than 1/fps */
-#define REFRESH_RATE 0.01
+constexpr double REFRESH_RATE = 0.01;
 
 /* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
 /* TODO: We assume that a decoded and resampled frame fits into this buffer */
-#define SAMPLE_ARRAY_SIZE (8 * 65536)
+constexpr uint32_t SAMPLE_ARRAY_SIZE = (8 * 65536);
 
-#define CURSOR_HIDE_DELAY 1000000
+constexpr uint32_t CURSOR_HIDE_DELAY = 1000000;
 
-#define USE_ONEPASS_SUBTITLE_RENDER 1
+constexpr uint32_t USE_ONEPASS_SUBTITLE_RENDER = 1;
+
+constexpr uint32_t VIDEO_PICTURE_QUEUE_SIZE = 3;
+constexpr uint32_t SUBPICTURE_QUEUE_SIZE = 16;
+constexpr uint32_t SAMPLE_QUEUE_SIZE = 9;
+constexpr uint32_t FRAME_QUEUE_SIZE = FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE));
 
 static unsigned sws_flags = SWS_BICUBIC;
 
@@ -113,11 +116,6 @@ typedef struct PacketQueue {
     SDL_mutex* mutex;
     SDL_cond* cond;
 } PacketQueue;
-
-#define VIDEO_PICTURE_QUEUE_SIZE 3
-#define SUBPICTURE_QUEUE_SIZE 16
-#define SAMPLE_QUEUE_SIZE 9
-#define FRAME_QUEUE_SIZE FFMAX(SAMPLE_QUEUE_SIZE, FFMAX(VIDEO_PICTURE_QUEUE_SIZE, SUBPICTURE_QUEUE_SIZE))
 
 typedef struct AudioParams {
     int freq;
@@ -156,15 +154,15 @@ typedef struct Frame {
 
 typedef struct FrameQueue {
     Frame queue[FRAME_QUEUE_SIZE];
-    int rindex;
-    int windex;
-    int size;
-    int max_size;
-    int keep_last;
-    int rindex_shown;
-    SDL_mutex* mutex;
-    SDL_cond* cond;
-    PacketQueue* pktq;
+    int rindex = 0;
+    int windex = 0;
+    int size = 0;
+    int max_size = 0;
+    int keep_last = 0;
+    int rindex_shown = 0;
+    std::mutex mutex;
+    std::condition_variable cond;
+    PacketQueue* pktq = nullptr;
 } FrameQueue;
 
 enum {
@@ -180,7 +178,8 @@ typedef struct Decoder {
     int pkt_serial;
     int finished;
     int packet_pending;
-    SDL_cond* empty_queue_cond;
+    //SDL_cond* empty_queue_cond;
+    std::shared_ptr<std::condition_variable> empty_queue_cond;
     int64_t start_pts;
     AVRational start_pts_tb;
     int64_t next_pts;
@@ -198,7 +197,7 @@ public:
 
 public:
     SDL_Thread* read_tid;
-    AVInputFormat* iformat;
+    AVInputFormat* iformat = nullptr;
     int abort_request;
     int force_refresh;
     int paused;
@@ -209,7 +208,7 @@ public:
     int64_t seek_pos;
     int64_t seek_rel;
     int read_pause_return;
-    AVFormatContext* ic;
+    AVFormatContext* ic = nullptr;
     int realtime;
 
     Clock audclk;
@@ -257,17 +256,17 @@ public:
     int16_t sample_array[SAMPLE_ARRAY_SIZE];
     int sample_array_index;
     int last_i_start;
-    RDFTContext* rdft;
+    RDFTContext* rdft = nullptr;
     int rdft_bits;
-    FFTSample* rdft_data;
+    FFTSample* rdft_data = nullptr;
     int xpos;
     double last_vis_time;
-    SDL_Texture* vis_texture;
-    SDL_Texture* sub_texture;
-    SDL_Texture* vid_texture;
+    SDL_Texture* vis_texture = nullptr;
+    SDL_Texture* sub_texture = nullptr;
+    SDL_Texture* vid_texture = nullptr;
 
     int subtitle_stream;
-    AVStream* subtitle_st;
+    AVStream* subtitle_st = nullptr;
     PacketQueue subtitleq;
 
     double frame_timer;
@@ -277,11 +276,11 @@ public:
     AVStream* video_st;
     PacketQueue videoq;
     double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
-    struct SwsContext* img_convert_ctx;
-    struct SwsContext* sub_convert_ctx;
+    struct SwsContext* img_convert_ctx = nullptr;
+    struct SwsContext* sub_convert_ctx = nullptr;
     int eof;
 
-    char* filename;
+    char* filename = nullptr;
     int width, height, xleft, ytop;
     int step;
 
@@ -296,7 +295,8 @@ public:
 
     int last_video_stream, last_audio_stream, last_subtitle_stream;
 
-    SDL_cond* continue_read_thread;
+    //SDL_cond* continue_read_thread;
+    std::shared_ptr<std::condition_variable> continue_read_thread = nullptr;
 };
 
 /* options specified by the user */
@@ -573,7 +573,8 @@ static int packet_queue_get(PacketQueue* q, AVPacket* pkt, int block, int* seria
     return ret;
 }
 
-static void decoder_init(Decoder* d, AVCodecContext* avctx, PacketQueue* queue, SDL_cond* empty_queue_cond) {
+/* 是否std::shared_ptr 要传引用 */
+static void decoder_init(Decoder* d, AVCodecContext* avctx, PacketQueue* queue, std::shared_ptr<std::condition_variable> empty_queue_cond/*SDL_cond* empty_queue_cond*/) {
     memset(d, 0, sizeof(Decoder));
     d->avctx = avctx;
     d->queue = queue;
@@ -632,7 +633,7 @@ static int decoder_decode_frame(Decoder* d, AVFrame* frame, AVSubtitle* sub) {
 
         do {
             if (d->queue->nb_packets == 0)
-                SDL_CondSignal(d->empty_queue_cond);
+                d->empty_queue_cond->notify_one();//SDL_CondSignal(d->empty_queue_cond);
             if (d->packet_pending) {
                 av_packet_move_ref(&pkt, &d->pkt);
                 d->packet_pending = 0;
@@ -690,15 +691,6 @@ static void frame_queue_unref_item(Frame* vp)
 static int frame_queue_init(FrameQueue* f, PacketQueue* pktq, int max_size, int keep_last)
 {
     int i;
-    memset(f, 0, sizeof(FrameQueue));
-    if (!(f->mutex = SDL_CreateMutex())) {
-        av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
-        return AVERROR(ENOMEM);
-    }
-    if (!(f->cond = SDL_CreateCond())) {
-        av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-        return AVERROR(ENOMEM);
-    }
     f->pktq = pktq;
     f->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
     f->keep_last = !!keep_last;
@@ -716,15 +708,12 @@ static void frame_queue_destory(FrameQueue* f)
         frame_queue_unref_item(vp);
         av_frame_free(&vp->frame);
     }
-    SDL_DestroyMutex(f->mutex);
-    SDL_DestroyCond(f->cond);
 }
 
 static void frame_queue_signal(FrameQueue* f)
 {
-    SDL_LockMutex(f->mutex);
-    SDL_CondSignal(f->cond);
-    SDL_UnlockMutex(f->mutex);
+    std::lock_guard<std::mutex> lock(f->mutex);
+    f->cond.notify_one();
 }
 
 static Frame* frame_queue_peek(FrameQueue* f)
@@ -745,12 +734,13 @@ static Frame* frame_queue_peek_last(FrameQueue* f)
 static Frame* frame_queue_peek_writable(FrameQueue* f)
 {
     /* wait until we have space to put a new frame */
-    SDL_LockMutex(f->mutex);
-    while (f->size >= f->max_size &&
-        !f->pktq->abort_request) {
-        SDL_CondWait(f->cond, f->mutex);
+    {
+        std::unique_lock<std::mutex> lock(f->mutex);
+        while (f->size >= f->max_size &&
+            !f->pktq->abort_request) {
+            f->cond.wait(lock);
+        }
     }
-    SDL_UnlockMutex(f->mutex);
 
     if (f->pktq->abort_request)
         return NULL;
@@ -761,12 +751,13 @@ static Frame* frame_queue_peek_writable(FrameQueue* f)
 static Frame* frame_queue_peek_readable(FrameQueue* f)
 {
     /* wait until we have a readable a new frame */
-    SDL_LockMutex(f->mutex);
-    while (f->size - f->rindex_shown <= 0 &&
-        !f->pktq->abort_request) {
-        SDL_CondWait(f->cond, f->mutex);
+    {
+        std::unique_lock<std::mutex> lock(f->mutex);
+        while (f->size - f->rindex_shown <= 0 &&
+            !f->pktq->abort_request) {
+            f->cond.wait(lock);
+        }
     }
-    SDL_UnlockMutex(f->mutex);
 
     if (f->pktq->abort_request)
         return NULL;
@@ -778,10 +769,10 @@ static void frame_queue_push(FrameQueue* f)
 {
     if (++f->windex == f->max_size)
         f->windex = 0;
-    SDL_LockMutex(f->mutex);
+
+    std::lock_guard<std::mutex> lock(f->mutex);
     f->size++;
-    SDL_CondSignal(f->cond);
-    SDL_UnlockMutex(f->mutex);
+    f->cond.notify_one();
 }
 
 static void frame_queue_next(FrameQueue* f)
@@ -793,10 +784,10 @@ static void frame_queue_next(FrameQueue* f)
     frame_queue_unref_item(&f->queue[f->rindex]);
     if (++f->rindex == f->max_size)
         f->rindex = 0;
-    SDL_LockMutex(f->mutex);
+
+    std::lock_guard<std::mutex> lock(f->mutex);
     f->size--;
-    SDL_CondSignal(f->cond);
-    SDL_UnlockMutex(f->mutex);
+    f->cond.notify_one();
 }
 
 /* return the number of undisplayed frames in the queue */
@@ -1049,10 +1040,11 @@ static void video_image_display(FMediaPlayer* is)
         double yratio = (double)rect.h / (double)sp->height;
         for (i = 0; i < sp->sub.num_rects; i++) {
             SDL_Rect* sub_rect = (SDL_Rect*)sp->sub.rects[i];
-            SDL_Rect target = { .x = rect.x + sub_rect->x * xratio,
-                               .y = rect.y + sub_rect->y * yratio,
-                               .w = sub_rect->w * xratio,
-                               .h = sub_rect->h * yratio };
+            SDL_Rect target;
+            target.x = rect.x + sub_rect->x * xratio;
+            target.y = rect.y + sub_rect->y * yratio;
+            target.w = sub_rect->w * xratio;
+            target.h = sub_rect->h * yratio;
             SDL_RenderCopy(renderer, is->sub_texture, sub_rect, &target);
         }
 #endif
@@ -1293,7 +1285,7 @@ static void stream_close(FMediaPlayer* is)
     frame_queue_destory(&is->pictq);
     frame_queue_destory(&is->sampq);
     frame_queue_destory(&is->subpq);
-    SDL_DestroyCond(is->continue_read_thread);
+    //SDL_DestroyCond(is->continue_read_thread);
     sws_freeContext(is->img_convert_ctx);
     sws_freeContext(is->sub_convert_ctx);
     av_free(is->filename);
@@ -1303,7 +1295,8 @@ static void stream_close(FMediaPlayer* is)
         SDL_DestroyTexture(is->vid_texture);
     if (is->sub_texture)
         SDL_DestroyTexture(is->sub_texture);
-    av_free(is);
+    delete is;//av_free(is);
+    is = nullptr;
 }
 
 static void do_exit(FMediaPlayer* is)
@@ -1370,16 +1363,24 @@ static int video_open(FMediaPlayer* is)
 /* display the current picture, if any */
 static void video_display(FMediaPlayer* is)
 {
-    if (!is->width)
-        video_open(is);
+    try
+    {
+        if (!is->width)
+            video_open(is);
 
-    SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-    SDL_RenderClear(renderer);
-    if (is->audio_st && is->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO)
-        video_audio_display(is);
-    else if (is->video_st)
-        video_image_display(is);
-    SDL_RenderPresent(renderer);
+        SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
+        SDL_RenderClear(renderer);
+        if (is->audio_st && is->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO)
+            video_audio_display(is);
+        else if (is->video_st)
+            video_image_display(is);
+        SDL_RenderPresent(renderer);
+    }
+    catch (...)
+    {
+        av_log(NULL, AV_LOG_ERROR, "Error::video_display\n");
+        return;
+    }
 }
 
 static double get_clock(Clock* c)
@@ -1485,16 +1486,16 @@ static void check_external_clock_speed(FMediaPlayer* is) {
 }
 
 /* seek in the stream */
-static void stream_seek(FMediaPlayer* is, int64_t pos, int64_t rel, int seek_by_bytes)
+static void stream_seek(FMediaPlayer* pPlayer, int64_t pos, int64_t rel, int seek_by_bytes)
 {
-    if (!is->seek_req) {
-        is->seek_pos = pos;
-        is->seek_rel = rel;
-        is->seek_flags &= ~AVSEEK_FLAG_BYTE;
+    if (!pPlayer->seek_req) {
+        pPlayer->seek_pos = pos;
+        pPlayer->seek_rel = rel;
+        pPlayer->seek_flags &= ~AVSEEK_FLAG_BYTE;
         if (seek_by_bytes)
-            is->seek_flags |= AVSEEK_FLAG_BYTE;
-        is->seek_req = 1;
-        SDL_CondSignal(is->continue_read_thread);
+            pPlayer->seek_flags |= AVSEEK_FLAG_BYTE;
+        pPlayer->seek_req = 1;
+        pPlayer->continue_read_thread->notify_one();
     }
 }
 
@@ -1645,10 +1646,11 @@ static void video_refresh(void* pUserData, double* remaining_time)
             if (delay > 0 && time - is->frame_timer > AV_SYNC_THRESHOLD_MAX)
                 is->frame_timer = time;
 
-            SDL_LockMutex(is->pictq.mutex);
-            if (!isnan(vp->pts))
-                update_video_pts(is, vp->pts, vp->pos, vp->serial);
-            SDL_UnlockMutex(is->pictq.mutex);
+            {
+                std::lock_guard<std::mutex> lock(is->pictq.mutex);
+                if (!isnan(vp->pts))
+                    update_video_pts(is, vp->pts, vp->pos, vp->serial);
+            }
 
             if (frame_queue_nb_remaining(&is->pictq) > 1) {
                 Frame* nextvp = frame_queue_peek_next(&is->pictq);
@@ -2768,7 +2770,7 @@ static int is_realtime(AVFormatContext* s)
 /* this thread gets the stream from the disk or the network */
 static int read_thread(void* pUserData)
 {
-    FMediaPlayer* is = static_cast<FMediaPlayer*>(pUserData);
+    FMediaPlayer* pPlayer = static_cast<FMediaPlayer*>(pUserData);
     AVFormatContext* ic = NULL;
     int err, i, ret;
     int st_index[AVMEDIA_TYPE_NB];
@@ -2776,21 +2778,21 @@ static int read_thread(void* pUserData)
     int64_t stream_start_time;
     int pkt_in_play_range = 0;
     AVDictionaryEntry* t;
-    SDL_mutex* wait_mutex = SDL_CreateMutex();
+    std::mutex wait_mutex;//SDL_mutex* wait_mutex = SDL_CreateMutex();
     int scan_all_pmts_set = 0;
     int64_t pkt_ts;
 
-    if (!wait_mutex) {
+   /* if (!wait_mutex) {
         av_log(NULL, AV_LOG_FATAL, "SDL_CreateMutex(): %s\n", SDL_GetError());
         ret = AVERROR(ENOMEM);
         goto fail;
-    }
+    }*/
 
     memset(st_index, -1, sizeof(st_index));
-    is->last_video_stream = is->video_stream = -1;
-    is->last_audio_stream = is->audio_stream = -1;
-    is->last_subtitle_stream = is->subtitle_stream = -1;
-    is->eof = 0;
+    pPlayer->last_video_stream = pPlayer->video_stream = -1;
+    pPlayer->last_audio_stream = pPlayer->audio_stream = -1;
+    pPlayer->last_subtitle_stream = pPlayer->subtitle_stream = -1;
+    pPlayer->eof = 0;
 
     ic = avformat_alloc_context();
     if (!ic) {
@@ -2799,14 +2801,14 @@ static int read_thread(void* pUserData)
         goto fail;
     }
     ic->interrupt_callback.callback = decode_interrupt_cb;
-    ic->interrupt_callback.opaque = is;
+    ic->interrupt_callback.opaque = pPlayer;
     if (!av_dict_get(format_opts, "scan_all_pmts", NULL, AV_DICT_MATCH_CASE)) {
         av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
         scan_all_pmts_set = 1;
     }
-    err = avformat_open_input(&ic, is->filename, is->iformat, &format_opts);
+    err = avformat_open_input(&ic, pPlayer->filename, pPlayer->iformat, &format_opts);
     if (err < 0) {
-        print_error(is->filename, err);
+        print_error(pPlayer->filename, err);
         ret = -1;
         goto fail;
     }
@@ -2818,7 +2820,7 @@ static int read_thread(void* pUserData)
         ret = AVERROR_OPTION_NOT_FOUND;
         goto fail;
     }
-    is->ic = ic;
+    pPlayer->ic = ic;
 
     if (genpts)
         ic->flags |= AVFMT_FLAG_GENPTS;
@@ -2837,7 +2839,7 @@ static int read_thread(void* pUserData)
 
         if (err < 0) {
             av_log(NULL, AV_LOG_WARNING,
-                "%s: could not find codec parameters\n", is->filename);
+                "%s: could not find codec parameters\n", pPlayer->filename);
             ret = -1;
             goto fail;
         }
@@ -2849,7 +2851,7 @@ static int read_thread(void* pUserData)
     if (seek_by_bytes < 0)
         seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
 
-    is->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
+    pPlayer->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
 
     if (!window_title && (t = av_dict_get(ic->metadata, "title", NULL, 0)))
         window_title = av_asprintf("%s - %s", t->value, input_filename);
@@ -2865,14 +2867,14 @@ static int read_thread(void* pUserData)
         ret = avformat_seek_file(ic, -1, INT64_MIN, timestamp, INT64_MAX, 0);
         if (ret < 0) {
             av_log(NULL, AV_LOG_WARNING, "%s: could not seek to position %0.3f\n",
-                is->filename, (double)timestamp / AV_TIME_BASE);
+                pPlayer->filename, (double)timestamp / AV_TIME_BASE);
         }
     }
 
-    is->realtime = is_realtime(ic);
+    pPlayer->realtime = is_realtime(ic);
 
     if (show_status)
-        av_dump_format(ic, 0, is->filename, 0);
+        av_dump_format(ic, 0, pPlayer->filename, 0);
 
     for (i = 0; i < ic->nb_streams; i++) {
         AVStream* st = ic->streams[i];
@@ -2908,7 +2910,7 @@ static int read_thread(void* pUserData)
                 st_index[AVMEDIA_TYPE_VIDEO]),
             NULL, 0);
 
-    is->eShow_mode = show_mode;
+    pPlayer->eShow_mode = show_mode;
     if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
         AVStream* st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
         AVCodecParameters* codecpar = st->codecpar;
@@ -2919,42 +2921,42 @@ static int read_thread(void* pUserData)
 
     /* open the streams */
     if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
-        stream_component_open(is, st_index[AVMEDIA_TYPE_AUDIO]);
+        stream_component_open(pPlayer, st_index[AVMEDIA_TYPE_AUDIO]);
     }
 
     ret = -1;
     if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
-        ret = stream_component_open(is, st_index[AVMEDIA_TYPE_VIDEO]);
+        ret = stream_component_open(pPlayer, st_index[AVMEDIA_TYPE_VIDEO]);
     }
-    if (is->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_NONE)
-        is->eShow_mode = ret >= 0 ? FMediaPlayer::EShowMode::SHOW_MODE_VIDEO : FMediaPlayer::EShowMode::SHOW_MODE_RDFT;
+    if (pPlayer->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_NONE)
+        pPlayer->eShow_mode = ret >= 0 ? FMediaPlayer::EShowMode::SHOW_MODE_VIDEO : FMediaPlayer::EShowMode::SHOW_MODE_RDFT;
 
     if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
-        stream_component_open(is, st_index[AVMEDIA_TYPE_SUBTITLE]);
+        stream_component_open(pPlayer, st_index[AVMEDIA_TYPE_SUBTITLE]);
     }
 
-    if (is->video_stream < 0 && is->audio_stream < 0) {
+    if (pPlayer->video_stream < 0 && pPlayer->audio_stream < 0) {
         av_log(NULL, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-            is->filename);
+            pPlayer->filename);
         ret = -1;
         goto fail;
     }
 
-    if (infinite_buffer < 0 && is->realtime)
+    if (infinite_buffer < 0 && pPlayer->realtime)
         infinite_buffer = 1;
 
     for (;;) {
-        if (is->abort_request)
+        if (pPlayer->abort_request)
             break;
-        if (is->paused != is->last_paused) {
-            is->last_paused = is->paused;
-            if (is->paused)
-                is->read_pause_return = av_read_pause(ic);
+        if (pPlayer->paused != pPlayer->last_paused) {
+            pPlayer->last_paused = pPlayer->paused;
+            if (pPlayer->paused)
+                pPlayer->read_pause_return = av_read_pause(ic);
             else
                 av_read_play(ic);
         }
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
-        if (is->paused &&
+        if (pPlayer->paused &&
             (!strcmp(ic->iformat->name, "rtsp") ||
             (ic->pb && !strncmp(input_filename, "mmsh:", 5)))) {
             /* wait 10 ms to avoid trying to get another packet */
@@ -2963,72 +2965,74 @@ static int read_thread(void* pUserData)
             continue;
         }
 #endif
-        if (is->seek_req) {
-            int64_t seek_target = is->seek_pos;
-            int64_t seek_min = is->seek_rel > 0 ? seek_target - is->seek_rel + 2 : INT64_MIN;
-            int64_t seek_max = is->seek_rel < 0 ? seek_target - is->seek_rel - 2 : INT64_MAX;
-            // FIXME the +-2 is due to rounding being not done in the correct direction in generation
+        if (pPlayer->seek_req) {
+            int64_t seek_target = pPlayer->seek_pos;
+            int64_t seek_min = pPlayer->seek_rel > 0 ? seek_target - pPlayer->seek_rel + 2 : INT64_MIN;
+            int64_t seek_max = pPlayer->seek_rel < 0 ? seek_target - pPlayer->seek_rel - 2 : INT64_MAX;
+            // FIXME the +-2 pPlayer due to rounding being not done in the correct direction in generation
             //      of the seek_pos/seek_rel variables
 
-            ret = avformat_seek_file(is->ic, -1, seek_min, seek_target, seek_max, is->seek_flags);
+            ret = avformat_seek_file(pPlayer->ic, -1, seek_min, seek_target, seek_max, pPlayer->seek_flags);
             if (ret < 0) {
                 av_log(NULL, AV_LOG_ERROR,
-                    "%s: error while seeking\n", is->ic->url);
+                    "%s: error while seeking\n", pPlayer->ic->url);
             }
             else {
-                if (is->audio_stream >= 0) {
-                    packet_queue_flush(&is->audioq);
-                    packet_queue_put(&is->audioq, &flush_pkt);
+                if (pPlayer->audio_stream >= 0) {
+                    packet_queue_flush(&pPlayer->audioq);
+                    packet_queue_put(&pPlayer->audioq, &flush_pkt);
                 }
-                if (is->subtitle_stream >= 0) {
-                    packet_queue_flush(&is->subtitleq);
-                    packet_queue_put(&is->subtitleq, &flush_pkt);
+                if (pPlayer->subtitle_stream >= 0) {
+                    packet_queue_flush(&pPlayer->subtitleq);
+                    packet_queue_put(&pPlayer->subtitleq, &flush_pkt);
                 }
-                if (is->video_stream >= 0) {
-                    packet_queue_flush(&is->videoq);
-                    packet_queue_put(&is->videoq, &flush_pkt);
+                if (pPlayer->video_stream >= 0) {
+                    packet_queue_flush(&pPlayer->videoq);
+                    packet_queue_put(&pPlayer->videoq, &flush_pkt);
                 }
-                if (is->seek_flags & AVSEEK_FLAG_BYTE) {
-                    set_clock(&is->extclk, NAN, 0);
+                if (pPlayer->seek_flags & AVSEEK_FLAG_BYTE) {
+                    set_clock(&pPlayer->extclk, NAN, 0);
                 }
                 else {
-                    set_clock(&is->extclk, seek_target / (double)AV_TIME_BASE, 0);
+                    set_clock(&pPlayer->extclk, seek_target / (double)AV_TIME_BASE, 0);
                 }
             }
-            is->seek_req = 0;
-            is->queue_attachments_req = 1;
-            is->eof = 0;
-            if (is->paused)
-                step_to_next_frame(is);
+            pPlayer->seek_req = 0;
+            pPlayer->queue_attachments_req = 1;
+            pPlayer->eof = 0;
+            if (pPlayer->paused)
+                step_to_next_frame(pPlayer);
         }
-        if (is->queue_attachments_req) {
-            if (is->video_st && is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC) {
+        if (pPlayer->queue_attachments_req) {
+            if (pPlayer->video_st && pPlayer->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC) {
                 AVPacket copy = { 0 };
-                if ((ret = av_packet_ref(&copy, &is->video_st->attached_pic)) < 0)
+                if ((ret = av_packet_ref(&copy, &pPlayer->video_st->attached_pic)) < 0)
                     goto fail;
-                packet_queue_put(&is->videoq, &copy);
-                packet_queue_put_nullpacket(&is->videoq, is->video_stream);
+                packet_queue_put(&pPlayer->videoq, &copy);
+                packet_queue_put_nullpacket(&pPlayer->videoq, pPlayer->video_stream);
             }
-            is->queue_attachments_req = 0;
+            pPlayer->queue_attachments_req = 0;
         }
 
         /* if the queue are full, no need to read more */
         if (infinite_buffer < 1 &&
-            (is->audioq.size + is->videoq.size + is->subtitleq.size > MAX_QUEUE_SIZE
-                || (stream_has_enough_packets(is->audio_st, is->audio_stream, &is->audioq) &&
-                    stream_has_enough_packets(is->video_st, is->video_stream, &is->videoq) &&
-                    stream_has_enough_packets(is->subtitle_st, is->subtitle_stream, &is->subtitleq)))) {
+            (pPlayer->audioq.size + pPlayer->videoq.size + pPlayer->subtitleq.size > MAX_QUEUE_SIZE
+                || (stream_has_enough_packets(pPlayer->audio_st, pPlayer->audio_stream, &pPlayer->audioq) &&
+                    stream_has_enough_packets(pPlayer->video_st, pPlayer->video_stream, &pPlayer->videoq) &&
+                    stream_has_enough_packets(pPlayer->subtitle_st, pPlayer->subtitle_stream, &pPlayer->subtitleq)))) {
             /* wait 10 ms */
-            SDL_LockMutex(wait_mutex);
-            SDL_CondWaitTimeout(is->continue_read_thread, wait_mutex, 10);
-            SDL_UnlockMutex(wait_mutex);
+            //SDL_LockMutex(wait_mutex);
+            //SDL_CondWaitTimeout(pPlayer->continue_read_thread, wait_mutex, 10);
+            //SDL_UnlockMutex(wait_mutex);
+            std::unique_lock<std::mutex> lock(wait_mutex);
+            pPlayer->continue_read_thread->wait_for(lock, std::chrono::milliseconds(10));
             continue;
         }
-        if (!is->paused &&
-            (!is->audio_st || (is->auddec.finished == is->audioq.serial && frame_queue_nb_remaining(&is->sampq) == 0)) &&
-            (!is->video_st || (is->viddec.finished == is->videoq.serial && frame_queue_nb_remaining(&is->pictq) == 0))) {
+        if (!pPlayer->paused &&
+            (!pPlayer->audio_st || (pPlayer->auddec.finished == pPlayer->audioq.serial && frame_queue_nb_remaining(&pPlayer->sampq) == 0)) &&
+            (!pPlayer->video_st || (pPlayer->viddec.finished == pPlayer->videoq.serial && frame_queue_nb_remaining(&pPlayer->pictq) == 0))) {
             if (loop != 1 && (!loop || --loop)) {
-                stream_seek(is, start_time != AV_NOPTS_VALUE ? start_time : 0, 0, 0);
+                stream_seek(pPlayer, start_time != AV_NOPTS_VALUE ? start_time : 0, 0, 0);
             }
             else if (autoexit) {
                 ret = AVERROR_EOF;
@@ -3037,26 +3041,26 @@ static int read_thread(void* pUserData)
         }
         ret = av_read_frame(ic, pkt);
         if (ret < 0) {
-            if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !is->eof) {
-                if (is->video_stream >= 0)
-                    packet_queue_put_nullpacket(&is->videoq, is->video_stream);
-                if (is->audio_stream >= 0)
-                    packet_queue_put_nullpacket(&is->audioq, is->audio_stream);
-                if (is->subtitle_stream >= 0)
-                    packet_queue_put_nullpacket(&is->subtitleq, is->subtitle_stream);
-                is->eof = 1;
+            if ((ret == AVERROR_EOF || avio_feof(ic->pb)) && !pPlayer->eof) {
+                if (pPlayer->video_stream >= 0)
+                    packet_queue_put_nullpacket(&pPlayer->videoq, pPlayer->video_stream);
+                if (pPlayer->audio_stream >= 0)
+                    packet_queue_put_nullpacket(&pPlayer->audioq, pPlayer->audio_stream);
+                if (pPlayer->subtitle_stream >= 0)
+                    packet_queue_put_nullpacket(&pPlayer->subtitleq, pPlayer->subtitle_stream);
+                pPlayer->eof = 1;
             }
             if (ic->pb && ic->pb->error)
                 break;
-            SDL_LockMutex(wait_mutex);
-            SDL_CondWaitTimeout(is->continue_read_thread, wait_mutex, 10);
-            SDL_UnlockMutex(wait_mutex);
+
+            std::unique_lock<std::mutex> lock(wait_mutex);
+            pPlayer->continue_read_thread->wait_for(lock, std::chrono::milliseconds(10));
             continue;
         }
         else {
-            is->eof = 0;
+            pPlayer->eof = 0;
         }
-        /* check if packet is in play range specified by user, then queue, otherwise discard */
+        /* check if packet pPlayer in play range specified by user, then queue, otherwise discard */
         stream_start_time = ic->streams[pkt->stream_index]->start_time;
         pkt_ts = pkt->pts == AV_NOPTS_VALUE ? pkt->dts : pkt->pts;
         pkt_in_play_range = duration == AV_NOPTS_VALUE ||
@@ -3064,15 +3068,15 @@ static int read_thread(void* pUserData)
             av_q2d(ic->streams[pkt->stream_index]->time_base) -
             (double)(start_time != AV_NOPTS_VALUE ? start_time : 0) / 1000000
             <= ((double)duration / 1000000);
-        if (pkt->stream_index == is->audio_stream && pkt_in_play_range) {
-            packet_queue_put(&is->audioq, pkt);
+        if (pkt->stream_index == pPlayer->audio_stream && pkt_in_play_range) {
+            packet_queue_put(&pPlayer->audioq, pkt);
         }
-        else if (pkt->stream_index == is->video_stream && pkt_in_play_range
-            && !(is->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
-            packet_queue_put(&is->videoq, pkt);
+        else if (pkt->stream_index == pPlayer->video_stream && pkt_in_play_range
+            && !(pPlayer->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
+            packet_queue_put(&pPlayer->videoq, pkt);
         }
-        else if (pkt->stream_index == is->subtitle_stream && pkt_in_play_range) {
-            packet_queue_put(&is->subtitleq, pkt);
+        else if (pkt->stream_index == pPlayer->subtitle_stream && pkt_in_play_range) {
+            packet_queue_put(&pPlayer->subtitleq, pkt);
         }
         else {
             av_packet_unref(pkt);
@@ -3081,17 +3085,16 @@ static int read_thread(void* pUserData)
 
     ret = 0;
 fail:
-    if (ic && !is->ic)
+    if (ic && !pPlayer->ic)
         avformat_close_input(&ic);
 
     if (ret != 0) {
         SDL_Event event;
 
         event.type = FF_QUIT_EVENT;
-        event.user.data1 = is;
+        event.user.data1 = pPlayer;
         SDL_PushEvent(&event);
     }
-    SDL_DestroyMutex(wait_mutex);
     return 0;
 }
 
@@ -3099,7 +3102,7 @@ static FMediaPlayer* stream_open(const char* filename, AVInputFormat* iformat)
 {
     FMediaPlayer* pPlayer;
 
-    pPlayer = static_cast<FMediaPlayer*>(av_mallocz(sizeof(FMediaPlayer)));
+    pPlayer = static_cast<FMediaPlayer*>(new FMediaPlayer()/*av_mallocz(sizeof(FMediaPlayer))*/);
     if (!pPlayer)
         return NULL;
     pPlayer->filename = av_strdup(filename);
@@ -3122,9 +3125,11 @@ static FMediaPlayer* stream_open(const char* filename, AVInputFormat* iformat)
         packet_queue_init(&pPlayer->subtitleq) < 0)
         goto fail;
 
-    if (!(pPlayer->continue_read_thread = SDL_CreateCond())) {
-        av_log(NULL, AV_LOG_FATAL, "SDL_CreateCond(): %s\n", SDL_GetError());
-        goto fail;
+    pPlayer->continue_read_thread = std::make_shared<std::condition_variable>();
+    if (pPlayer->continue_read_thread == nullptr)
+    {
+        av_log(NULL, AV_LOG_ERROR, "Make a condition varibale failed\n");
+        return nullptr;
     }
 
     init_clock(&pPlayer->vidclk, &pPlayer->videoq.serial);
