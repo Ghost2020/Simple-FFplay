@@ -156,11 +156,15 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="cmdutils.c" />
+    <ClCompile Include="FDecoder.cpp" />
+    <ClCompile Include="FMediaPlayer.cpp" />
     <ClCompile Include="main.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="cmdutils.h" />
     <ClInclude Include="config.h" />
+    <ClInclude Include="FDecoder.h" />
+    <ClInclude Include="FMediaPlayer.h" />
   </ItemGroup>
   <ItemGroup>
     <None Include="..\README.md" />
