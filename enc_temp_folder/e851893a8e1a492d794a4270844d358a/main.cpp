@@ -1550,8 +1550,7 @@ public:
         if (!this->paused && get_master_sync_type() == FMediaPlayer::ESyncType::AV_SYNC_EXTERNAL_CLOCK && this->realtime)
             check_external_clock_speed();
 
-        if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO && this->audio_st) 
-        {
+        if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO && this->audio_st) {
             time = av_gettime_relative() / 1000000.0;
             if (this->force_refresh || this->last_vis_time + rdftspeed < time) {
                 video_display();
@@ -1668,8 +1667,7 @@ public:
             double av_diff;
 
             cur_time = av_gettime_relative();
-            if (!last_time || (cur_time - last_time) >= 30000) 
-            {
+            if (!last_time || (cur_time - last_time) >= 30000) {
                 aqsize = 0;
                 vqsize = 0;
                 sqsize = 0;
