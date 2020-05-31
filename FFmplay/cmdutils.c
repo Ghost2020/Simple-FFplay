@@ -2134,8 +2134,7 @@ AVDictionary *filter_codec_opts(AVDictionary *opts, enum AVCodecID codec_id,
     return ret;
 }
 
-AVDictionary **setup_find_stream_info_opts(AVFormatContext *s,
-                                           AVDictionary *codec_opts)
+AVDictionary **setup_find_stream_info_opts(AVFormatContext *s, AVDictionary *codec_opts)
 {
     int i;
     AVDictionary **opts;

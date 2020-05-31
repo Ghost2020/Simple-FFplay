@@ -341,11 +341,14 @@ public:
 	PacketQueue* pktq = nullptr;
 };
 
+/*
+* \@brief 解码相关操作
+*/
 class FDecoder
 {
 	friend class FMediaPlayer;
 public:
-	FDecoder();
+	explicit FDecoder();
 
 	FDecoder(const FDecoder&) = delete;
 	FDecoder& operator=(const FDecoder&) = delete;

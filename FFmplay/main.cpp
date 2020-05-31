@@ -1,6 +1,10 @@
 
-
 #include "FMediaPlayer.h"
+
+extern "C"
+{
+    #include "cmdutils.h"
+}
 
 const char program_name[] = "ffplay";
 
@@ -57,6 +61,18 @@ static int opt_show_mode(void* optctx, const char* opt, const char* arg)
     return 0;
 }
 
+static AVInputFormat* file_iformat;
+
+static int opt_format(void* optctx, const char* opt, const char* arg)
+{
+    file_iformat = av_find_input_format(arg);
+    if (!file_iformat) {
+        av_log(NULL, AV_LOG_FATAL, "Unknown input format: %s\n", arg);
+        return AVERROR(EINVAL);
+    }
+    return 0;
+}
+
 static void opt_input_file(void* optctx, const char* filename)
 {
     if (input_filename) {
@@ -78,6 +94,7 @@ static const OptionDef options[] = {
     //{ "y", HAS_ARG, /*{.func_arg = */opt_height/* }*/, "force displayed height", "height" },
     { "s", HAS_ARG | OPT_VIDEO,/* {.func_arg = */opt_frame_size/* }*/, "set frame size (WxH or abbreviation)", "size" },
     { "pix_fmt", HAS_ARG | OPT_EXPERT | OPT_VIDEO, /*{.func_arg = */opt_frame_pix_fmt/* }*/, "set pixel format", "format" },
+    { "f", HAS_ARG, /*{.func_arg = */opt_format/* }*/, "force format", "fmt" },
     //{ "drp", OPT_INT | HAS_ARG | OPT_EXPERT, { &decoder_reorder_pts }, "let decoder reorder pts 0=off 1=on -1=auto", ""},
     //{ "lowres", OPT_INT | HAS_ARG | OPT_EXPERT, { &lowres }, "", "" },
     //{ "sync", HAS_ARG | OPT_EXPERT,/* {.func_arg = */opt_sync/* }*/, "set audio-video sync. type (type=audio/video/ext)", "type" },
@@ -137,11 +154,25 @@ void show_help_default(const char* opt, const char* arg)
     );
 }
 
-/* 
-    湖南卫视 rtmp://58.200.131.2:1935/livetv/hunantv
-    广西卫视 ：rtmp://58.200.131.2:1935/livetv/gxtv
-    广东卫视：rtmp://58.200.131.2:1935/livetv/gdtv
-    东方卫视：rtmp://58.200.131.2:1935/livetv/dftv
+/*
+使用方法如下:
+    方式一:本地媒体文件路径
+
+    方式二:直播地址如下:
+
+        湖南卫视 rtmp://58.200.131.2:1935/livetv/hunantv
+        广西卫视 ：rtmp://58.200.131.2:1935/livetv/gxtv
+        广东卫视：rtmp://58.200.131.2:1935/livetv/gdtv
+        东方卫视：rtmp://58.200.131.2:1935/livetv/dftv
+
+    方式三:获取播放设备
+        ./ffmpeg -f dshow -list_devices true -i dummy
+
+        本机播放设备: "Logitech HD Webcam C270"
+
+        捕获camera图像信息并播放
+        -f dshow -i video="Logitech HD Webcam C270"
+
 */
 
 /* Called from the main */
@@ -151,19 +182,13 @@ int main(int argc, char** argv)
 
     parse_loglevel(argc, argv, options);
 
-    FMediaPlayer::InitContext();
-
     std::unique_ptr<FMediaPlayer> pPlayer1 = std::make_unique<FMediaPlayer>();
     //std::unique_ptr<FMediaPlayer> pPlayer2 = std::make_unique<FMediaPlayer>();
     if (pPlayer1 == nullptr)
     {
         av_log(nullptr, AV_LOG_FATAL, "Failed to Create FMediaPlayer\n");
-        FMediaPlayer::UnInitContext();
         return -1;
     }
-
-    pPlayer1->InitRender();
-    //pPlayer2->InitRender();
 
     init_opts();
 
@@ -182,7 +207,7 @@ int main(int argc, char** argv)
         exit(1);
     }
 
-    if (!pPlayer1->stream_open(input_filename))
+    if (!pPlayer1->StreamOpen(input_filename, file_iformat))
     {
         av_log(nullptr, AV_LOG_FATAL, "Failed to Open stream\n");
         return -1;
@@ -194,17 +219,20 @@ int main(int argc, char** argv)
         return -1;
     }*/
 
-    pPlayer1->event_loop();
+    //std::this_thread::sleep_for(std::chrono::seconds(2));
+
+    pPlayer1->EventLoop();
     
+    /* TODO #SEQ1 */
     /*std::function<void()> func1 = std::bind(&FMediaPlayer::event_loop, &(*pPlayer1));
     std::future<void> fut1 = std::async(std::launch::async, std::move(func1));*/
+
     /*std::function<void()> func2 = std::bind(&FMediaPlayer::event_loop, &(*pPlayer2));
-    std::thread p2(func2);*/
+    std::future<void> fut2 = std::async(std::launch::deferred, std::move(func2));*/
 
-    /*fut1.get();*/
-    /*p2.join();*/
+    //fut1.get();
+    //fut2.get();
 
-    FMediaPlayer::UnInitContext();
     uninit_opts();
 
     /* never returns */

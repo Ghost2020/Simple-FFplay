@@ -1,5 +1,10 @@
 #include "FMediaPlayer.h"
 
+extern "C"
+{
+#include "libavutil/dict.h"
+}
+
 constexpr uint32_t MAX_QUEUE_SIZE = (15 * 1024 * 1024);
 constexpr uint32_t MIN_FRAMES = 25;
 constexpr uint32_t EXTERNAL_CLOCK_MIN_FRAMES = 2;
@@ -108,14 +113,23 @@ void SClock::SetSpeed(double speed)
 	this->speed = speed;
 }
 
-FMediaPlayer::FMediaPlayer() {};
+uint8_t FMediaPlayer::g_nInstance = 0;
 
-FMediaPlayer:: ~FMediaPlayer()
+FMediaPlayer::FMediaPlayer() 
 {
+	if (++g_nInstance == 1)
+		initContext();
+};
+
+FMediaPlayer::~FMediaPlayer()
+{
+	if (--g_nInstance == 0)
+		unInitContext();
+
 	do_exit();
 }
 
-bool FMediaPlayer::InitContext()
+bool FMediaPlayer::initContext()
 {
 	av_log_set_flags(AV_LOG_SKIP_REPEATED);
 
@@ -148,14 +162,14 @@ bool FMediaPlayer::InitContext()
 	return true;
 }
 
-void FMediaPlayer::UnInitContext()
+void FMediaPlayer::unInitContext()
 {
 	avformat_network_deinit();
 
 	SDL_Quit();
 }
 
-bool FMediaPlayer::InitRender()
+bool FMediaPlayer::initRender()
 {
 	int flags = SDL_WINDOW_HIDDEN;
 	if (alwaysontop)
@@ -165,28 +179,30 @@ bool FMediaPlayer::InitRender()
 		av_log(nullptr, AV_LOG_WARNING, "Your SDL version doesn't support SDL_WINDOW_ALWAYS_ON_TOP. Feature will be inactive.\n");
 #endif
 	flags |= SDL_WINDOW_RESIZABLE;
-	window = SDL_CreateWindow(program_name, SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+	std::string windowName = std::string("FFmplay") + std::to_string(g_nInstance);
+	//SDL_CreateWindowFrom();
+	pWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
-	if (window)
+	if (pWindow)
 	{
-		renderer = SDL_CreateRenderer(window, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
-		if (!renderer) {
+		pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
+		if (!pRenderer) {
 			av_log(nullptr, AV_LOG_WARNING, "Failed to initialize a hardware accelerated renderer: %s\n", SDL_GetError());
-			renderer = SDL_CreateRenderer(window, -1, 0);
+			pRenderer = SDL_CreateRenderer(pWindow, -1, 0);
 		}
-		if (renderer) {
-			if (!SDL_GetRendererInfo(renderer, &renderer_info))
+		if (pRenderer) {
+			if (!SDL_GetRendererInfo(pRenderer, &renderer_info))
 				av_log(nullptr, AV_LOG_VERBOSE, "Initialized %s renderer.\n", renderer_info.name);
 		}
 	}
-	if (!window || !renderer || !renderer_info.num_texture_formats) {
+	if (!pWindow || !pRenderer || !renderer_info.num_texture_formats) {
 		av_log(nullptr, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
 		return false;
 	}
 	return true;
 }
 
-void FMediaPlayer::UninitRender()
+void FMediaPlayer::uninitRender()
 {
 	if (this->vis_texture)
 		SDL_DestroyTexture(this->vis_texture);
@@ -195,10 +211,10 @@ void FMediaPlayer::UninitRender()
 	if (this->sub_texture)
 		SDL_DestroyTexture(this->sub_texture);
 
-	if (renderer)
-		SDL_DestroyRenderer(renderer);
-	if (window)
-		SDL_DestroyWindow(window);
+	if (pRenderer)
+		SDL_DestroyRenderer(pRenderer);
+	if (pWindow)
+		SDL_DestroyWindow(pWindow);
 }
 
 void FMediaPlayer::set_default_window_size(int width, int height, AVRational sar)
@@ -221,7 +237,7 @@ void FMediaPlayer::fill_rectangle(int x, int y, int w, int h)
 	rect.w = w;
 	rect.h = h;
 	if (w && h)
-		SDL_RenderFillRect(renderer, &rect);
+		SDL_RenderFillRect(pRenderer, &rect);
 }
 
 int FMediaPlayer::realloc_texture(SDL_Texture** texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture)
@@ -233,7 +249,7 @@ int FMediaPlayer::realloc_texture(SDL_Texture** texture, Uint32 new_format, int 
 		int pitch;
 		if (*texture)
 			SDL_DestroyTexture(*texture);
-		if (!(*texture = SDL_CreateTexture(renderer, new_format, SDL_TEXTUREACCESS_STREAMING, new_width, new_height)))
+		if (!(*texture = SDL_CreateTexture(pRenderer, new_format, SDL_TEXTUREACCESS_STREAMING, new_width, new_height)))
 			return -1;
 		if (SDL_SetTextureBlendMode(*texture, blendmode) < 0)
 			return -1;
@@ -285,6 +301,7 @@ void FMediaPlayer::get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt
 		format == AV_PIX_FMT_BGR32 ||
 		format == AV_PIX_FMT_BGR32_1)
 		*sdl_blendmode = SDL_BLENDMODE_BLEND;
+
 	for (i = 0; i < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; i++) {
 		if (format == sdl_texture_format_map[i].format) {
 			*sdl_pix_fmt = sdl_texture_format_map[i].texture_fmt;
@@ -338,12 +355,10 @@ int FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsCo
 		}
 		break;
 	default:
-		if (frame->linesize[0] < 0) {
+		if (frame->linesize[0] < 0)
 			ret = SDL_UpdateTexture(*tex, nullptr, frame->data[0] + frame->linesize[0] * (frame->height - 1), -frame->linesize[0]);
-		}
-		else {
+		else
 			ret = SDL_UpdateTexture(*tex, nullptr, frame->data[0], frame->linesize[0]);
-		}
 		break;
 	}
 	return ret;
@@ -367,12 +382,12 @@ void FMediaPlayer::set_sdl_yuv_conversion_mode(AVFrame* frame)
 
 void FMediaPlayer::video_image_display()
 {
-	SFrame* vp;
+	SFrame* vp = nullptr;
 	SFrame* sp = nullptr;
 	SDL_Rect rect;
 
 	vp = this->pictq.PeekLast();
-	if (this->subtitle_st) {
+	if (this->pSubtitleStream) {
 		if (this->subpq.NbRemaining() > 0) {
 			sp = this->subpq.Peek();
 
@@ -428,7 +443,7 @@ void FMediaPlayer::video_image_display()
 	}
 
 	set_sdl_yuv_conversion_mode(vp->frame);
-	SDL_RenderCopyEx(renderer, this->vid_texture, nullptr, &rect, 0, nullptr, static_cast<SDL_RendererFlip>(vp->flip_v ? SDL_FLIP_VERTICAL : 0));
+	SDL_RenderCopyEx(pRenderer, this->vid_texture, nullptr, &rect, 0, nullptr, static_cast<SDL_RendererFlip>(vp->flip_v ? SDL_FLIP_VERTICAL : 0));
 	set_sdl_yuv_conversion_mode(nullptr);
 	if (sp) {
 #if USE_ONEPASS_SUBTITLE_RENDER
@@ -444,7 +459,7 @@ void FMediaPlayer::video_image_display()
 			target.y = rect.y + sub_rect->y * yratio;
 			target.w = sub_rect->w * xratio;
 			target.h = sub_rect->h * yratio;
-			SDL_RenderCopy(renderer, this->sub_texture, sub_rect, &target);
+			SDL_RenderCopy(pRenderer, this->sub_texture, sub_rect, &target);
 		}
 #endif
 	}
@@ -511,7 +526,7 @@ void FMediaPlayer::video_audio_display()
 
 	if (this->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_WAVES)
 	{
-		SDL_SetRenderDrawColor(renderer, 255, 255, 255, 255);
+		SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 
 		/* total height for one channel */
 		h = this->height / nb_display_channels;
@@ -537,7 +552,7 @@ void FMediaPlayer::video_audio_display()
 			}
 		}
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 255, 255);
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
 
 		for (ch = 1; ch < nb_display_channels; ch++) {
 			y = this->ytop + ch * h;
@@ -597,7 +612,7 @@ void FMediaPlayer::video_audio_display()
 				}
 				SDL_UnlockTexture(this->vis_texture);
 			}
-			SDL_RenderCopy(renderer, this->vis_texture, nullptr, nullptr);
+			SDL_RenderCopy(pRenderer, this->vis_texture, nullptr, nullptr);
 		}
 		if (!this->paused)
 			this->xpos++;
@@ -608,14 +623,14 @@ void FMediaPlayer::video_audio_display()
 
 void FMediaPlayer::stream_component_close(int stream_index)
 {
-	AVFormatContext* ic = this->ic;
-	AVCodecParameters* codecpar;
+	AVCodecParameters* codecpar = nullptr;
 
-	if (stream_index < 0 || stream_index >= ic->nb_streams)
+	if (stream_index < 0 || stream_index >= this->pFormatCtx->nb_streams)
 		return;
-	codecpar = ic->streams[stream_index]->codecpar;
+	codecpar = this->pFormatCtx->streams[stream_index]->codecpar;
 
-	switch (codecpar->codec_type) {
+	switch (codecpar->codec_type) 
+	{
 	case AVMEDIA_TYPE_AUDIO:
 		this->auddec.Abort(&this->sampq);
 		SDL_CloseAudioDevice(audio_dev);
@@ -644,18 +659,19 @@ void FMediaPlayer::stream_component_close(int stream_index)
 		break;
 	}
 
-	ic->streams[stream_index]->discard = AVDISCARD_ALL;
-	switch (codecpar->codec_type) {
+	this->pFormatCtx->streams[stream_index]->discard = AVDISCARD_ALL;
+	switch (codecpar->codec_type) 
+	{
 	case AVMEDIA_TYPE_AUDIO:
-		this->audio_st = nullptr;
+		this->pAudioStream = nullptr;
 		this->audio_stream = -1;
 		break;
 	case AVMEDIA_TYPE_VIDEO:
-		this->video_st = nullptr;
+		this->pVideoStream = nullptr;
 		this->video_stream = -1;
 		break;
 	case AVMEDIA_TYPE_SUBTITLE:
-		this->subtitle_st = nullptr;
+		this->pSubtitleStream = nullptr;
 		this->subtitle_stream = -1;
 		break;
 	default:
@@ -663,23 +679,35 @@ void FMediaPlayer::stream_component_close(int stream_index)
 	}
 }
 
-void FMediaPlayer::stream_close()
+void FMediaPlayer::StreamClose()
 {
-	/* XXX: use a special url_shutdown call to abort parse cleanly */
+	/* 中止解析 */
 	this->abort_request = true;
+
+	/* 等待读取线程停止 */
 	if (this->future.valid())
 		if (this->future.get() != 0)
 			av_log(nullptr, AV_LOG_WARNING, "Thread exit exception\n");
 
-	/* close each stream */
+	/* 依次关闭各个媒体流 */
 	if (this->audio_stream >= 0)
+	{
 		stream_component_close(this->audio_stream);
+		audio_stream = -1;
+	}
 	if (this->video_stream >= 0)
+	{
 		stream_component_close(this->video_stream);
+		video_stream = -1;
+	}
 	if (this->subtitle_stream >= 0)
+	{
 		stream_component_close(this->subtitle_stream);
+		subtitle_stream = -1;
+	}
 
-	avformat_close_input(&this->ic);
+	avformat_close_input(&this->pFormatCtx);
+	this->pFormatCtx = nullptr;
 
 	this->videoq.Destroy();
 	this->audioq.Destroy();
@@ -690,15 +718,18 @@ void FMediaPlayer::stream_close()
 	this->sampq.Destory();
 	this->subpq.Destory();
 	sws_freeContext(this->img_convert_ctx);
+	this->img_convert_ctx = nullptr;
 	sws_freeContext(this->sub_convert_ctx);
+	this->sub_convert_ctx = nullptr;
 	av_free(this->sURL);
+	this->sURL = nullptr;
 }
 
 void FMediaPlayer::do_exit()
 {
-	stream_close();
+	StreamClose();
 
-	UninitRender();
+	uninitRender();
 
 #if CONFIG_AVFILTER
 	av_freep(&vfilters_list);
@@ -716,16 +747,14 @@ void FMediaPlayer::sigterm_handler(int sig)
 
 int FMediaPlayer::video_open()
 {
-	int w, h;
+	const int w = screen_width ? screen_width : default_width;
+	const int h = screen_height ? screen_height : default_height;
 
-	w = screen_width ? screen_width : default_width;
-	h = screen_height ? screen_height : default_height;
-
-	SDL_SetWindowSize(window, w, h);
-	SDL_SetWindowPosition(window, screen_left, screen_top);
+	SDL_SetWindowSize(pWindow, w, h);
+	SDL_SetWindowPosition(pWindow, screen_left, screen_top);
 	if (is_full_screen)
-		SDL_SetWindowFullscreen(window, SDL_WINDOW_FULLSCREEN_DESKTOP);
-	SDL_ShowWindow(window);
+		SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
+	SDL_ShowWindow(pWindow);
 
 	this->width = w;
 	this->height = h;
@@ -740,13 +769,13 @@ void FMediaPlayer::video_display()
 		if (!this->width)
 			video_open();
 
-		SDL_SetRenderDrawColor(renderer, 0, 0, 0, 255);
-		SDL_RenderClear(renderer);
-		if (this->audio_st && this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO)
+		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
+		SDL_RenderClear(pRenderer);
+		if (this->pAudioStream && this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO)
 			video_audio_display();
-		else if (this->video_st)
+		else if (this->pVideoStream)
 			video_image_display();
-		SDL_RenderPresent(renderer);
+		SDL_RenderPresent(pRenderer);
 	}
 	catch (...)
 	{
@@ -767,14 +796,14 @@ FMediaPlayer::ESyncType FMediaPlayer::get_master_sync_type()
 {
 	if (this->av_sync_type == ESyncType::AV_SYNC_VIDEO_MASTER)
 	{
-		if (this->video_st)
+		if (this->pVideoStream)
 			return ESyncType::AV_SYNC_VIDEO_MASTER;
 		else
 			return ESyncType::AV_SYNC_AUDIO_MASTER;
 	}
 	else if (this->av_sync_type == ESyncType::AV_SYNC_AUDIO_MASTER)
 	{
-		if (this->audio_st)
+		if (this->pAudioStream)
 			return ESyncType::AV_SYNC_AUDIO_MASTER;
 		else
 			return ESyncType::AV_SYNC_EXTERNAL_CLOCK;
@@ -828,7 +857,7 @@ void FMediaPlayer::stream_seek(int64_t pos, int64_t rel, int seek_by_bytes)
 		this->seek_flags &= ~AVSEEK_FLAG_BYTE;
 		if (seek_by_bytes)
 			this->seek_flags |= AVSEEK_FLAG_BYTE;
-		this->seek_req = 1;
+		this->seek_req = true;
 		this->continue_read_thread->notify_one();
 	}
 }
@@ -847,18 +876,18 @@ void FMediaPlayer::stream_toggle_pause()
 	this->paused = this->audclk.paused = this->vidclk.paused = this->extclk.paused = !this->paused;
 }
 
-void FMediaPlayer::toggle_pause()
+void FMediaPlayer::OnTogglePause()
 {
 	stream_toggle_pause();
 	this->step = 0;
 }
 
-void FMediaPlayer::toggle_mute()
+void FMediaPlayer::OnToggleMute()
 {
 	this->muted = !this->muted;
 }
 
-void FMediaPlayer::update_volume(int sign, double step)
+void FMediaPlayer::OnUpdateVolume(int sign, double step)
 {
 	double volume_level = this->audio_volume ? (20 * log(this->audio_volume / (double)SDL_MIX_MAXVOLUME) / log(10)) : -1000.0;
 	int new_volume = lrint(SDL_MIX_MAXVOLUME * pow(10.0, (volume_level + sign * step) / 20.0));
@@ -930,10 +959,10 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 
 	SFrame* sp = nullptr, * sp2 = nullptr;
 
-	if (!this->paused && get_master_sync_type() == FMediaPlayer::ESyncType::AV_SYNC_EXTERNAL_CLOCK && this->realtime)
+	if (!this->paused && get_master_sync_type() == FMediaPlayer::ESyncType::AV_SYNC_EXTERNAL_CLOCK && this->is_realtime())
 		check_external_clock_speed();
 
-	if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO && this->audio_st)
+	if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_VIDEO && this->pAudioStream)
 	{
 		time = av_gettime_relative() / 1000000.0;
 		if (this->force_refresh || this->last_vis_time + rdftspeed < time)
@@ -944,7 +973,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 		remaining_time = FFMIN(remaining_time, this->last_vis_time + rdftspeed - time);
 	}
 
-	if (this->video_st) {
+	if (this->pVideoStream) {
 	retry:
 		if (this->pictq.NbRemaining() == 0) {
 			// nothing to do, no picture to display in the queue
@@ -998,7 +1027,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 				}
 			}
 
-			if (this->subtitle_st) {
+			if (this->pSubtitleStream) {
 				while (this->subpq.NbRemaining() > 0) {
 					sp = this->subpq.Peek();
 
@@ -1054,21 +1083,19 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 		cur_time = av_gettime_relative();
 		if (!last_time || (cur_time - last_time) >= 30000)
 		{
-			aqsize = 0;
-			vqsize = 0;
-			sqsize = 0;
-			if (this->audio_st)
+			aqsize = vqsize = sqsize = 0;
+			if (this->pAudioStream)
 				aqsize = this->audioq.size;
-			if (this->video_st)
+			if (this->pVideoStream)
 				vqsize = this->videoq.size;
-			if (this->subtitle_st)
+			if (this->pSubtitleStream)
 				sqsize = this->subtitleq.size;
 			av_diff = 0;
-			if (this->audio_st && this->video_st)
+			if (this->pAudioStream && this->pVideoStream)
 				av_diff = this->audclk.Get() - this->vidclk.Get();
-			else if (this->video_st)
+			else if (this->pVideoStream)
 				av_diff = get_master_clock() - this->vidclk.Get();
-			else if (this->audio_st)
+			else if (this->pAudioStream)
 				av_diff = get_master_clock() - this->audclk.Get();
 			/*av_log(nullptr, AV_LOG_INFO,
 				"%7.2f %s:%7.3f fd=%4d aq=%5dKB vq=%5dKB sq=%5dB f=%"PRId64"/%"PRId64"   \r",
@@ -1129,17 +1156,21 @@ int FMediaPlayer::get_video_frame(AVFrame* frame)
 		double dpts = NAN;
 
 		if (frame->pts != AV_NOPTS_VALUE)
-			dpts = av_q2d(this->video_st->time_base) * frame->pts;
+			dpts = av_q2d(this->pVideoStream->time_base) * frame->pts;
 
-		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(this->ic, this->video_st, frame);
+		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(this->pFormatCtx, this->pVideoStream, frame);
 
-		if (framedrop > 0 || (framedrop && get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER)) {
-			if (frame->pts != AV_NOPTS_VALUE) {
+		if (framedrop > 0 || (framedrop && get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER)) 
+		{
+			if (frame->pts != AV_NOPTS_VALUE) 
+			{
 				double diff = dpts - get_master_clock();
 				if (!isnan(diff) && fabs(diff) < AV_NOSYNC_THRESHOLD &&
 					diff - this->frame_last_filter_delay < 0 &&
 					this->viddec.pkt_serial == this->vidclk.serial &&
-					this->videoq.nb_packets) {
+					this->videoq.nb_packets
+					) 
+				{
 					this->frame_drops_early++;
 					av_frame_unref(frame);
 					got_picture = 0;
@@ -1196,15 +1227,15 @@ fail:
 	return ret;
 }
 
-static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const char* vfilters, AVFrame* frame)
+int FMediaPlayer::configure_video_filters(AVFilterGraph* graph, const char* vfilters, AVFrame* frame)
 {
 	enum AVPixelFormat pix_fmts[FF_ARRAY_ELEMS(sdl_texture_format_map)];
 	char sws_flags_str[512] = "";
 	char buffersrc_args[256];
 	int ret;
 	AVFilterContext* filt_src = nullptr, * filt_out = nullptr, * last_filter = nullptr;
-	AVCodecParameters* codecpar = is->video_st->codecpar;
-	AVRational fr = av_guess_frame_rate(is->ic, is->video_st, nullptr);
+	AVCodecParameters* codecpar = this->pVideoStream->codecpar;
+	AVRational fr = av_guess_frame_rate(this->pFormatCtx, this->pVideoStream, nullptr);
 	AVDictionaryEntry* e = nullptr;
 	int nb_pix_fmts = 0;
 	int i, j;
@@ -1234,7 +1265,7 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
 	snprintf(buffersrc_args, sizeof(buffersrc_args),
 		"video_size=%dx%d:pix_fmt=%d:time_base=%d/%d:pixel_aspect=%d/%d",
 		frame->width, frame->height, frame->format,
-		is->video_st->time_base.num, is->video_st->time_base.den,
+		this->pVideoStream->time_base.num, pFormatCtx->video_st->time_base.den,
 		codecpar->sample_aspect_ratio.num, FFMAX(codecpar->sample_aspect_ratio.den, 1));
 	if (fr.num && fr.den)
 		av_strlcatf(buffersrc_args, sizeof(buffersrc_args), ":frame_rate=%d/%d", fr.num, fr.den);
@@ -1275,7 +1306,7 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
 } while (0)
 
 	if (autorotate) {
-		double theta = get_rotation(is->video_st);
+		double theta = get_rotation(pFormatCtx->video_st);
 
 		if (fabs(theta - 90) < 1.0) {
 			INSERT_FILT("transpose", "clock");
@@ -1297,14 +1328,14 @@ static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const c
 	if ((ret = configure_filtergraph(graph, vfilters, filt_src, last_filter)) < 0)
 		goto fail;
 
-	is->in_video_filter = filt_src;
-	is->out_video_filter = filt_out;
+	pFormatCtx->in_video_filter = filt_src;
+	pFormatCtx->out_video_filter = filt_out;
 
 fail:
 	return ret;
 }
 
-static int configure_audio_filters(VideoState* is, const char* afilters, int force_output_format)
+int FMediaPlayer::configure_audio_filters(const char* afilters, int force_output_format)
 {
 	static const enum AVSampleFormat sample_fmts[] = { AV_SAMPLE_FMT_S16, AV_SAMPLE_FMT_NONE };
 	int sample_rates[2] = { 0, -1 };
@@ -1316,36 +1347,35 @@ static int configure_audio_filters(VideoState* is, const char* afilters, int for
 	char asrc_args[256];
 	int ret;
 
-	avfilter_graph_free(&is->agraph);
-	if (!(is->agraph = avfilter_graph_alloc()))
+	avfilter_graph_free(&this->agraph);
+	if (!(this->agraph = avfilter_graph_alloc()))
 		return AVERROR(ENOMEM);
-	is->agraph->nb_threads = filter_nbthreads;
+	this->agraph->nb_threads = filter_nbthreads;
 
 	while ((e = av_dict_get(swr_opts, "", e, AV_DICT_IGNORE_SUFFIX)))
 		av_strlcatf(aresample_swr_opts, sizeof(aresample_swr_opts), "%s=%s:", e->key, e->value);
 	if (strlen(aresample_swr_opts))
 		aresample_swr_opts[strlen(aresample_swr_opts) - 1] = '\0';
-	av_opt_set(is->agraph, "aresample_swr_opts", aresample_swr_opts, 0);
+	av_opt_set(this->agraph, "aresample_swr_opts", aresample_swr_opts, 0);
 
 	ret = snprintf(asrc_args, sizeof(asrc_args),
 		"sample_rate=%d:sample_fmt=%s:channels=%d:time_base=%d/%d",
-		is->audio_filter_src.freq, av_get_sample_fmt_name(is->audio_filter_src.fmt),
-		is->audio_filter_src.channels,
-		1, is->audio_filter_src.freq);
-	if (is->audio_filter_src.channel_layout)
+		this->audio_filter_src.freq, av_get_sample_fmt_name(this->audio_filter_src.fmt),
+		this->audio_filter_src.channels,
+		1, this->audio_filter_src.freq);
+	if (this->audio_filter_src.channel_layout)
 		snprintf(asrc_args + ret, sizeof(asrc_args) - ret,
-			":channel_layout=0x%"PRIx64, is->audio_filter_src.channel_layout);
+			":channel_layout=0x%"PRIx64, this->audio_filter_src.channel_layout);
 
 	ret = avfilter_graph_create_filter(&filt_asrc,
 		avfilter_get_by_name("abuffer"), "ffplay_abuffer",
-		asrc_args, nullptr, is->agraph);
+		asrc_args, nullptr, this->agraph);
 	if (ret < 0)
 		goto end;
 
-
 	ret = avfilter_graph_create_filter(&filt_asink,
 		avfilter_get_by_name("abuffersink"), "ffplay_abuffersink",
-		nullptr, nullptr, is->agraph);
+		nullptr, nullptr, this->agraph);
 	if (ret < 0)
 		goto end;
 
@@ -1355,9 +1385,9 @@ static int configure_audio_filters(VideoState* is, const char* afilters, int for
 		goto end;
 
 	if (force_output_format) {
-		channel_layouts[0] = is->audio_tgt.channel_layout;
-		channels[0] = is->audio_tgt.channels;
-		sample_rates[0] = is->audio_tgt.freq;
+		channel_layouts[0] = this->audio_tgt.channel_layout;
+		channels[0] = this->audio_tgt.channels;
+		sample_rates[0] = this->audio_tgt.freq;
 		if ((ret = av_opt_set_int(filt_asink, "all_channel_counts", 0, AV_OPT_SEARCH_CHILDREN)) < 0)
 			goto end;
 		if ((ret = av_opt_set_int_list(filt_asink, "channel_layouts", channel_layouts, -1, AV_OPT_SEARCH_CHILDREN)) < 0)
@@ -1369,15 +1399,15 @@ static int configure_audio_filters(VideoState* is, const char* afilters, int for
 	}
 
 
-	if ((ret = configure_filtergraph(is->agraph, afilters, filt_asrc, filt_asink)) < 0)
+	if ((ret = configure_filtergraph(this->agraph, afilters, filt_asrc, filt_asink)) < 0)
 		goto end;
 
-	is->in_audio_filter = filt_asrc;
-	is->out_audio_filter = filt_asink;
+	this->in_audio_filter = filt_asrc;
+	this->out_audio_filter = filt_asink;
 
 end:
 	if (ret < 0)
-		avfilter_graph_free(&is->agraph);
+		avfilter_graph_free(&this->agraph);
 	return ret;
 }
 #endif  /* CONFIG_AVFILTER */
@@ -1385,7 +1415,7 @@ end:
 int FMediaPlayer::audio_thread()
 {
 	AVFrame* frame = av_frame_alloc();
-	SFrame* af;
+	SFrame* af = nullptr;
 #if CONFIG_AVFILTER
 	int last_serial = -1;
 	int64_t dec_channel_layout;
@@ -1424,13 +1454,13 @@ int FMediaPlayer::audio_thread()
 					this->audio_filter_src.freq, this->audio_filter_src.channels, av_get_sample_fmt_name(this->audio_filter_src.fmt), buf1, last_serial,
 					frame->sample_rate, frame->channels, av_get_sample_fmt_name(frame->format), buf2, this->auddec.pkt_serial);
 
-				this->audio_filter_src.fmt = frame->format;
+				this->audio_filter_src.fmt = static_cast<AVSampleFormat>(frame->format);
 				this->audio_filter_src.channels = frame->channels;
 				this->audio_filter_src.channel_layout = dec_channel_layout;
 				this->audio_filter_src.freq = frame->sample_rate;
 				last_serial = this->auddec.pkt_serial;
 
-				if ((ret = configure_audio_filters(is, afilters, 1)) < 0)
+				if ((ret = configure_audio_filters(afilters, 1)) < 0)
 					goto the_end;
 			}
 
@@ -1474,8 +1504,8 @@ int FMediaPlayer::video_thread()
 	double pts;
 	double duration;
 	int ret;
-	AVRational tb = this->video_st->time_base;
-	AVRational frame_rate = av_guess_frame_rate(this->ic, this->video_st, nullptr);
+	AVRational tb = this->pVideoStream->time_base;
+	AVRational frame_rate = av_guess_frame_rate(this->pFormatCtx, this->pVideoStream, nullptr);
 
 #if CONFIG_AVFILTER
 	AVFilterGraph* graph = nullptr;
@@ -1490,7 +1520,8 @@ int FMediaPlayer::video_thread()
 	if (!frame)
 		return AVERROR(ENOMEM);
 
-	for (;;) {
+	for (;;) 
+	{
 		ret = this->get_video_frame(frame);
 		if (ret < 0)
 			goto the_end;
@@ -1516,10 +1547,10 @@ int FMediaPlayer::video_thread()
 				goto the_end;
 			}
 			graph->nb_threads = filter_nbthreads;
-			if ((ret = configure_video_filters(graph, is, vfilters_list ? vfilters_list[this->vfilter_idx] : nullptr, frame)) < 0) {
+			if ((ret = configure_video_filters(graph, vfilters_list ? vfilters_list[this->vfilter_idx] : nullptr, frame)) < 0) {
 				SDL_Event event;
 				event.type = FF_QUIT_EVENT;
-				event.user.data1 = is;
+				event.user.data1 = this;
 				SDL_PushEvent(&event);
 				goto the_end;
 			}
@@ -1527,7 +1558,7 @@ int FMediaPlayer::video_thread()
 			filt_out = this->out_video_filter;
 			last_w = frame->width;
 			last_h = frame->height;
-			last_format = frame->format;
+			last_format = static_cast<AVPixelFormat>(frame->format);
 			last_serial = this->viddec.pkt_serial;
 			last_vfilter_idx = this->vfilter_idx;
 			frame_rate = av_buffersink_get_frame_rate(filt_out);
@@ -1580,7 +1611,8 @@ int FMediaPlayer::subtitle_thread()
 	int got_subtitle;
 	double pts;
 
-	for (;;) {
+	for (;;) 
+	{
 		if (!(sp = this->subpq.PeekWritable()))
 			return 0;
 
@@ -1589,7 +1621,8 @@ int FMediaPlayer::subtitle_thread()
 
 		pts = 0;
 
-		if (got_subtitle && sp->sub.format == 0) {
+		if (got_subtitle && sp->sub.format == 0) 
+		{
 			if (sp->sub.pts != AV_NOPTS_VALUE)
 				pts = sp->sub.pts / (double)AV_TIME_BASE;
 			sp->pts = pts;
@@ -1608,6 +1641,90 @@ int FMediaPlayer::subtitle_thread()
 	return 0;
 }
 
+AVDictionary** FMediaPlayer::setup_find_stream_info_opts(AVFormatContext* s, AVDictionary* codec_opts)
+{
+	auto check_stream_specifier = [](AVFormatContext* s, AVStream* st, const char* spec) -> int
+	{
+		int ret = avformat_match_stream_specifier(s, st, spec);
+		if (ret < 0)
+			av_log(s, AV_LOG_ERROR, "Invalid stream specifier: %s.\n", spec);
+		return ret;
+	};
+
+	auto filter_codec_opts = [&](AVDictionary* opts, enum AVCodecID codec_id,
+		AVFormatContext* s, AVStream* st, AVCodec* codec) -> AVDictionary*
+	{
+		AVDictionary* ret = NULL;
+		AVDictionaryEntry* t = NULL;
+		int            flags = s->oformat ? AV_OPT_FLAG_ENCODING_PARAM
+			: AV_OPT_FLAG_DECODING_PARAM;
+		char          prefix = 0;
+		const AVClass* cc = avcodec_get_class();
+
+		if (!codec)
+			codec = s->oformat ? avcodec_find_encoder(codec_id)
+			: avcodec_find_decoder(codec_id);
+
+		switch (st->codecpar->codec_type) {
+		case AVMEDIA_TYPE_VIDEO:
+			prefix = 'v';
+			flags |= AV_OPT_FLAG_VIDEO_PARAM;
+			break;
+		case AVMEDIA_TYPE_AUDIO:
+			prefix = 'a';
+			flags |= AV_OPT_FLAG_AUDIO_PARAM;
+			break;
+		case AVMEDIA_TYPE_SUBTITLE:
+			prefix = 's';
+			flags |= AV_OPT_FLAG_SUBTITLE_PARAM;
+			break;
+		}
+
+		while (t = av_dict_get(opts, "", t, AV_DICT_IGNORE_SUFFIX)) {
+			char* p = strchr(t->key, ':');
+
+			/* check stream specification in opt name */
+			if (p)
+				switch (check_stream_specifier(s, st, p + 1)) {
+				case  1: *p = 0; break;
+				case  0:         continue;
+				default:         return nullptr;
+				}
+
+			if (av_opt_find(&cc, t->key, NULL, flags, AV_OPT_SEARCH_FAKE_OBJ) ||
+				!codec ||
+				(codec->priv_class &&
+					av_opt_find(&codec->priv_class, t->key, NULL, flags,
+						AV_OPT_SEARCH_FAKE_OBJ)))
+				av_dict_set(&ret, t->key, t->value, 0);
+			else if (t->key[0] == prefix &&
+				av_opt_find(&cc, t->key + 1, NULL, flags,
+					AV_OPT_SEARCH_FAKE_OBJ))
+				av_dict_set(&ret, t->key + 1, t->value, 0);
+
+			if (p)
+				*p = ':';
+		}
+		return ret;
+	};
+
+	int i;
+	AVDictionary** opts;
+
+	if (!s->nb_streams)
+		return NULL;
+	opts = static_cast<AVDictionary**>(av_mallocz_array(s->nb_streams, sizeof(*opts)));
+	if (!opts) {
+		av_log(NULL, AV_LOG_ERROR,
+			"Could not alloc memory for stream options.\n");
+		return NULL;
+	}
+	for (i = 0; i < s->nb_streams; i++)
+		opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
+			s, s->streams[i], NULL);
+	return opts;
+}
+
 int FMediaPlayer::read_thread()
 {
 	AVFormatContext* ic = nullptr;
@@ -1620,6 +1737,9 @@ int FMediaPlayer::read_thread()
 	std::mutex wait_mutex;
 	int scan_all_pmts_set = 0;
 	int64_t pkt_ts;
+
+	AVDictionary* format_opts = nullptr;
+	AVDictionary* codec_opts = nullptr;
 
 	memset(st_index, -1, sizeof(st_index));
 	this->last_video_stream = this->video_stream = -1;
@@ -1635,31 +1755,41 @@ int FMediaPlayer::read_thread()
 	}
 	ic->interrupt_callback.callback = decode_interrupt_cb;
 	ic->interrupt_callback.opaque = this;
-	if (!av_dict_get(format_opts, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE)) {
+	/* 为了摆脱cmdutil.h */
+	/*if (!av_dict_get(format_opts, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE)) {
 		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
 		scan_all_pmts_set = 1;
-	}
-	err = avformat_open_input(&ic, this->sURL, this->iformat, &format_opts);
+	}*/
+
+	av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
+	err = avformat_open_input(&ic, this->sURL, this->pInputformat, &format_opts);
 	if (err < 0) {
-		print_error(this->sURL, err);
+		char errbuf[128];
+		const char* errbuf_ptr = errbuf;
+
+		if (av_strerror(err, errbuf, sizeof(errbuf)) < 0)
+			errbuf_ptr = strerror(AVUNERROR(err));
+
+		av_log(NULL, AV_LOG_ERROR, "%s: %s\n", this->sURL, errbuf_ptr);
 		ret = -1;
 		goto fail;
 	}
 	if (scan_all_pmts_set)
 		av_dict_set(&format_opts, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
 
-	if ((t = av_dict_get(format_opts, "", nullptr, AV_DICT_IGNORE_SUFFIX))) {
+	/* @TODO 解除了只能在主线程中运行 */
+	/*if ((t = av_dict_get(format_opts, "", nullptr, AV_DICT_IGNORE_SUFFIX))) {
 		av_log(nullptr, AV_LOG_ERROR, "Option %s not found.\n", t->key);
 		ret = AVERROR_OPTION_NOT_FOUND;
 		goto fail;
-	}
-	this->ic = ic;
+	}*/
+	this->pFormatCtx = ic;
 
 	av_format_inject_global_side_data(ic);
 
 	{
 		AVDictionary** opts = setup_find_stream_info_opts(ic, codec_opts);
-		int orig_nb_streams = ic->nb_streams;
+		unsigned int orig_nb_streams = ic->nb_streams;
 
 		err = avformat_find_stream_info(ic, opts);
 
@@ -1722,31 +1852,27 @@ int FMediaPlayer::read_thread()
 
 	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
 		AVStream* st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
-		AVCodecParameters* codecpar = st->codecpar;
 		AVRational sar = av_guess_sample_aspect_ratio(ic, st, nullptr);
-		if (codecpar->width)
-			this->set_default_window_size(codecpar->width, codecpar->height, sar);
+		if (st->codecpar->width)
+			this->set_default_window_size(st->codecpar->width, st->codecpar->height, sar);
 	}
 
 	/* open the streams */
-	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0) {
+	if (st_index[AVMEDIA_TYPE_AUDIO] >= 0)
 		this->stream_component_open(st_index[AVMEDIA_TYPE_AUDIO]);
-	}
 
 	ret = -1;
-	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0) {
+	if (st_index[AVMEDIA_TYPE_VIDEO] >= 0)
 		ret = this->stream_component_open(st_index[AVMEDIA_TYPE_VIDEO]);
-	}
+
 	if (this->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_NONE)
 		this->eShow_mode = ret >= 0 ? FMediaPlayer::EShowMode::SHOW_MODE_VIDEO : FMediaPlayer::EShowMode::SHOW_MODE_RDFT;
 
-	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0) {
+	if (st_index[AVMEDIA_TYPE_SUBTITLE] >= 0)
 		this->stream_component_open(st_index[AVMEDIA_TYPE_SUBTITLE]);
-	}
 
 	if (this->video_stream < 0 && this->audio_stream < 0) {
-		av_log(nullptr, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n",
-			this->sURL);
+		av_log(nullptr, AV_LOG_FATAL, "Failed to open file '%s' or configure filtergraph\n", this->sURL);
 		ret = -1;
 		goto fail;
 	}
@@ -1756,9 +1882,13 @@ int FMediaPlayer::read_thread()
 
 	for (;;)
 	{
+		/* 请求退出 */
 		if (this->abort_request)
 			break;
-		if (this->paused != this->last_paused) {
+
+		/* 暂停/继续 */
+		if (this->paused != this->last_paused) 
+		{
 			this->last_paused = this->paused;
 			if (this->paused)
 				this->read_pause_return = av_read_pause(ic);
@@ -1768,10 +1898,11 @@ int FMediaPlayer::read_thread()
 #if CONFIG_RTSP_DEMUXER || CONFIG_MMSH_PROTOCOL
 		if (this->paused &&
 			(!strcmp(ic->iformat->name, "rtsp") ||
-			(ic->pb && !strncmp(this->sURL, "mmsh:", 5)))) {
+			(ic->pb && !strncmp(this->sURL, "mmsh:", 5)))) 
+		{
 			/* wait 10 ms to avoid trying to get another packet */
 			/* XXX: horrible */
-			SDL_Delay(10);
+			std::this_thread::sleep_for(std::chrono::milliseconds(10));
 			continue;
 		}
 #endif
@@ -1782,11 +1913,12 @@ int FMediaPlayer::read_thread()
 			// FIXME the +-2 pPlayer due to rounding being not done in the correct direction in generation
 			//      of the seek_pos/seek_rel variables
 
-			ret = avformat_seek_file(this->ic, -1, seek_min, seek_target, seek_max, this->seek_flags);
+			ret = avformat_seek_file(this->pFormatCtx, -1, seek_min, seek_target, seek_max, this->seek_flags);
 			if (ret < 0) {
-				av_log(nullptr, AV_LOG_ERROR, "%s: error while seeking\n", this->ic->url);
+				av_log(nullptr, AV_LOG_ERROR, "%s: error while seeking\n", this->pFormatCtx->url);
 			}
-			else {
+			else 
+			{
 				if (this->audio_stream >= 0) {
 					this->audioq.Flush();
 					this->audioq.Put(&flush_pkt);
@@ -1799,23 +1931,21 @@ int FMediaPlayer::read_thread()
 					this->videoq.Flush();
 					this->videoq.Put(&flush_pkt);
 				}
-				if (this->seek_flags & AVSEEK_FLAG_BYTE) {
+				if (this->seek_flags & AVSEEK_FLAG_BYTE)
 					this->extclk.Set(NAN, 0);
-				}
-				else {
+				else
 					this->extclk.Set(seek_target / (double)AV_TIME_BASE, 0);
-				}
 			}
-			this->seek_req = 0;
+			this->seek_req = false;
 			this->queue_attachments_req = 1;
 			this->eof = 0;
 			if (this->paused)
 				this->step_to_next_frame();
 		}
 		if (this->queue_attachments_req) {
-			if (this->video_st && this->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC) {
+			if (this->pVideoStream && this->pVideoStream->disposition & AV_DISPOSITION_ATTACHED_PIC) {
 				AVPacket copy = { 0 };
-				if ((ret = av_packet_ref(&copy, &this->video_st->attached_pic)) < 0)
+				if ((ret = av_packet_ref(&copy, &this->pVideoStream->attached_pic)) < 0)
 					goto fail;
 				this->videoq.Put(&copy);
 				this->videoq.PutNullPacket(this->video_stream);
@@ -1826,17 +1956,17 @@ int FMediaPlayer::read_thread()
 		/* if the queue are full, no need to read more */
 		if (!this->infinite_buffer &&
 			(this->audioq.size + this->videoq.size + this->subtitleq.size > MAX_QUEUE_SIZE
-				|| (this->stream_has_enough_packets(this->audio_st, this->audio_stream, &this->audioq) &&
-					this->stream_has_enough_packets(this->video_st, this->video_stream, &this->videoq) &&
-					this->stream_has_enough_packets(this->subtitle_st, this->subtitle_stream, &this->subtitleq)))) {
-			/* wait 10 ms */
+				|| (this->stream_has_enough_packets(this->pAudioStream, this->audio_stream, &this->audioq) &&
+					this->stream_has_enough_packets(this->pVideoStream, this->video_stream, &this->videoq) &&
+					this->stream_has_enough_packets(this->pSubtitleStream, this->subtitle_stream, &this->subtitleq)))) {
+			
 			std::unique_lock<std::mutex> lock(wait_mutex);
 			this->continue_read_thread->wait_for(lock, std::chrono::milliseconds(10));
 			continue;
 		}
 		if (!this->paused &&
-			(!this->audio_st || (this->auddec.finished == this->audioq.serial && this->sampq.NbRemaining() == 0)) &&
-			(!this->video_st || (this->viddec.finished == this->videoq.serial && this->pictq.NbRemaining() == 0))) {
+			(!this->pAudioStream || (this->auddec.finished == this->audioq.serial && this->sampq.NbRemaining() == 0)) &&
+			(!this->pVideoStream || (this->viddec.finished == this->videoq.serial && this->pictq.NbRemaining() == 0))) {
 			if (this->loop != 1 && (!this->loop || --this->loop))
 				this->stream_seek(this->start_time != AV_NOPTS_VALUE ? this->start_time : 0, 0, 0);
 
@@ -1877,7 +2007,7 @@ int FMediaPlayer::read_thread()
 			this->audioq.Put(pkt);
 		}
 		else if (pkt->stream_index == this->video_stream && pkt_in_play_range
-			&& !(this->video_st->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
+			&& !(this->pVideoStream->disposition & AV_DISPOSITION_ATTACHED_PIC)) {
 			this->videoq.Put(pkt);
 		}
 		else if (pkt->stream_index == this->subtitle_stream && pkt_in_play_range) {
@@ -1888,8 +2018,11 @@ int FMediaPlayer::read_thread()
 
 	ret = 0;
 fail:
-	if (ic && !this->ic)
+	if (ic && !this->pFormatCtx)
 		avformat_close_input(&ic);
+
+	if(format_opts)
+		av_dict_free(&format_opts);
 
 	if (ret != 0) {
 		SDL_Event event;
@@ -2203,8 +2336,8 @@ int FMediaPlayer::audio_decode_frame()
 
 int FMediaPlayer::stream_component_open(int stream_index)
 {
-	AVCodecContext* avctx;
-	AVCodec* codec;
+	AVCodecContext* avctx = nullptr;
+	AVCodec* codec = nullptr;
 	const char* forced_codec_name = nullptr;
 	AVDictionary* opts = nullptr;
 	AVDictionaryEntry* t = nullptr;
@@ -2213,17 +2346,17 @@ int FMediaPlayer::stream_component_open(int stream_index)
 	int ret = 0;
 	int stream_lowres = lowres;
 
-	if (stream_index < 0 || stream_index >= ic->nb_streams)
+	if (stream_index < 0 || stream_index >= pFormatCtx->nb_streams)
 		return -1;
 
 	avctx = avcodec_alloc_context3(nullptr);
 	if (!avctx)
 		return AVERROR(ENOMEM);
 
-	ret = avcodec_parameters_to_context(avctx, ic->streams[stream_index]->codecpar);
+	ret = avcodec_parameters_to_context(avctx, pFormatCtx->streams[stream_index]->codecpar);
 	if (ret < 0)
 		goto fail;
-	avctx->pkt_timebase = ic->streams[stream_index]->time_base;
+	avctx->pkt_timebase = pFormatCtx->streams[stream_index]->time_base;
 
 	codec = avcodec_find_decoder(avctx->codec_id);
 
@@ -2242,8 +2375,8 @@ int FMediaPlayer::stream_component_open(int stream_index)
 
 	avctx->flags2 |= AV_CODEC_FLAG2_FAST;
 
-	opts = filter_codec_opts(codec_opts, avctx->codec_id, ic, ic->streams[stream_index], codec);
-	if (!av_dict_get(opts, "threads", nullptr, 0))
+	/*opts = filter_codec_opts(codec_opts, avctx->codec_id, pFormatCtx, pFormatCtx->streams[stream_index], codec);
+	if (!av_dict_get(opts, "threads", nullptr, 0))*/
 		av_dict_set(&opts, "threads", "auto", 0);
 	if (stream_lowres)
 		av_dict_set_int(&opts, "lowres", stream_lowres, 0);
@@ -2252,14 +2385,16 @@ int FMediaPlayer::stream_component_open(int stream_index)
 	if ((ret = avcodec_open2(avctx, codec, &opts)) < 0) {
 		goto fail;
 	}
-	if ((t = av_dict_get(opts, "", nullptr, AV_DICT_IGNORE_SUFFIX))) {
+
+	/* @TODO seq:1 解除了只能在主线程中运行 */
+	/*if ((t = av_dict_get(opts, "", nullptr, AV_DICT_IGNORE_SUFFIX))) {
 		av_log(nullptr, AV_LOG_ERROR, "Option %s not found.\n", t->key);
 		ret = AVERROR_OPTION_NOT_FOUND;
 		goto fail;
-	}
+	}*/
 
 	this->eof = 0;
-	ic->streams[stream_index]->discard = AVDISCARD_DEFAULT;
+	pFormatCtx->streams[stream_index]->discard = AVDISCARD_DEFAULT;
 	switch (avctx->codec_type) {
 	case AVMEDIA_TYPE_AUDIO:
 #if CONFIG_AVFILTER
@@ -2270,7 +2405,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 		this->audio_filter_src.channels = avctx->channels;
 		this->audio_filter_src.channel_layout = get_valid_channel_layout(avctx->channel_layout, avctx->channels);
 		this->audio_filter_src.fmt = avctx->sample_fmt;
-		if ((ret = configure_audio_filters(is, afilters, 0)) < 0)
+		if ((ret = configure_audio_filters(afilters, 0)) < 0)
 			goto fail;
 		sink = this->out_audio_filter;
 		sample_rate = av_buffersink_get_sample_rate(sink);
@@ -2287,6 +2422,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 		/* prepare audio output */
 		if ((ret = audio_open(channel_layout, nb_channels, sample_rate, &this->audio_tgt)) < 0)
 			goto fail;
+
 		this->audio_hw_buf_size = ret;
 		this->audio_src = this->audio_tgt;
 		this->audio_buf_size = 0;
@@ -2300,12 +2436,12 @@ int FMediaPlayer::stream_component_open(int stream_index)
 		this->audio_diff_threshold = (double)(this->audio_hw_buf_size) / this->audio_tgt.bytes_per_sec;
 
 		this->audio_stream = stream_index;
-		this->audio_st = ic->streams[stream_index];
+		this->pAudioStream = pFormatCtx->streams[stream_index];
 
 		this->auddec.Init(avctx, &this->audioq, this->continue_read_thread);
-		if ((this->ic->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !this->ic->iformat->read_seek) {
-			this->auddec.start_pts = this->audio_st->start_time;
-			this->auddec.start_pts_tb = this->audio_st->time_base;
+		if ((this->pFormatCtx->iformat->flags & (AVFMT_NOBINSEARCH | AVFMT_NOGENSEARCH | AVFMT_NO_BYTE_SEEK)) && !this->pFormatCtx->iformat->read_seek) {
+			this->auddec.start_pts = this->pAudioStream->start_time;
+			this->auddec.start_pts_tb = this->pAudioStream->time_base;
 		}
 		std::function<int(void)> audioFunc = std::bind(&FMediaPlayer::audio_thread, this);
 		if ((ret = this->auddec.Start(audioFunc)) < 0)
@@ -2316,7 +2452,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 	case AVMEDIA_TYPE_VIDEO:
 	{
 		this->video_stream = stream_index;
-		this->video_st = ic->streams[stream_index];
+		this->pVideoStream = pFormatCtx->streams[stream_index];
 
 		this->viddec.Init(avctx, &this->videoq, this->continue_read_thread);
 		std::function<int(void)> videoFunc = std::bind(&FMediaPlayer::video_thread, this);
@@ -2328,7 +2464,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 	case AVMEDIA_TYPE_SUBTITLE:
 	{
 		this->subtitle_stream = stream_index;
-		this->subtitle_st = ic->streams[stream_index];
+		this->pSubtitleStream = pFormatCtx->streams[stream_index];
 
 		this->subdec.Init(avctx, &this->subtitleq, this->continue_read_thread);
 		std::function<int(void)> subtitleoFunc = std::bind(&FMediaPlayer::subtitle_thread, this);
@@ -2344,7 +2480,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 fail:
 	avcodec_free_context(&avctx);
 out:
-	av_dict_free(&opts);
+	if(opts) av_dict_free(&opts);
 
 	return ret;
 }
@@ -2359,25 +2495,36 @@ bool FMediaPlayer::stream_has_enough_packets(AVStream* st, int stream_id, Packet
 
 bool FMediaPlayer::is_realtime()
 {
-	if (!strcmp(ic->iformat->name, "rtp") || !strcmp(ic->iformat->name, "rtsp") || !strcmp(ic->iformat->name, "sdp"))
+	if (pFormatCtx == nullptr)
+		return false;
+
+	if (!strcmp(pFormatCtx->iformat->name, "rtp") || !strcmp(pFormatCtx->iformat->name, "rtsp") || !strcmp(pFormatCtx->iformat->name, "sdp"))
 		return true;
 
-	if (ic->pb && (!strncmp(ic->url, "rtp:", 4) || !strncmp(ic->url, "udp:", 4) || !strncmp(ic->url, "rtmp:", 4)))
+	if (pFormatCtx->pb && (!strncmp(pFormatCtx->url, "rtp:", 4) || !strncmp(pFormatCtx->url, "udp:", 4) || !strncmp(pFormatCtx->url, "rtmp:", 4)))
 		return true;
 
 	return false;
 }
 
-bool FMediaPlayer::stream_open(const char* filename)
+bool FMediaPlayer::StreamOpen(const std::string& sURL, AVInputFormat* iformat)
 {
+	if (sURL.empty())
+		return false;
+
+	if (!initRender())
+		return false;
+
 	av_init_packet(&this->flush_pkt);
 	this->flush_pkt.data = (uint8_t*)&this->flush_pkt;
 
 	std::function<int(void)> readFunc = std::bind(&FMediaPlayer::read_thread, this);
 
-	this->sURL = av_strdup(filename);
+	this->sURL = av_strdup(sURL.c_str());
 	if (!this->sURL)
 		goto fail;
+	if (iformat)
+		this->pInputformat = iformat;
 	this->ytop = 0;
 	this->xleft = 0;
 
@@ -2418,7 +2565,7 @@ bool FMediaPlayer::stream_open(const char* filename)
 	{
 		av_log(nullptr, AV_LOG_FATAL, "CreateThread Failured\n");
 	fail:
-		stream_close();
+		StreamClose();
 		return false;
 	}
 	return true;
@@ -2430,7 +2577,7 @@ void FMediaPlayer::stream_cycle_channel(int codec_type)
 	int old_index;
 	AVStream* st;
 	AVProgram* p = nullptr;
-	int nb_streams = ic->nb_streams;
+	int nb_streams = pFormatCtx->nb_streams;
 
 	if (codec_type == AVMEDIA_TYPE_VIDEO) {
 		start_index = this->last_video_stream;
@@ -2447,7 +2594,7 @@ void FMediaPlayer::stream_cycle_channel(int codec_type)
 	stream_index = start_index;
 
 	if (codec_type != AVMEDIA_TYPE_VIDEO && this->video_stream != -1) {
-		p = av_find_program_from_stream(ic, nullptr, this->video_stream);
+		p = av_find_program_from_stream(pFormatCtx, nullptr, this->video_stream);
 		if (p) {
 			nb_streams = p->nb_stream_indexes;
 			for (start_index = 0; start_index < nb_streams; start_index++)
@@ -2474,7 +2621,7 @@ void FMediaPlayer::stream_cycle_channel(int codec_type)
 		}
 		if (stream_index == start_index)
 			return;
-		st = this->ic->streams[p ? p->stream_index[stream_index] : stream_index];
+		st = this->pFormatCtx->streams[p ? p->stream_index[stream_index] : stream_index];
 		if (st->codecpar->codec_type == codec_type) {
 			/* check that parameters are OK */
 			switch (codec_type) {
@@ -2500,18 +2647,18 @@ the_end:
 	stream_component_open(stream_index);
 }
 
-void FMediaPlayer::toggle_full_screen()
+void FMediaPlayer::OnToggleFullScreen()
 {
 	is_full_screen = !is_full_screen;
-	SDL_SetWindowFullscreen(window, is_full_screen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
+	SDL_SetWindowFullscreen(pWindow, is_full_screen ? SDL_WINDOW_FULLSCREEN_DESKTOP : 0);
 }
 
-void FMediaPlayer::toggle_audio_display()
+void FMediaPlayer::OnToggleAudioDisplay()
 {
 	int next = static_cast<int>(this->eShow_mode);
 	do {
 		next = (next + 1) % int(FMediaPlayer::EShowMode::SHOW_MODE_NB);
-	} while (next != int(this->eShow_mode) && (next == int(FMediaPlayer::EShowMode::SHOW_MODE_VIDEO) && !this->video_st || next != int(FMediaPlayer::EShowMode::SHOW_MODE_VIDEO) && !this->audio_st));
+	} while (next != int(this->eShow_mode) && (next == int(FMediaPlayer::EShowMode::SHOW_MODE_VIDEO) && !this->pVideoStream || next != int(FMediaPlayer::EShowMode::SHOW_MODE_VIDEO) && !this->pAudioStream));
 	if (int(this->eShow_mode) != next) {
 		this->force_refresh = 1;
 		this->eShow_mode = FMediaPlayer::EShowMode(next);
@@ -2543,12 +2690,12 @@ void FMediaPlayer::seek_chapter(int incr)
 	int64_t pos = get_master_clock() * AV_TIME_BASE;
 	int i;
 
-	if (!ic->nb_chapters)
+	if (!pFormatCtx->nb_chapters)
 		return;
 
 	/* find the current chapter */
-	for (i = 0; i < this->ic->nb_chapters; i++) {
-		AVChapter* ch = this->ic->chapters[i];
+	for (i = 0; i < this->pFormatCtx->nb_chapters; i++) {
+		AVChapter* ch = this->pFormatCtx->chapters[i];
 		if (av_compare_ts(pos, AVRational{ 1, AV_TIME_BASE }, ch->start, ch->time_base) < 0) {
 			i--;
 			break;
@@ -2557,14 +2704,14 @@ void FMediaPlayer::seek_chapter(int incr)
 
 	i += incr;
 	i = FFMAX(i, 0);
-	if (i >= this->ic->nb_chapters)
+	if (i >= this->pFormatCtx->nb_chapters)
 		return;
 
 	av_log(nullptr, AV_LOG_VERBOSE, "Seeking to chapter %d.\n", i);
-	stream_seek(av_rescale_q(this->ic->chapters[i]->start, this->ic->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, 0);
+	stream_seek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, 0);
 }
 
-void FMediaPlayer::event_loop()
+void FMediaPlayer::EventLoop()
 {
 	SDL_Event event;
 	double incr, pos, frac;
@@ -2581,25 +2728,26 @@ void FMediaPlayer::event_loop()
 			// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
 			if (!this->width)
 				continue;
-			switch (event.key.keysym.sym) {
+			switch (event.key.keysym.sym) 
+			{
 			case SDLK_f:
-				toggle_full_screen();
+				OnToggleFullScreen();
 				this->force_refresh = 1;
 				break;
 			case SDLK_p:
 			case SDLK_SPACE:
-				toggle_pause();
+				OnTogglePause();
 				break;
 			case SDLK_m:
-				toggle_mute();
+				OnToggleMute();
 				break;
 			case SDLK_KP_MULTIPLY:
 			case SDLK_0:
-				update_volume(1, SDL_VOLUME_STEP);
+				OnUpdateVolume(1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_KP_DIVIDE:
 			case SDLK_9:
-				update_volume(-1, SDL_VOLUME_STEP);
+				OnUpdateVolume(-1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_s: // S: Step to next frame
 				step_to_next_frame();
@@ -2629,18 +2777,18 @@ void FMediaPlayer::event_loop()
 					toggle_audio_display(cur_stream);
 				}
 #else
-				toggle_audio_display();
+				OnToggleAudioDisplay();
 #endif
 				break;
 			case SDLK_PAGEUP:
-				if (this->ic->nb_chapters <= 1) {
+				if (this->pFormatCtx->nb_chapters <= 1) {
 					incr = 600.0;
 					goto do_seek;
 				}
 				seek_chapter(1);
 				break;
 			case SDLK_PAGEDOWN:
-				if (this->ic->nb_chapters <= 1) {
+				if (this->pFormatCtx->nb_chapters <= 1) {
 					incr = -600.0;
 					goto do_seek;
 				}
@@ -2665,9 +2813,9 @@ void FMediaPlayer::event_loop()
 					if (pos < 0 && this->audio_stream >= 0)
 						pos = this->sampq.LastPos();
 					if (pos < 0)
-						pos = avio_tell(this->ic->pb);
-					if (this->ic->bit_rate)
-						incr *= this->ic->bit_rate / 8.0;
+						pos = avio_tell(this->pFormatCtx->pb);
+					if (this->pFormatCtx->bit_rate)
+						incr *= this->pFormatCtx->bit_rate / 8.0;
 					else
 						incr *= 180000.0;
 					pos += incr;
@@ -2678,8 +2826,8 @@ void FMediaPlayer::event_loop()
 					if (isnan(pos))
 						pos = (double)this->seek_pos / AV_TIME_BASE;
 					pos += incr;
-					if (this->ic->start_time != AV_NOPTS_VALUE && pos < this->ic->start_time / (double)AV_TIME_BASE)
-						pos = this->ic->start_time / (double)AV_TIME_BASE;
+					if (this->pFormatCtx->start_time != AV_NOPTS_VALUE && pos < this->pFormatCtx->start_time / (double)AV_TIME_BASE)
+						pos = this->pFormatCtx->start_time / (double)AV_TIME_BASE;
 					stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
 				}
 				break;
@@ -2691,7 +2839,7 @@ void FMediaPlayer::event_loop()
 			if (event.button.button == SDL_BUTTON_LEFT) {
 				static int64_t last_mouse_left_click = 0;
 				if (av_gettime_relative() - last_mouse_left_click <= 500000) {
-					toggle_full_screen();
+					OnToggleFullScreen();
 					this->force_refresh = 1;
 					last_mouse_left_click = 0;
 				}
@@ -2715,15 +2863,15 @@ void FMediaPlayer::event_loop()
 					break;
 				x = event.motion.x;
 			}
-			if (seek_by_bytes || this->ic->duration <= 0) {
-				uint64_t size = avio_size(this->ic->pb);
+			if (seek_by_bytes || this->pFormatCtx->duration <= 0) {
+				uint64_t size = avio_size(this->pFormatCtx->pb);
 				stream_seek(size * x / this->width, 0, 1);
 			}
 			else {
 				int64_t ts;
 				int ns, hh, mm, ss;
 				int tns, thh, tmm, tss;
-				tns = this->ic->duration / 1000000LL;
+				tns = this->pFormatCtx->duration / 1000000LL;
 				thh = tns / 3600;
 				tmm = (tns % 3600) / 60;
 				tss = (tns % 60);
@@ -2735,9 +2883,9 @@ void FMediaPlayer::event_loop()
 				av_log(nullptr, AV_LOG_INFO,
 					"Seek to %2.0f%% (%2d:%02d:%02d) of total duration (%2d:%02d:%02d)       \n", frac * 100,
 					hh, mm, ss, thh, tmm, tss);
-				ts = frac * this->ic->duration;
-				if (this->ic->start_time != AV_NOPTS_VALUE)
-					ts += this->ic->start_time;
+				ts = frac * this->pFormatCtx->duration;
+				if (this->pFormatCtx->start_time != AV_NOPTS_VALUE)
+					ts += this->pFormatCtx->start_time;
 				stream_seek(ts, 0, 0);
 			}
 			break;

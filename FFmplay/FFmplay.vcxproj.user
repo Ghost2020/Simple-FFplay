@@ -6,7 +6,7 @@
     <RemoteDebuggerCommandArguments>D:\File\Movie\Interstellar\Interstellar.mkv</RemoteDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>D:\File\Movie\Interstellar\Interstellar.mkv</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>F:\CXX\file\video\GB28181视频教程第一集（基础知识）.flv</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
   </PropertyGroup>
 </Project>

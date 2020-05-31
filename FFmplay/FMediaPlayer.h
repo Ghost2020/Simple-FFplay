@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <atomic>
 
 #include "FDecoder.h"
 
@@ -25,7 +26,7 @@ extern "C"
 
 #include <SDL.h>
 
-#include "cmdutils.h"
+//#include "cmdutils.h"
 }
 
 /* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
@@ -42,6 +43,9 @@ struct AudioParams
     int bytes_per_sec;
 };
 
+/*
+* \@brief 用于媒体间同步用
+*/
 class SClock
 {
     friend class FMediaPlayer;
@@ -67,37 +71,114 @@ private:
 };
 
 
+/*
+* \@brief 媒体播放接口
+*/
 class FMediaPlayer
 {
 public:
     enum struct EShowMode : uint8_t
     {
-        SHOW_MODE_NONE = 0, SHOW_MODE_VIDEO, SHOW_MODE_WAVES, SHOW_MODE_RDFT, SHOW_MODE_NB
+        SHOW_MODE_NONE = 0, 
+        SHOW_MODE_VIDEO, 
+        SHOW_MODE_WAVES, 
+        SHOW_MODE_RDFT, 
+        SHOW_MODE_NB
     };
 
     enum struct ESyncType : uint8_t
     {
-        AV_SYNC_AUDIO_MASTER, /* default choice */
+        AV_SYNC_AUDIO_MASTER,   /* default choice */
         AV_SYNC_VIDEO_MASTER,
         AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
     };
 
 public:
-    FMediaPlayer();
+    explicit FMediaPlayer();
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;
     FMediaPlayer& operator=(const FMediaPlayer&) = delete;
 
+private:
+    /* 被实例化的数量 用于自动管理核心资源*/
+    static uint8_t g_nInstance;
+
+    /*
+    * \@brief 初始化FFmpeg、SDL
+    */
+    static bool initContext();
+
+    /*
+    * \@brief 反初始化环境
+    */
+    static void unInitContext();
+
+    /*
+    * \@brief 初始化渲染相关
+    */
+    bool initRender();
+
+    /*
+    * \@brief 反初始化渲染相关
+    */
+    void uninitRender();
 public:
-    static bool InitContext();
-  
-    static void UnInitContext();
-  
-    bool InitRender();
+    /*
+    * \@brief 打开媒体流
+    * \@param sURL
+    * \@param iformat
+    * \@return true::打开成功 false::失败
+    */
+    bool StreamOpen(const std::string& sURL, AVInputFormat* iformat = nullptr);
 
-    void UninitRender();
+    /*
+    * \@brief 
+    */
+    void StreamClose();
 
+    /*
+    * \@brief handle an event sent by the GUI
+    */
+    void EventLoop();
+
+    /*
+   * \@brief
+   */
+    void OnToggleFullScreen();
+
+    /*
+    * \@brief
+    */
+    void OnToggleAudioDisplay();
+
+    /*
+    * \@brief
+    */
+    void OnTogglePause();
+
+    /*
+    * \@brief
+    */
+    void OnToggleMute();
+
+    /*
+    * \@brief
+    */
+    void OnUpdateVolume(int sign, double step);
+
+    /*
+    * \@brief @TODO
+    */
+    static void sigterm_handler(int sig);
+
+private:
+    /*
+    * \@brief 设置窗口的默认大小
+    * \@param width 窗口宽度
+    * \@param height 窗口高度
+    * \@param sar 
+    */
     void set_default_window_size(int width, int height, AVRational sar);
 
     inline void fill_rectangle(int x, int y, int w, int h);
@@ -116,19 +197,15 @@ public:
 
     void video_image_display();
 
-    static inline int compute_mod(int a, int b);
-
     void video_audio_display();
+
+    static inline int compute_mod(int a, int b);
 
     void stream_component_close(int stream_index);
 
-    void stream_close();
-
     void do_exit();
 
-    static void sigterm_handler(int sig);
-
-    int video_open();
+    AVDictionary** setup_find_stream_info_opts(AVFormatContext* s, AVDictionary* codec_opts);
 
     /* display the current picture, if any */
     void video_display();
@@ -147,12 +224,6 @@ public:
 
     /* pause or resume the video */
     void stream_toggle_pause();
-
-    void toggle_pause();
-
-    void toggle_mute();
-
-    void update_volume(int sign, double step);
 
     void step_to_next_frame();
 
@@ -173,19 +244,36 @@ public:
     static int configure_filtergraph(AVFilterGraph* graph, const char* filtergraph,
         AVFilterContext* source_ctx, AVFilterContext* sink_ctx);
 
-    static int configure_video_filters(AVFilterGraph* graph, VideoState* is, const char* vfilters, AVFrame* frame);
+    int configure_video_filters(AVFilterGraph* graph, const char* vfilters, AVFrame* frame);
 
-    static int configure_audio_filters(VideoState* is, const char* afilters, int force_output_format);
+    int configure_audio_filters(const char* afilters, int force_output_format);
 #endif  /* CONFIG_AVFILTER */
 
+    /*
+    * \@brief 用于获取音频数据
+    * \@return
+    */
     int audio_thread();
 
+    /*
+    * \@brief 用于获取视频数据
+    * \@return
+    */
     int video_thread();
 
+    /*
+    * \@brief 用于获取字幕数据
+    * \@return
+    */
     int subtitle_thread();
 
-    /* this thread gets the stream from the disk or the network */
+    /* 
+    * \@brief 此线程从磁盘或网络获取流
+    * \@return
+    */
     int read_thread();
+
+    int video_open();
 
     int audio_open(int64_t wanted_channel_layout, int wanted_nb_channels, int wanted_sample_rate, struct AudioParams* audio_hw_params);
 
@@ -220,40 +308,32 @@ public:
     */
     bool is_realtime();
 
-    bool stream_open(const char* filename);
-
     void stream_cycle_channel(int codec_type);
-
-    void toggle_full_screen();
-
-    void toggle_audio_display();
 
     void refresh_loop_wait_event(SDL_Event* event);
 
     void seek_chapter(int incr);
 
-    /* handle an event sent by the GUI */
-    void event_loop();
-
 public:
     static EShowMode eShow_mode;
 
 private:
-    SDL_Window* window = nullptr;
-    SDL_Renderer* renderer = nullptr;
+    SDL_Window* pWindow = nullptr;
+    SDL_Renderer* pRenderer = nullptr;
     SDL_RendererInfo renderer_info = { 0 };
     SDL_AudioDeviceID audio_dev;
 
     AVPacket flush_pkt;
     /* 用以获取线程执行的结果，以及线程同步 */
     std::future<int> future;
-    AVInputFormat* iformat = nullptr;
+    /*  */
+    AVInputFormat* pInputformat = nullptr;
     bool abort_request = false;
     int force_refresh;
     bool paused = false;
-    int last_paused;
+    bool last_paused = false;
     int queue_attachments_req;
-    int seek_req;
+    bool seek_req = false;
     int seek_flags;
     int loop = 1;
     bool framedrop = false;
@@ -263,8 +343,8 @@ private:
     int64_t seek_pos;
     int64_t seek_rel;
     int read_pause_return;
-    AVFormatContext* ic = nullptr;
-    bool realtime = false;
+    /*  */
+    AVFormatContext* pFormatCtx = nullptr;
 
     /* 是否自动退出 */
     bool autoexit = false;
@@ -280,16 +360,16 @@ private:
     int lowres = 0;
 
 #if CONFIG_AVFILTER
-    static const char** vfilters_list = nullptr;
-    static int nb_vfilters = 0;
-    static char* afilters = nullptr;
+    const char** vfilters_list = nullptr;
+    int nb_vfilters = 0;
+    char* afilters = nullptr;
 #endif
     int autorotate = 1;
     /* number of filter threads per graph */
     int filter_nbthreads = 0;
 
     /* current context */
-    int is_full_screen;
+    bool is_full_screen = false;
     int64_t audio_callback_time;
 
     int64_t cursor_last_shown;
@@ -332,7 +412,7 @@ private:
     double audio_diff_avg_coef;
     double audio_diff_threshold;
     int audio_diff_avg_count;
-    AVStream* audio_st = nullptr;
+    AVStream* pAudioStream = nullptr;
     PacketQueue audioq;
     int audio_hw_buf_size;
     uint8_t* audio_buf = nullptr;
@@ -348,7 +428,7 @@ private:
     struct AudioParams audio_filter_src;
 #endif
     struct AudioParams audio_tgt;
-    struct SwrContext* swr_ctx;
+    struct SwrContext* swr_ctx = nullptr;
     int frame_drops_early;
     int frame_drops_late;
 
@@ -365,14 +445,14 @@ private:
     SDL_Texture* vid_texture = nullptr;
 
     int subtitle_stream = -1;
-    AVStream* subtitle_st = nullptr;
+    AVStream* pSubtitleStream = nullptr;
     PacketQueue subtitleq;
 
     double frame_timer;
     double frame_last_returned_time;
     double frame_last_filter_delay;
     int video_stream = -1;
-    AVStream* video_st = nullptr;
+    AVStream* pVideoStream = nullptr;
     PacketQueue videoq;
     double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
     struct SwsContext* img_convert_ctx = nullptr;
