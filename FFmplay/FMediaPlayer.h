@@ -58,6 +58,10 @@ public:
 
     void Set(double pts, int serial);
 
+    /*
+    * \@brief 设置时钟速度
+    * \@param speed[in]:
+    */
     void SetSpeed(double speed);
 
 private:
@@ -77,20 +81,22 @@ private:
 class FMediaPlayer
 {
 public:
+    /* 显示方式 */
     enum struct EShowMode : uint8_t
     {
         SHOW_MODE_NONE = 0, 
-        SHOW_MODE_VIDEO, 
-        SHOW_MODE_WAVES, 
-        SHOW_MODE_RDFT, 
-        SHOW_MODE_NB
+        SHOW_MODE_VIDEO, /* 显示音视频 */
+        SHOW_MODE_WAVES, /* 显示声纹波形 */
+        SHOW_MODE_RDFT,  /* @TODO */
+        SHOW_MODE_NB     /* 效果等同于SHOW_MODE_RDFT */
     };
 
+    /* 音画同步方式 */
     enum struct ESyncType : uint8_t
     {
-        AV_SYNC_AUDIO_MASTER,   /* default choice */
-        AV_SYNC_VIDEO_MASTER,
-        AV_SYNC_EXTERNAL_CLOCK, /* synchronize to an external clock */
+        AV_SYNC_AUDIO_MASTER,   /* 音频为基准同步 */
+        AV_SYNC_VIDEO_MASTER,   /* 视频为基准同步 */
+        AV_SYNC_EXTERNAL_CLOCK, /* 外部时钟同步 */
     };
 
 public:
@@ -126,14 +132,14 @@ private:
 public:
     /*
     * \@brief 打开媒体流
-    * \@param sURL
+    * \@param sURL:媒体流的存放位置，或者是直播的地址，也可是本地的摄像头
     * \@param iformat
     * \@return true::打开成功 false::失败
     */
     bool StreamOpen(const std::string& sURL, AVInputFormat* iformat = nullptr);
 
     /*
-    * \@brief 
+    * \@brief 关闭媒体流
     */
     void StreamClose();
 
@@ -163,9 +169,29 @@ public:
     void OnToggleMute();
 
     /*
-    * \@brief
+    * \@brief 逐帧播放
+    */
+    void OnStepToNextFrame();
+
+    /*
+    * \@brief @TODO seek in the stream 
+    * \@param pos
+    * \@param rel
+    * \@param seek_by_bytes
+    */
+    void OnStreamSeek(int64_t pos, int64_t rel, bool seek_by_bytes);
+
+    /*
+    * \@brief 调节播放的音量
+    * \@param sign: 大小方向
+    * \@param step: 音量大小
     */
     void OnUpdateVolume(int sign, double step);
+
+    /*
+    * \@brief 退出操作
+    */
+    void OnExit();
 
     /*
     * \@brief @TODO
@@ -175,65 +201,154 @@ public:
 private:
     /*
     * \@brief 设置窗口的默认大小
-    * \@param width 窗口宽度
-    * \@param height 窗口高度
-    * \@param sar 
+    * \@param width[in] 窗口宽度
+    * \@param height[in] 窗口高度
+    * \@param sar[in]
     */
     void set_default_window_size(int width, int height, AVRational sar);
 
-    inline void fill_rectangle(int x, int y, int w, int h);
+    /*
+    * \@brief 填充矩形，用于显示声纹波形
+    * \@param nXPos[in]：
+    * \@param nYPos[in]：
+    * \@param nWidth[in]：矩形宽度
+    * \@param nHeight[in]：矩形高度
+    */
+    inline void fill_rectangle(int nXPos, int nYPos, int nWidth, int nHeight);
 
-    int realloc_texture(SDL_Texture** texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture);
+    /*
+    * \@brief @TODO
+    * \@param texture
+    * \@param nNewFormat[in]
+    * \@param nNewWidth[in]
+    * \@param nNewHeight[in]
+    * \@param eBlendmode[in]
+    * \@param bInitTexture[in]
+    * \@retrun 
+    */
+    bool realloc_texture(SDL_Texture** texture, Uint32 nNewFormat, int nNewWidth, int nNewHeight, SDL_BlendMode eBlendmode, bool bInitTexture);
 
-    void calculate_display_rect(SDL_Rect* rect,
-        int scr_xleft, int scr_ytop, int scr_width, int scr_height,
-        int pic_width, int pic_height, AVRational pic_sar);
+    /*
+    * \@brief 
+    * \@param rect[in,out]
+    * \@param srcRect[in]
+    * \@param pic_width[in]
+    * \@param pic_height[in]
+    * \@param pic_sar[in]
+    */
+    void calculate_display_rect(SDL_Rect& rect, const SDL_Rect& srcRect, int pic_width, int pic_height, AVRational pic_sar);
 
-    void get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt, SDL_BlendMode* sdl_blendmode);
+    /*
+    * \@brief 获取SDL 渲染的模式
+    * \@param nFormat[in]
+    * \@param sdl_pix_fmt[in,out]
+    * \@param sdl_blendmode[in,out]
+    */
+    void get_sdl_pix_fmt_and_blendmode(int nFormat, Uint32* sdl_pix_fmt, SDL_BlendMode* sdl_blendmode);
 
-    int upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsContext** img_convert_ctx);
-
+    /*
+    * \@brief 设置SDL-YUV转换的模式
+    * \@param frame[in]:原始图像数据
+    */
     void set_sdl_yuv_conversion_mode(AVFrame* frame);
 
-    void video_image_display();
+    /*
+    * \@brief 由外部传入的原始图像数据来更新纹理数据
+    * \@param tex[in,out]
+    * \@param frame[in]:传入的原始视频数据
+    * \@param img_convert_ctx[in,out]
+    * \@retrun true:successed false:failured
+    */
+    bool upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsContext** img_convert_ctx);
 
-    void video_audio_display();
-
-    static inline int compute_mod(int a, int b);
-
-    void stream_component_close(int stream_index);
-
-    void do_exit();
-
-    AVDictionary** setup_find_stream_info_opts(AVFormatContext* s, AVDictionary* codec_opts);
-
-    /* display the current picture, if any */
+    /* 
+    * \@breif 显示当前图片（如果有) 
+    */
     void video_display();
 
-    static void sync_clock_to_slave(SClock* c, SClock* slave);
+    /*
+    * \@brief 绘制图像和字幕数据
+    */
+    void video_image_display();
 
+    /*
+    * \@brief 绘制音频波形数据
+    */
+    void video_audio_display();
+
+    /*
+    * \@brief 取余运算
+    */
+    static inline int compute_mod(int a, int b);
+
+    /*
+    * \@brief 关闭指定通道的媒体流
+    * \@param nStreamIndex[in] 媒体通道索引
+    */
+    void stream_component_close(int nStreamIndex);
+
+    /*
+    * \@brief 查找媒体流的相关信息 @TODO
+    * \@param s[in]
+    * \@param codec_opts[in]
+    * \@return @TODO
+    */
+    AVDictionary** setup_find_stream_info_opts(AVFormatContext* s, AVDictionary* codec_opts);
+
+    /*
+    * \@brief @TODO 同步时钟
+    * \@param c[in]
+    * \@param slave[in]
+    */
+    static void sync_clock_to_slave(SClock& c, SClock& slave);
+
+    /*
+    * \@brief 获取同步类型
+    */
     ESyncType get_master_sync_type();
 
-    /* get the current master clock value */
+    /* 
+    * \@brief 获取当前主时钟值 
+    */
     double get_master_clock();
 
+    /*
+    * \brief @TODO
+    */
     void check_external_clock_speed();
 
-    /* seek in the stream */
-    void stream_seek(int64_t pos, int64_t rel, int seek_by_bytes);
-
-    /* pause or resume the video */
+    /* 
+    * \@brief pause or resume the video 
+    */
     void stream_toggle_pause();
 
-    void step_to_next_frame();
-
+    /*
+    * \@brief 计算延迟有多大
+    * \@param delay[in] 上一帧的持续时间
+    * \@return 延迟时间
+    */
     double compute_target_delay(double delay);
 
+    /*
+    * \@breif 计算临近帧的持续时间
+    * \@param vp[in] 
+    * \@param nextvp[in]
+    * \@return 
+    */
     double vp_duration(SFrame* vp, SFrame* nextvp);
 
+    /*
+    * \@brief 更新视频帧的时间戳
+    * \@param pts[in]
+    * \@param pos[in]
+    * \@param serial[in]
+    */
     void update_video_pts(double pts, int64_t pos, int serial);
 
-    /* called to display each frame */
+    /* 
+    * \@brief called to display each frame 
+    * \@param remaining_time[in,out]
+    */
     void video_refresh(double& remaining_time);
     
     int queue_picture(AVFrame* src_frame, double pts, double duration, int64_t pos, int serial);
@@ -323,6 +438,7 @@ private:
     SDL_RendererInfo renderer_info = { 0 };
     SDL_AudioDeviceID audio_dev;
 
+    /* @TODO */
     AVPacket flush_pkt;
     /* 用以获取线程执行的结果，以及线程同步 */
     std::future<int> future;
@@ -385,14 +501,14 @@ private:
     uint16_t screen_left = SDL_WINDOWPOS_CENTERED;
     uint16_t screen_top = SDL_WINDOWPOS_CENTERED;
 
-    int seek_by_bytes = -1;
+    bool seek_by_bytes = false;
     float seek_interval = 10;
 
     double rdftspeed = 0.02;
 
-    SClock audclk;
-    SClock vidclk;
-    SClock extclk;
+    SClock audclk;  /* 音频时钟 */
+    SClock vidclk;  /* 视频时钟 */
+    SClock extclk;  /* 外部时钟 */
 
     FrameQueue pictq;
     FrameQueue subpq;
@@ -441,7 +557,9 @@ private:
     int xpos;
     double last_vis_time;
     SDL_Texture* vis_texture = nullptr;
+    /* 字幕纹理 */
     SDL_Texture* sub_texture = nullptr;
+    /* 图像纹理 */
     SDL_Texture* vid_texture = nullptr;
 
     int subtitle_stream = -1;
@@ -456,11 +574,13 @@ private:
     PacketQueue videoq;
     double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
     struct SwsContext* img_convert_ctx = nullptr;
+    /* 字幕信息 */
     struct SwsContext* sub_convert_ctx = nullptr;
     int eof;
 
     char* sURL = nullptr;
-    int width, height, xleft, ytop;
+    //int width, height, xleft, ytop;
+    SDL_Rect rect{};
     int step;
 
 #if CONFIG_AVFILTER

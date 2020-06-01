@@ -186,7 +186,9 @@ private:
 /* Common struct for handling all types of decoded data and allocated render buffers. */
 struct SFrame
 {
+	/* 原始图像数据 */
 	AVFrame* frame = nullptr;
+	/* 字幕相关数据 */
 	AVSubtitle sub{};
 	int serial;
 	double pts;           /* presentation timestamp for the frame */
@@ -196,7 +198,7 @@ struct SFrame
 	int height;
 	int format;
 	AVRational sar{};
-	int uploaded;
+	bool uploaded = false;
 	int flip_v;
 };
 

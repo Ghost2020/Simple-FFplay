@@ -78,7 +78,7 @@ void SClock::Init(int* queue_serial)
 	this->speed = 1.0;
 	this->paused = false;
 	this->queue_serial = queue_serial;
-	Set(NAN, -1);
+	this->Set(NAN, -1);
 }
 
 double SClock::Get()
@@ -104,12 +104,12 @@ void SClock::SetAt(double pts, int serial, double time)
 void SClock::Set(double pts, int serial)
 {
 	double time = av_gettime_relative() / 1000000.0;
-	SetAt(pts, serial, time);
+	this->SetAt(pts, serial, time);
 }
 
 void SClock::SetSpeed(double speed)
 {
-	Set(Get(), serial);
+	this->Set(Get(), serial);
 	this->speed = speed;
 }
 
@@ -126,7 +126,7 @@ FMediaPlayer::~FMediaPlayer()
 	if (--g_nInstance == 0)
 		unInitContext();
 
-	do_exit();
+	OnExit();
 }
 
 bool FMediaPlayer::initContext()
@@ -219,53 +219,51 @@ void FMediaPlayer::uninitRender()
 
 void FMediaPlayer::set_default_window_size(int width, int height, AVRational sar)
 {
-	SDL_Rect rect;
 	int max_width = screen_width ? screen_width : INT_MAX;
 	int max_height = screen_height ? screen_height : INT_MAX;
 	if (max_width == INT_MAX && max_height == INT_MAX)
 		max_height = height;
-	calculate_display_rect(&rect, 0, 0, max_width, max_height, width, height, sar);
+
+	SDL_Rect rect;
+	calculate_display_rect(rect, SDL_Rect{ 0, 0, max_width, max_height }, width, height, sar);
 	default_width = rect.w;
 	default_height = rect.h;
 }
 
-void FMediaPlayer::fill_rectangle(int x, int y, int w, int h)
+void FMediaPlayer::fill_rectangle(int nXPos, int nYPos, int nWidth, int nHeight)
 {
-	SDL_Rect rect;
-	rect.x = x;
-	rect.y = y;
-	rect.w = w;
-	rect.h = h;
-	if (w && h)
+	SDL_Rect rect{ nXPos, nYPos , nWidth , nHeight };
+	if (nWidth && nHeight)
 		SDL_RenderFillRect(pRenderer, &rect);
 }
 
-int FMediaPlayer::realloc_texture(SDL_Texture** texture, Uint32 new_format, int new_width, int new_height, SDL_BlendMode blendmode, int init_texture)
+bool FMediaPlayer::realloc_texture(SDL_Texture** texture, Uint32 nNewFormat, int nNewWidth, int nNewHeight, SDL_BlendMode eBlendmode, bool bInitTexture)
 {
 	Uint32 format;
 	int access, w, h;
-	if (!*texture || SDL_QueryTexture(*texture, &format, &access, &w, &h) < 0 || new_width != w || new_height != h || new_format != format) {
-		void* pixels;
+	if (!*texture || SDL_QueryTexture(*texture, &format, &access, &w, &h) < 0 || nNewWidth != w || nNewHeight != h || nNewFormat != format)
+	{
+		void* pixels = nullptr;
 		int pitch;
 		if (*texture)
 			SDL_DestroyTexture(*texture);
-		if (!(*texture = SDL_CreateTexture(pRenderer, new_format, SDL_TEXTUREACCESS_STREAMING, new_width, new_height)))
-			return -1;
-		if (SDL_SetTextureBlendMode(*texture, blendmode) < 0)
-			return -1;
-		if (init_texture) {
+		if (!(*texture = SDL_CreateTexture(pRenderer, nNewFormat, SDL_TEXTUREACCESS_STREAMING, nNewWidth, nNewHeight)))
+			return false;
+		if (SDL_SetTextureBlendMode(*texture, eBlendmode) < 0)
+			return false;
+		if (bInitTexture)
+		{
 			if (SDL_LockTexture(*texture, nullptr, &pixels, &pitch) < 0)
-				return -1;
-			memset(pixels, 0, pitch * new_height);
+				return false;
+			memset(pixels, 0, pitch * nNewHeight);
 			SDL_UnlockTexture(*texture);
 		}
-		av_log(nullptr, AV_LOG_VERBOSE, "Created %dx%d texture with %s.\n", new_width, new_height, SDL_GetPixelFormatName(new_format));
+		av_log(nullptr, AV_LOG_VERBOSE, "Created %dx%d texture with %s.\n", nNewWidth, nNewHeight, SDL_GetPixelFormatName(nNewFormat));
 	}
-	return 0;
+	return true;
 }
 
-void FMediaPlayer::calculate_display_rect(SDL_Rect* rect,
-	int scr_xleft, int scr_ytop, int scr_width, int scr_height,
+void FMediaPlayer::calculate_display_rect(SDL_Rect& rect, const SDL_Rect& srcRect,
 	int pic_width, int pic_height, AVRational pic_sar)
 {
 	AVRational aspect_ratio = pic_sar;
@@ -277,18 +275,18 @@ void FMediaPlayer::calculate_display_rect(SDL_Rect* rect,
 	aspect_ratio = av_mul_q(aspect_ratio, av_make_q(pic_width, pic_height));
 
 	/* XXX: we suppose the screen has a 1.0 pixel ratio */
-	height = scr_height;
+	height = srcRect.h;
 	width = av_rescale(height, aspect_ratio.num, aspect_ratio.den) & ~1;
-	if (width > scr_width) {
-		width = scr_width;
+	if (width > srcRect.w) {
+		width = srcRect.w;
 		height = av_rescale(width, aspect_ratio.den, aspect_ratio.num) & ~1;
 	}
-	x = (scr_width - width) / 2;
-	y = (scr_height - height) / 2;
-	rect->x = scr_xleft + x;
-	rect->y = scr_ytop + y;
-	rect->w = FFMAX((int)width, 1);
-	rect->h = FFMAX((int)height, 1);
+	x = (srcRect.w - width) / 2;
+	y = (srcRect.h - height) / 2;
+	rect.x = srcRect.x + x;
+	rect.y = srcRect.y + y;
+	rect.w = FFMAX((int)width, 1);
+	rect.h = FFMAX((int)height, 1);
 }
 
 void FMediaPlayer::get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt, SDL_BlendMode* sdl_blendmode)
@@ -310,13 +308,13 @@ void FMediaPlayer::get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt
 	}
 }
 
-int FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsContext** img_convert_ctx)
+bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsContext** img_convert_ctx)
 {
-	int ret = 0;
+	int ret = -1;
 	Uint32 sdl_pix_fmt;
 	SDL_BlendMode sdl_blendmode;
 	get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
-	if (realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, 0) < 0)
+	if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))
 		return -1;
 	switch (sdl_pix_fmt) {
 	case SDL_PIXELFORMAT_UNKNOWN:
@@ -351,7 +349,7 @@ int FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsCo
 		}
 		else {
 			av_log(nullptr, AV_LOG_ERROR, "Mixed negative and positive linesizes are not supported.\n");
-			return -1;
+			return false;
 		}
 		break;
 	default:
@@ -361,7 +359,7 @@ int FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsCo
 			ret = SDL_UpdateTexture(*tex, nullptr, frame->data[0], frame->linesize[0]);
 		break;
 	}
-	return ret;
+	return (ret == 0) ? true : false;
 }
 
 void FMediaPlayer::set_sdl_yuv_conversion_mode(AVFrame* frame)
@@ -387,73 +385,78 @@ void FMediaPlayer::video_image_display()
 	SDL_Rect rect;
 
 	vp = this->pictq.PeekLast();
-	if (this->pSubtitleStream) {
-		if (this->subpq.NbRemaining() > 0) {
-			sp = this->subpq.Peek();
+	/* 计算字幕矩形位置信息 */
+	if (this->pSubtitleStream && (this->subpq.NbRemaining() > 0))
+	{
+		sp = this->subpq.Peek();
 
-			if (vp->pts >= sp->pts + ((float)sp->sub.start_display_time / 1000)) {
-				if (!sp->uploaded) {
-					uint8_t* pixels[4];
-					int pitch[4];
-					int i;
-					if (!sp->width || !sp->height) {
-						sp->width = vp->width;
-						sp->height = vp->height;
-					}
-					if (realloc_texture(&this->sub_texture, SDL_PIXELFORMAT_ARGB8888, sp->width, sp->height, SDL_BLENDMODE_BLEND, 1) < 0)
-						return;
-
-					for (i = 0; i < sp->sub.num_rects; i++) {
-						AVSubtitleRect* sub_rect = sp->sub.rects[i];
-
-						sub_rect->x = av_clip(sub_rect->x, 0, sp->width);
-						sub_rect->y = av_clip(sub_rect->y, 0, sp->height);
-						sub_rect->w = av_clip(sub_rect->w, 0, sp->width - sub_rect->x);
-						sub_rect->h = av_clip(sub_rect->h, 0, sp->height - sub_rect->y);
-
-						this->sub_convert_ctx = sws_getCachedContext(this->sub_convert_ctx,
-							sub_rect->w, sub_rect->h, AV_PIX_FMT_PAL8,
-							sub_rect->w, sub_rect->h, AV_PIX_FMT_BGRA,
-							0, nullptr, nullptr, nullptr);
-						if (!this->sub_convert_ctx) {
-							av_log(nullptr, AV_LOG_FATAL, "Cannot initialize the conversion context\n");
-							return;
-						}
-						if (!SDL_LockTexture(this->sub_texture, (SDL_Rect*)sub_rect, (void**)pixels, pitch)) {
-							sws_scale(this->sub_convert_ctx, (const uint8_t* const*)sub_rect->data, sub_rect->linesize,
-								0, sub_rect->h, pixels, pitch);
-							SDL_UnlockTexture(this->sub_texture);
-						}
-					}
-					sp->uploaded = 1;
+		if (vp->pts >= sp->pts + ((float)sp->sub.start_display_time / 1000)) {
+			if (!sp->uploaded) {
+				uint8_t* pixels[4];
+				int pitch[4];
+				int i;
+				if (!sp->width || !sp->height) {
+					sp->width = vp->width;
+					sp->height = vp->height;
 				}
+				if (!realloc_texture(&this->sub_texture, SDL_PIXELFORMAT_ARGB8888, sp->width, sp->height, SDL_BLENDMODE_BLEND, true))
+					return;
+
+				for (i = 0; i < sp->sub.num_rects; i++) 
+				{
+					AVSubtitleRect* sub_rect = sp->sub.rects[i];
+
+					sub_rect->x = av_clip(sub_rect->x, 0, sp->width);
+					sub_rect->y = av_clip(sub_rect->y, 0, sp->height);
+					sub_rect->w = av_clip(sub_rect->w, 0, sp->width - sub_rect->x);
+					sub_rect->h = av_clip(sub_rect->h, 0, sp->height - sub_rect->y);
+
+					this->sub_convert_ctx = sws_getCachedContext(this->sub_convert_ctx,
+						sub_rect->w, sub_rect->h, AV_PIX_FMT_PAL8,
+						sub_rect->w, sub_rect->h, AV_PIX_FMT_BGRA,
+						0, nullptr, nullptr, nullptr);
+					if (!this->sub_convert_ctx) {
+						av_log(nullptr, AV_LOG_FATAL, "Cannot initialize the conversion context\n");
+						return;
+					}
+					if (!SDL_LockTexture(this->sub_texture, (SDL_Rect*)sub_rect, (void**)pixels, pitch)) {
+						sws_scale(this->sub_convert_ctx, (const uint8_t* const*)sub_rect->data, sub_rect->linesize,
+							0, sub_rect->h, pixels, pitch);
+						SDL_UnlockTexture(this->sub_texture);
+					}
+				}
+				sp->uploaded = true;
 			}
-			else
-				sp = nullptr;
 		}
+		else sp = nullptr;
 	}
 
-	calculate_display_rect(&rect, this->xleft, this->ytop, this->width, this->height, vp->width, vp->height, vp->sar);
+	calculate_display_rect(rect, this->rect, vp->width, vp->height, vp->sar);
 
-	if (!vp->uploaded) {
-		if (upload_texture(&this->vid_texture, vp->frame, &this->img_convert_ctx) < 0)
+	if (!vp->uploaded) 
+	{
+		if (!upload_texture(&this->vid_texture, vp->frame, &this->img_convert_ctx))
 			return;
-		vp->uploaded = 1;
+		vp->uploaded = true;
 		vp->flip_v = vp->frame->linesize[0] < 0;
 	}
 
+	/* 绘制图像数据 */
 	set_sdl_yuv_conversion_mode(vp->frame);
 	SDL_RenderCopyEx(pRenderer, this->vid_texture, nullptr, &rect, 0, nullptr, static_cast<SDL_RendererFlip>(vp->flip_v ? SDL_FLIP_VERTICAL : 0));
 	set_sdl_yuv_conversion_mode(nullptr);
+
+	/* 绘制字幕数据 */
 	if (sp) {
 #if USE_ONEPASS_SUBTITLE_RENDER
 		SDL_RenderCopy(renderer, this->sub_texture, nullptr, &rect);
 #else
 		int i;
-		double xratio = (double)rect.w / (double)sp->width;
-		double yratio = (double)rect.h / (double)sp->height;
-		for (i = 0; i < sp->sub.num_rects; i++) {
-			SDL_Rect* sub_rect = (SDL_Rect*)sp->sub.rects[i];
+		const double xratio = (double)rect.w / (double)sp->width;
+		const double yratio = (double)rect.h / (double)sp->height;
+		for (i = 0; i < sp->sub.num_rects; i++) 
+		{
+			const SDL_Rect* sub_rect = (SDL_Rect*)sp->sub.rects[i];
 			SDL_Rect target;
 			target.x = rect.x + sub_rect->x * xratio;
 			target.y = rect.y + sub_rect->y * yratio;
@@ -465,7 +468,7 @@ void FMediaPlayer::video_image_display()
 	}
 }
 
-inline int FMediaPlayer::compute_mod(int a, int b)
+int FMediaPlayer::compute_mod(int a, int b)
 {
 	return a < 0 ? a % b + b : a % b;
 }
@@ -473,11 +476,11 @@ inline int FMediaPlayer::compute_mod(int a, int b)
 void FMediaPlayer::video_audio_display()
 {
 	int i, i_start, x, y1, y, ys, delay, n, nb_display_channels;
-	int ch, channels, h, h2;
+	int channels, h, h2;
 	int64_t time_diff;
 	int rdft_bits, nb_freq;
 
-	for (rdft_bits = 1; (1 << rdft_bits) < 2 * this->height; rdft_bits++)
+	for (rdft_bits = 1; (1 << rdft_bits) < 2 * this->rect.h; rdft_bits++)
 		;
 	nb_freq = 1 << (rdft_bits - 1);
 
@@ -486,7 +489,7 @@ void FMediaPlayer::video_audio_display()
 	nb_display_channels = channels;
 	if (!this->paused)
 	{
-		int data_used = this->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_WAVES ? this->width : (2 * nb_freq);
+		int data_used = this->eShow_mode == FMediaPlayer::EShowMode::SHOW_MODE_WAVES ? this->rect.w : (2 * nb_freq);
 		n = 2 * channels;
 		delay = this->audio_write_buf_size;
 		delay /= n;
@@ -529,14 +532,14 @@ void FMediaPlayer::video_audio_display()
 		SDL_SetRenderDrawColor(pRenderer, 255, 255, 255, 255);
 
 		/* total height for one channel */
-		h = this->height / nb_display_channels;
+		h = this->rect.h / nb_display_channels;
 		/* graph height / 2 */
 		h2 = (h * 9) / 20;
-		for (ch = 0; ch < nb_display_channels; ch++)
+		for (int ch = 0; ch < nb_display_channels; ch++)
 		{
 			i = i_start + ch;
-			y1 = this->ytop + ch * h + (h / 2); /* position of center line */
-			for (x = 0; x < this->width; x++) {
+			y1 = this->rect.y + ch * h + (h / 2); /* position of center line */
+			for (x = 0; x < this->rect.w; x++) {
 				y = (this->sample_array[i] * h2) >> 15;
 				if (y < 0) {
 					y = -y;
@@ -545,7 +548,7 @@ void FMediaPlayer::video_audio_display()
 				else {
 					ys = y1;
 				}
-				fill_rectangle(this->xleft + x, ys, 1, y);
+				fill_rectangle(this->rect.x + x, ys, 1, y);
 				i += channels;
 				if (i >= SAMPLE_ARRAY_SIZE)
 					i -= SAMPLE_ARRAY_SIZE;
@@ -554,13 +557,13 @@ void FMediaPlayer::video_audio_display()
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 255, 255);
 
-		for (ch = 1; ch < nb_display_channels; ch++) {
-			y = this->ytop + ch * h;
-			fill_rectangle(this->xleft, y, this->width, 1);
+		for (int ch = 1; ch < nb_display_channels; ch++) {
+			y = this->rect.y + ch * h;
+			fill_rectangle(this->rect.x, y, this->rect.w, 1);
 		}
 	}
 	else {
-		if (realloc_texture(&this->vis_texture, SDL_PIXELFORMAT_ARGB8888, this->width, this->height, SDL_BLENDMODE_NONE, 1) < 0)
+		if (!realloc_texture(&this->vis_texture, SDL_PIXELFORMAT_ARGB8888, this->rect.w, this->rect.h, SDL_BLENDMODE_NONE, true))
 			return;
 
 		nb_display_channels = FFMIN(nb_display_channels, 2);
@@ -578,11 +581,11 @@ void FMediaPlayer::video_audio_display()
 		else {
 			FFTSample* data[2];
 			SDL_Rect rect;
-			rect.x = this->xpos; rect.y = 0; rect.w = 1; rect.h = this->height;
+			rect.x = this->xpos; rect.y = 0; rect.w = 1; rect.h = this->rect.h;
 
 			uint32_t* pixels;
 			int pitch;
-			for (ch = 0; ch < nb_display_channels; ch++) {
+			for (int ch = 0; ch < nb_display_channels; ch++) {
 				data[ch] = this->rdft_data + 2 * nb_freq * ch;
 				i = i_start + ch;
 				for (x = 0; x < 2 * nb_freq; x++) {
@@ -599,8 +602,8 @@ void FMediaPlayer::video_audio_display()
 			if (!SDL_LockTexture(this->vis_texture, &rect, (void**)&pixels, &pitch))
 			{
 				pitch >>= 2;
-				pixels += pitch * this->height;
-				for (y = 0; y < this->height; y++) {
+				pixels += pitch * this->rect.h;
+				for (y = 0; y < this->rect.h; y++) {
 					double w = 1 / sqrt(nb_freq);
 					int a = sqrt(w * sqrt(data[0][2 * y + 0] * data[0][2 * y + 0] + data[0][2 * y + 1] * data[0][2 * y + 1]));
 					int b = (nb_display_channels == 2) ? sqrt(w * hypot(data[1][2 * y + 0], data[1][2 * y + 1]))
@@ -616,18 +619,18 @@ void FMediaPlayer::video_audio_display()
 		}
 		if (!this->paused)
 			this->xpos++;
-		if (this->xpos >= this->width)
-			this->xpos = this->xleft;
+		if (this->xpos >= this->rect.w)
+			this->xpos = this->rect.x;
 	}
 }
 
-void FMediaPlayer::stream_component_close(int stream_index)
+void FMediaPlayer::stream_component_close(int nStreamIndex)
 {
 	AVCodecParameters* codecpar = nullptr;
 
-	if (stream_index < 0 || stream_index >= this->pFormatCtx->nb_streams)
+	if (nStreamIndex < 0 || nStreamIndex >= this->pFormatCtx->nb_streams)
 		return;
-	codecpar = this->pFormatCtx->streams[stream_index]->codecpar;
+	codecpar = this->pFormatCtx->streams[nStreamIndex]->codecpar;
 
 	switch (codecpar->codec_type) 
 	{
@@ -659,7 +662,7 @@ void FMediaPlayer::stream_component_close(int stream_index)
 		break;
 	}
 
-	this->pFormatCtx->streams[stream_index]->discard = AVDISCARD_ALL;
+	this->pFormatCtx->streams[nStreamIndex]->discard = AVDISCARD_ALL;
 	switch (codecpar->codec_type) 
 	{
 	case AVMEDIA_TYPE_AUDIO:
@@ -681,7 +684,7 @@ void FMediaPlayer::stream_component_close(int stream_index)
 
 void FMediaPlayer::StreamClose()
 {
-	/* 中止解析 */
+	/* 中止解析请求 */
 	this->abort_request = true;
 
 	/* 等待读取线程停止 */
@@ -725,7 +728,7 @@ void FMediaPlayer::StreamClose()
 	this->sURL = nullptr;
 }
 
-void FMediaPlayer::do_exit()
+void FMediaPlayer::OnExit()
 {
 	StreamClose();
 
@@ -756,8 +759,8 @@ int FMediaPlayer::video_open()
 		SDL_SetWindowFullscreen(pWindow, SDL_WINDOW_FULLSCREEN_DESKTOP);
 	SDL_ShowWindow(pWindow);
 
-	this->width = w;
-	this->height = h;
+	this->rect.w = w;
+	this->rect.h = h;
 
 	return 0;
 }
@@ -766,7 +769,7 @@ void FMediaPlayer::video_display()
 {
 	try
 	{
-		if (!this->width)
+		if (!this->rect.w)
 			video_open();
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
@@ -784,12 +787,14 @@ void FMediaPlayer::video_display()
 	}
 }
 
-void FMediaPlayer::sync_clock_to_slave(SClock* c, SClock* slave)
+void FMediaPlayer::sync_clock_to_slave(SClock& c, SClock& slave)
 {
-	double clock = c->Get();
-	double slave_clock = slave->Get();
-	if (!isnan(slave_clock) && (isnan(clock) || fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD))
-		c->Set(slave_clock, slave->serial);
+	const double clock = c.Get();
+	const double slave_clock = slave.Get();
+	if ( !std::isnan(slave_clock) && 
+		 (std::isnan(clock) || (std::fabs(clock - slave_clock) > AV_NOSYNC_THRESHOLD) )
+	   )
+		c.Set(slave_clock, slave.serial);
 }
 
 FMediaPlayer::ESyncType FMediaPlayer::get_master_sync_type()
@@ -815,9 +820,10 @@ FMediaPlayer::ESyncType FMediaPlayer::get_master_sync_type()
 
 double FMediaPlayer::get_master_clock()
 {
-	double val;
+	double val = 0.0;
 
-	switch (get_master_sync_type()) {
+	switch (get_master_sync_type()) 
+	{
 	case ESyncType::AV_SYNC_VIDEO_MASTER:
 		val = this->vidclk.Get();
 		break;
@@ -848,7 +854,7 @@ void FMediaPlayer::check_external_clock_speed()
 	}
 }
 
-void FMediaPlayer::stream_seek(int64_t pos, int64_t rel, int seek_by_bytes)
+void FMediaPlayer::OnStreamSeek(int64_t pos, int64_t rel, bool seek_by_bytes)
 {
 	if (!this->seek_req)
 	{
@@ -894,7 +900,7 @@ void FMediaPlayer::OnUpdateVolume(int sign, double step)
 	this->audio_volume = av_clip(this->audio_volume == new_volume ? (this->audio_volume + sign) : new_volume, 0, SDL_MIX_MAXVOLUME);
 }
 
-void FMediaPlayer::step_to_next_frame()
+void FMediaPlayer::OnStepToNextFrame()
 {
 	/* if the stream is paused unpause it, then step */
 	if (this->paused)
@@ -904,19 +910,18 @@ void FMediaPlayer::step_to_next_frame()
 
 double FMediaPlayer::compute_target_delay(double delay)
 {
-	double sync_threshold, diff = 0;
+	double sync_threshold = 0, diff = 0;
 
 	/* update delay to follow master synchronisation source */
 	if (get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER) {
-		/* if video is slave, we try to correct big delays by
-		   duplicating or deleting a frame */
+		/* if video is slave, we try to correct big delays by duplicating or deleting a frame */
 		diff = this->vidclk.Get() - get_master_clock();
 
 		/* skip or repeat frame. We take into account the
 		   delay to compute the threshold. I still don't know
 		   if it is the best guess */
 		sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
-		if (!isnan(diff) && fabs(diff) < this->max_frame_duration) {
+		if (!std::isnan(diff) && std::fabs(diff) < this->max_frame_duration) {
 			if (diff <= -sync_threshold)
 				delay = FFMAX(0, delay + diff);
 			else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
@@ -926,31 +931,29 @@ double FMediaPlayer::compute_target_delay(double delay)
 		}
 	}
 
-	av_log(nullptr, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n",
-		delay, -diff);
+	av_log(nullptr, AV_LOG_TRACE, "video: delay=%0.3f A-V=%f\n", delay, -diff);
 
 	return delay;
 }
 
 double FMediaPlayer::vp_duration(SFrame* vp, SFrame* nextvp)
 {
-	if (vp->serial == nextvp->serial) {
+	if (vp->serial == nextvp->serial) 
+	{
 		double duration = nextvp->pts - vp->pts;
-		if (isnan(duration) || duration <= 0 || duration > this->max_frame_duration)
+		if (std::isnan(duration) || duration <= 0 || duration > this->max_frame_duration)
 			return vp->duration;
 		else
 			return duration;
 	}
-	else {
-		return 0.0;
-	}
+	else return 0.0;
 }
 
 void FMediaPlayer::update_video_pts(double pts, int64_t pos, int serial)
 {
 	/* update current video pts */
 	this->vidclk.Set(pts, serial);
-	sync_clock_to_slave(&this->extclk, &this->vidclk);
+	sync_clock_to_slave(this->extclk, this->vidclk);
 }
 
 void FMediaPlayer::video_refresh(double& remaining_time)
@@ -979,8 +982,8 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 			// nothing to do, no picture to display in the queue
 		}
 		else {
-			double last_duration, duration, delay;
-			SFrame* vp, * lastvp;
+			double duration, delay;
+			SFrame* vp = nullptr, * lastvp = nullptr;
 
 			/* dequeue the picture */
 			lastvp = this->pictq.PeekLast();
@@ -998,8 +1001,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 				goto display;
 
 			/* compute nominal last_duration */
-			last_duration = vp_duration(lastvp, vp);
-			delay = compute_target_delay(last_duration);
+			delay = compute_target_delay(vp_duration(lastvp, vp));
 
 			time = av_gettime_relative() / 1000000.0;
 			if (time < this->frame_timer + delay) {
@@ -1013,7 +1015,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 
 			{
 				std::lock_guard<std::mutex> lock(this->pictq.mutex);
-				if (!isnan(vp->pts))
+				if (!std::isnan(vp->pts))
 					update_video_pts(vp->pts, vp->pos, vp->serial);
 			}
 
@@ -1127,7 +1129,7 @@ int FMediaPlayer::queue_picture(AVFrame* src_frame, double pts, double duration,
 		return -1;
 
 	vp->sar = src_frame->sample_aspect_ratio;
-	vp->uploaded = 0;
+	vp->uploaded = false;
 
 	vp->width = src_frame->width;
 	vp->height = src_frame->height;
@@ -1629,7 +1631,7 @@ int FMediaPlayer::subtitle_thread()
 			sp->serial = this->subdec.pkt_serial;
 			sp->width = this->subdec.avctx->width;
 			sp->height = this->subdec.avctx->height;
-			sp->uploaded = 0;
+			sp->uploaded = false;
 
 			/* now we can update the picture count */
 			this->subpq.Push();
@@ -1940,7 +1942,7 @@ int FMediaPlayer::read_thread()
 			this->queue_attachments_req = 1;
 			this->eof = 0;
 			if (this->paused)
-				this->step_to_next_frame();
+				this->OnStepToNextFrame();
 		}
 		if (this->queue_attachments_req) {
 			if (this->pVideoStream && this->pVideoStream->disposition & AV_DISPOSITION_ATTACHED_PIC) {
@@ -1968,7 +1970,7 @@ int FMediaPlayer::read_thread()
 			(!this->pAudioStream || (this->auddec.finished == this->audioq.serial && this->sampq.NbRemaining() == 0)) &&
 			(!this->pVideoStream || (this->viddec.finished == this->videoq.serial && this->pictq.NbRemaining() == 0))) {
 			if (this->loop != 1 && (!this->loop || --this->loop))
-				this->stream_seek(this->start_time != AV_NOPTS_VALUE ? this->start_time : 0, 0, 0);
+				this->OnStreamSeek(this->start_time != AV_NOPTS_VALUE ? this->start_time : 0, 0, false);
 
 			else if (autoexit) {
 				ret = AVERROR_EOF;
@@ -2150,7 +2152,7 @@ void FMediaPlayer::sdl_audio_callback(void* pUserData, Uint8* stream, int len)
 	if (!isnan(pPlayer->audio_clock))
 	{
 		pPlayer->audclk.SetAt(pPlayer->audio_clock - (double)(2 * pPlayer->audio_hw_buf_size + pPlayer->audio_write_buf_size) / pPlayer->audio_tgt.bytes_per_sec, pPlayer->audio_clock_serial, pPlayer->audio_callback_time / 1000000.0);
-		sync_clock_to_slave(&pPlayer->extclk, &pPlayer->audclk);
+		sync_clock_to_slave(pPlayer->extclk, pPlayer->audclk);
 	}
 }
 
@@ -2525,8 +2527,8 @@ bool FMediaPlayer::StreamOpen(const std::string& sURL, AVInputFormat* iformat)
 		goto fail;
 	if (iformat)
 		this->pInputformat = iformat;
-	this->ytop = 0;
-	this->xleft = 0;
+	this->rect.y = 0;
+	this->rect.x = 0;
 
 	/* start video display */
 	if (this->pictq.Init(&this->videoq, VIDEO_PICTURE_QUEUE_SIZE, 1) < 0)
@@ -2708,7 +2710,7 @@ void FMediaPlayer::seek_chapter(int incr)
 		return;
 
 	av_log(nullptr, AV_LOG_VERBOSE, "Seeking to chapter %d.\n", i);
-	stream_seek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, 0);
+	OnStreamSeek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, false);
 }
 
 void FMediaPlayer::EventLoop()
@@ -2726,7 +2728,7 @@ void FMediaPlayer::EventLoop()
 				return;
 
 			// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
-			if (!this->width)
+			if (!this->rect.w)
 				continue;
 			switch (event.key.keysym.sym) 
 			{
@@ -2750,7 +2752,7 @@ void FMediaPlayer::EventLoop()
 				OnUpdateVolume(-1, SDL_VOLUME_STEP);
 				break;
 			case SDLK_s: // S: Step to next frame
-				step_to_next_frame();
+				OnStepToNextFrame();
 				break;
 			case SDLK_a:
 				stream_cycle_channel(AVMEDIA_TYPE_AUDIO);
@@ -2819,7 +2821,7 @@ void FMediaPlayer::EventLoop()
 					else
 						incr *= 180000.0;
 					pos += incr;
-					stream_seek(pos, incr, 1);
+					OnStreamSeek(pos, incr, true);
 				}
 				else {
 					pos = get_master_clock();
@@ -2828,7 +2830,7 @@ void FMediaPlayer::EventLoop()
 					pos += incr;
 					if (this->pFormatCtx->start_time != AV_NOPTS_VALUE && pos < this->pFormatCtx->start_time / (double)AV_TIME_BASE)
 						pos = this->pFormatCtx->start_time / (double)AV_TIME_BASE;
-					stream_seek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), 0);
+					OnStreamSeek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), false);
 				}
 				break;
 			default:
@@ -2865,7 +2867,7 @@ void FMediaPlayer::EventLoop()
 			}
 			if (seek_by_bytes || this->pFormatCtx->duration <= 0) {
 				uint64_t size = avio_size(this->pFormatCtx->pb);
-				stream_seek(size * x / this->width, 0, 1);
+				OnStreamSeek(size * x / this->rect.w, 0, true);
 			}
 			else {
 				int64_t ts;
@@ -2875,7 +2877,7 @@ void FMediaPlayer::EventLoop()
 				thh = tns / 3600;
 				tmm = (tns % 3600) / 60;
 				tss = (tns % 60);
-				frac = x / this->width;
+				frac = x / this->rect.w;
 				ns = frac * tns;
 				hh = ns / 3600;
 				mm = (ns % 3600) / 60;
@@ -2886,14 +2888,14 @@ void FMediaPlayer::EventLoop()
 				ts = frac * this->pFormatCtx->duration;
 				if (this->pFormatCtx->start_time != AV_NOPTS_VALUE)
 					ts += this->pFormatCtx->start_time;
-				stream_seek(ts, 0, 0);
+				OnStreamSeek(ts, 0, false);
 			}
 			break;
 		case SDL_WINDOWEVENT:
 			switch (event.window.event) {
 			case SDL_WINDOWEVENT_SIZE_CHANGED:
-				screen_width = this->width = event.window.data1;
-				screen_height = this->height = event.window.data2;
+				screen_width = this->rect.w = event.window.data1;
+				screen_height = this->rect.h = event.window.data2;
 				if (this->vis_texture) {
 					SDL_DestroyTexture(this->vis_texture);
 					this->vis_texture = nullptr;
