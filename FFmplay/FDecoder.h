@@ -29,11 +29,10 @@ class PacketQueue
 	friend class FDecoder;
 public:
 	/* packet queue handling */
-	int Init(AVPacket& packet)
+	void Init(AVPacket& packet)
 	{
 		_flush_pkt = packet;
 		abort_request = true;
-		return 0;
 	}
 
 	int PutPrivate(AVPacket* pkt)
@@ -211,15 +210,15 @@ public:
 	FrameQueue& operator=(const FrameQueue&) = delete;
 public:
 
-	int Init(PacketQueue* pktq, int max_size, int keep_last)
+	bool Init(PacketQueue* pktq, int max_size, int keep_last)
 	{
 		this->pktq = pktq;
 		this->max_size = FFMIN(max_size, FRAME_QUEUE_SIZE);
 		this->keep_last = !!keep_last;
 		for (int i = 0; i < max_size; i++)
 			if (!(queue[i].frame = av_frame_alloc()))
-				return AVERROR(ENOMEM);
-		return 0;
+				return false;
+		return true;
 	}
 
 	void Destory()
@@ -351,6 +350,7 @@ class FDecoder
 	friend class FMediaPlayer;
 public:
 	explicit FDecoder();
+	~FDecoder();
 
 	FDecoder(const FDecoder&) = delete;
 	FDecoder& operator=(const FDecoder&) = delete;
@@ -366,10 +366,11 @@ public:
 	void Destroy();
 
 	void Abort(FrameQueue* fq);
+
 private:
 	AVPacket pkt;
-	PacketQueue* queue = nullptr;
-	AVCodecContext* avctx = nullptr;
+	PacketQueue* pQueue = nullptr;
+	AVCodecContext* pAvCtx = nullptr;
 	int pkt_serial;
 	int finished;
 	bool packet_pending = false;

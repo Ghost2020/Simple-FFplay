@@ -1,11 +1,15 @@
 #include "FDecoder.h"
 
-FDecoder::FDecoder() {};
+FDecoder::FDecoder() {}
+
+FDecoder::~FDecoder()
+{
+}
 
 void FDecoder::Init(AVCodecContext* avctx, PacketQueue* queue, std::shared_ptr<std::condition_variable> empty_queue_cond)
 {
-	this->avctx = avctx;
-	this->queue = queue;
+	this->pAvCtx = avctx;
+	this->pQueue = queue;
 	this->empty_queue_cond = empty_queue_cond;
 	this->start_pts = AV_NOPTS_VALUE;
 	this->pkt_serial = -1;
@@ -19,17 +23,17 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 	{
 		AVPacket pkt;
 
-		if (this->queue->serial == this->pkt_serial)
+		if (this->pQueue->serial == this->pkt_serial)
 		{
 			do
 			{
-				if (this->queue->abort_request)
+				if (this->pQueue->abort_request)
 					return -1;
 
-				switch (this->avctx->codec_type)
+				switch (this->pAvCtx->codec_type)
 				{
 				case AVMEDIA_TYPE_VIDEO:
-					ret = avcodec_receive_frame(this->avctx, frame);
+					ret = avcodec_receive_frame(this->pAvCtx, frame);
 					if (ret >= 0)
 					{
 						/*if (decoder_reorder_pts == -1)*/
@@ -40,11 +44,11 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 					}
 					break;
 				case AVMEDIA_TYPE_AUDIO:
-					ret = avcodec_receive_frame(this->avctx, frame);
+					ret = avcodec_receive_frame(this->pAvCtx, frame);
 					if (ret >= 0) {
-						AVRational tb = AVRational{ 1, frame->sample_rate };
+						AVRational tb{ 1, frame->sample_rate };
 						if (frame->pts != AV_NOPTS_VALUE)
-							frame->pts = av_rescale_q(frame->pts, this->avctx->pkt_timebase, tb);
+							frame->pts = av_rescale_q(frame->pts, this->pAvCtx->pkt_timebase, tb);
 						else if (this->next_pts != AV_NOPTS_VALUE)
 							frame->pts = av_rescale_q(this->next_pts, this->next_pts_tb, tb);
 						if (frame->pts != AV_NOPTS_VALUE) {
@@ -57,7 +61,7 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 				if (ret == AVERROR_EOF)
 				{
 					this->finished = this->pkt_serial;
-					avcodec_flush_buffers(this->avctx);
+					avcodec_flush_buffers(this->pAvCtx);
 					return 0;
 				}
 				if (ret >= 0)
@@ -67,29 +71,29 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 
 		do
 		{
-			if (this->queue->nb_packets == 0)
+			if (this->pQueue->nb_packets == 0)
 				this->empty_queue_cond->notify_one();
 			if (this->packet_pending) {
 				av_packet_move_ref(&pkt, &this->pkt);
 				this->packet_pending = false;
 			}
 			else {
-				if (!this->queue->Get(&pkt, 1, &this->pkt_serial))
+				if (!this->pQueue->Get(&pkt, 1, &this->pkt_serial))
 					return -1;
 			}
-		} while (this->queue->serial != this->pkt_serial);
+		} while (this->pQueue->serial != this->pkt_serial);
 
-		if (pkt.data == this->queue->_flush_pkt.data) {
-			avcodec_flush_buffers(this->avctx);
+		if (pkt.data == this->pQueue->_flush_pkt.data) {
+			avcodec_flush_buffers(this->pAvCtx);
 			this->finished = 0;
 			this->next_pts = this->start_pts;
 			this->next_pts_tb = this->start_pts_tb;
 		}
 		else
 		{
-			if (this->avctx->codec_type == AVMEDIA_TYPE_SUBTITLE) {
+			if (this->pAvCtx->codec_type == AVMEDIA_TYPE_SUBTITLE) {
 				int got_frame = 0;
-				ret = avcodec_decode_subtitle2(this->avctx, sub, &got_frame, &pkt);
+				ret = avcodec_decode_subtitle2(this->pAvCtx, sub, &got_frame, &pkt);
 				if (ret < 0)
 					ret = AVERROR(EAGAIN);
 				else {
@@ -101,8 +105,8 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 				}
 			}
 			else {
-				if (avcodec_send_packet(this->avctx, &pkt) == AVERROR(EAGAIN)) {
-					av_log(this->avctx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
+				if (avcodec_send_packet(this->pAvCtx, &pkt) == AVERROR(EAGAIN)) {
+					av_log(this->pAvCtx, AV_LOG_ERROR, "Receive_frame and send_packet both returned EAGAIN, which is an API violation.\n");
 					this->packet_pending = true;
 					av_packet_move_ref(&this->pkt, &pkt);
 				}
@@ -114,7 +118,7 @@ int FDecoder::Decode(AVFrame* frame, AVSubtitle* sub)
 
 int FDecoder::Start(std::function<int(void)>& func)
 {
-	this->queue->Start();
+	this->pQueue->Start();
 
 	this->future = std::async(std::launch::async, std::move(func));
 	if (!this->future.valid())
@@ -128,12 +132,12 @@ int FDecoder::Start(std::function<int(void)>& func)
 void FDecoder::Destroy()
 {
 	av_packet_unref(&this->pkt);
-	avcodec_free_context(&this->avctx);
+	avcodec_free_context(&this->pAvCtx);
 }
 
 void FDecoder::Abort(FrameQueue* fq)
 {
-	this->queue->Abort();
+	this->pQueue->Abort();
 	fq->Signal();
 
 	if (future.valid())
@@ -142,5 +146,5 @@ void FDecoder::Abort(FrameQueue* fq)
 			av_log(nullptr, AV_LOG_WARNING, "Thread exit exception\n");
 	}
 
-	this->queue->Flush();
+	this->pQueue->Flush();
 }
