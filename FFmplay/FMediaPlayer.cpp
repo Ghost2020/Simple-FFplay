@@ -741,7 +741,7 @@ void FMediaPlayer::OnExit()
 	av_freep(&vfilters_list);
 #endif
 
-	av_log(nullptr, AV_LOG_QUIET, "Exit Now");
+	av_log(nullptr, AV_LOG_QUIET, "Exit Now\n");
 
 	return;
 }
@@ -2759,196 +2759,194 @@ void FMediaPlayer::OnSeekChapter(int incr)
 	OnStreamSeek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, false);
 }
 
-void FMediaPlayer::EventLoop()
+void FMediaPlayer::Tick()
 {
 	SDL_Event event;
 	double incr, pos, frac;
 
-	for (;;) 
-	{
-		double x = 0;
-		refresh_loop_wait_event(event);
-		switch (event.type) {
-		case SDL_KEYDOWN:
-			if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
-				return;
-
-			// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
-			if (!this->rect.w)
-				continue;
-			switch (event.key.keysym.sym) 
-			{
-			case SDLK_f:
-				OnToggleFullScreen();
-				break;
-			case SDLK_p:
-			case SDLK_SPACE:
-				OnTogglePause();
-				break;
-			case SDLK_m:
-				OnToggleMute();
-				break;
-			case SDLK_KP_MULTIPLY:
-			case SDLK_0:
-				OnUpdateVolume(1, SDL_VOLUME_STEP);
-				break;
-			case SDLK_KP_DIVIDE:
-			case SDLK_9:
-				OnUpdateVolume(-1, SDL_VOLUME_STEP);
-				break;
-			case SDLK_s: // S: Step to next frame
-				OnStepToNextFrame();
-				break;
-			case SDLK_a:
-				OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
-				break;
-			case SDLK_v:
-				OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
-				break;
-			case SDLK_c:
-				OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
-				OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
-				OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_t:
-				OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
-				break;
-			case SDLK_w:
-#if CONFIG_AVFILTER
-				if (this->eShow_mode == EShowMode::SHOW_MODE_VIDEO && this->vfilter_idx < nb_vfilters - 1) {
-					if (++this->vfilter_idx >= nb_vfilters)
-						this->vfilter_idx = 0;
-				}
-				else {
-					this->vfilter_idx = 0;
-					this->OnToggleAudioDisplay();
-				}
-#else
-				OnToggleAudioDisplay();
-#endif
-				break;
-			case SDLK_PAGEUP:
-				if (this->pFormatCtx->nb_chapters <= 1) {
-					incr = 600.0;
-					goto do_seek;
-				}
-				OnSeekChapter(1);
-				break;
-			case SDLK_PAGEDOWN:
-				if (this->pFormatCtx->nb_chapters <= 1) {
-					incr = -600.0;
-					goto do_seek;
-				}
-				OnSeekChapter(-1);
-				break;
-			case SDLK_LEFT:
-				incr = seek_interval ? -seek_interval : -10.0;
-				goto do_seek;
-			case SDLK_RIGHT:
-				incr = seek_interval ? seek_interval : 10.0;
-				goto do_seek;
-			case SDLK_UP:
-				incr = 60.0;
-				goto do_seek;
-			case SDLK_DOWN:
-				incr = -60.0;
-			do_seek:
-				if (seek_by_bytes) {
-					pos = -1;
-					if (pos < 0 && this->video_stream >= 0)
-						pos = this->pictq.LastPos();
-					if (pos < 0 && this->audio_stream >= 0)
-						pos = this->sampq.LastPos();
-					if (pos < 0)
-						pos = avio_tell(this->pFormatCtx->pb);
-					if (this->pFormatCtx->bit_rate)
-						incr *= this->pFormatCtx->bit_rate / 8.0;
-					else
-						incr *= 180000.0;
-					pos += incr;
-					OnStreamSeek(pos, incr, true);
-				}
-				else {
-					pos = get_master_clock();
-					if (isnan(pos))
-						pos = (double)this->seek_pos / AV_TIME_BASE;
-					pos += incr;
-					if (this->pFormatCtx->start_time != AV_NOPTS_VALUE && pos < this->pFormatCtx->start_time / (double)AV_TIME_BASE)
-						pos = this->pFormatCtx->start_time / (double)AV_TIME_BASE;
-					OnStreamSeek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), false);
-				}
-				break;
-			default:
-				break;
-			}
-			break;
-		case SDL_MOUSEBUTTONDOWN:
-			if (event.button.button == SDL_BUTTON_LEFT) {
-				static int64_t last_mouse_left_click = 0;
-				if (av_gettime_relative() - last_mouse_left_click <= 500000) {
-					OnToggleFullScreen();
-					last_mouse_left_click = 0;
-				}
-				else {
-					last_mouse_left_click = av_gettime_relative();
-				}
-			}
-		case SDL_MOUSEMOTION:
-			if (cursor_hidden) {
-				SDL_ShowCursor(1);
-				cursor_hidden = 0;
-			}
-			cursor_last_shown = av_gettime_relative();
-			if (event.type == SDL_MOUSEBUTTONDOWN) {
-				if (event.button.button != SDL_BUTTON_RIGHT)
-					break;
-				x = event.button.x;
-			}
-			else {
-				if (!(event.motion.state & SDL_BUTTON_RMASK))
-					break;
-				x = event.motion.x;
-			}
-			if (seek_by_bytes || this->pFormatCtx->duration <= 0) {
-				uint64_t size = avio_size(this->pFormatCtx->pb);
-				OnStreamSeek(size * x / this->rect.w, 0, true);
-			}
-			else {
-				const int tns = this->pFormatCtx->duration / 1000000LL;
-				const int thh = tns / 3600;
-				const int tmm = (tns % 3600) / 60;
-				const int tss = (tns % 60);
-				const int frac = x / this->rect.w;
-				const int ns = frac * tns;
-				const int hh = ns / 3600;
-				const int mm = (ns % 3600) / 60;
-				const int ss = (ns % 60);
-				av_log(nullptr, AV_LOG_INFO, "Seek to %2.0f%% (%2d:%02d:%02d) of total duration (%2d:%02d:%02d)       \n", frac * 100,
-					hh, mm, ss, thh, tmm, tss);
-				int64_t ts = frac * this->pFormatCtx->duration;
-				if (this->pFormatCtx->start_time != AV_NOPTS_VALUE)
-					ts += this->pFormatCtx->start_time;
-				OnStreamSeek(ts, 0, false);
-			}
-			break;
-		case SDL_WINDOWEVENT:
-			switch (event.window.event) {
-			case SDL_WINDOWEVENT_SIZE_CHANGED:
-				screen_width = this->rect.w = event.window.data1;
-				screen_height = this->rect.h = event.window.data2;
-				if (this->vis_texture) {
-					SDL_DestroyTexture(this->vis_texture);
-					this->vis_texture = nullptr;
-				}
-			case SDL_WINDOWEVENT_EXPOSED:
-				this->force_refresh = true;
-			}
-			break;
-		case SDL_QUIT:
-		case FF_QUIT_EVENT:
+	double x = 0;
+	refresh_loop_wait_event(event);
+	switch (event.type) {
+	case SDL_KEYDOWN:
+		if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
+			this->OnExit();
 			return;
+
+		// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
+		if (!this->rect.w)
+			return;
+		switch (event.key.keysym.sym)
+		{
+		case SDLK_f:
+			OnToggleFullScreen();
+			break;
+		case SDLK_p:
+		case SDLK_SPACE:
+			OnTogglePause();
+			break;
+		case SDLK_m:
+			OnToggleMute();
+			break;
+		case SDLK_KP_MULTIPLY:
+		case SDLK_0:
+			OnUpdateVolume(1, SDL_VOLUME_STEP);
+			break;
+		case SDLK_KP_DIVIDE:
+		case SDLK_9:
+			OnUpdateVolume(-1, SDL_VOLUME_STEP);
+			break;
+		case SDLK_s: // S: Step to next frame
+			OnStepToNextFrame();
+			break;
+		case SDLK_a:
+			OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
+			break;
+		case SDLK_v:
+			OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
+			break;
+		case SDLK_c:
+			OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
+			OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
+			OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
+			break;
+		case SDLK_t:
+			OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
+			break;
+		case SDLK_w:
+#if CONFIG_AVFILTER
+			if (this->eShow_mode == EShowMode::SHOW_MODE_VIDEO && this->vfilter_idx < nb_vfilters - 1) {
+				if (++this->vfilter_idx >= nb_vfilters)
+					this->vfilter_idx = 0;
+			}
+			else {
+				this->vfilter_idx = 0;
+				this->OnToggleAudioDisplay();
+			}
+#else
+			OnToggleAudioDisplay();
+#endif
+			break;
+		case SDLK_PAGEUP:
+			if (this->pFormatCtx->nb_chapters <= 1) {
+				incr = 600.0;
+				goto do_seek;
+			}
+			OnSeekChapter(1);
+			break;
+		case SDLK_PAGEDOWN:
+			if (this->pFormatCtx->nb_chapters <= 1) {
+				incr = -600.0;
+				goto do_seek;
+			}
+			OnSeekChapter(-1);
+			break;
+		case SDLK_LEFT:
+			incr = seek_interval ? -seek_interval : -10.0;
+			goto do_seek;
+		case SDLK_RIGHT:
+			incr = seek_interval ? seek_interval : 10.0;
+			goto do_seek;
+		case SDLK_UP:
+			incr = 60.0;
+			goto do_seek;
+		case SDLK_DOWN:
+			incr = -60.0;
+		do_seek:
+			if (seek_by_bytes) {
+				pos = -1;
+				if (pos < 0 && this->video_stream >= 0)
+					pos = this->pictq.LastPos();
+				if (pos < 0 && this->audio_stream >= 0)
+					pos = this->sampq.LastPos();
+				if (pos < 0)
+					pos = avio_tell(this->pFormatCtx->pb);
+				if (this->pFormatCtx->bit_rate)
+					incr *= this->pFormatCtx->bit_rate / 8.0;
+				else
+					incr *= 180000.0;
+				pos += incr;
+				OnStreamSeek(pos, incr, true);
+			}
+			else {
+				pos = get_master_clock();
+				if (isnan(pos))
+					pos = (double)this->seek_pos / AV_TIME_BASE;
+				pos += incr;
+				if (this->pFormatCtx->start_time != AV_NOPTS_VALUE && pos < this->pFormatCtx->start_time / (double)AV_TIME_BASE)
+					pos = this->pFormatCtx->start_time / (double)AV_TIME_BASE;
+				OnStreamSeek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), false);
+			}
+			break;
 		default:
 			break;
+			}
+		break;
+	case SDL_MOUSEBUTTONDOWN:
+		if (event.button.button == SDL_BUTTON_LEFT) {
+			static int64_t last_mouse_left_click = 0;
+			if (av_gettime_relative() - last_mouse_left_click <= 500000) {
+				OnToggleFullScreen();
+				last_mouse_left_click = 0;
+			}
+			else {
+				last_mouse_left_click = av_gettime_relative();
+			}
 		}
-	}
+	case SDL_MOUSEMOTION:
+		if (cursor_hidden) {
+			SDL_ShowCursor(1);
+			cursor_hidden = 0;
+		}
+		cursor_last_shown = av_gettime_relative();
+		if (event.type == SDL_MOUSEBUTTONDOWN) {
+			if (event.button.button != SDL_BUTTON_RIGHT)
+				break;
+			x = event.button.x;
+		}
+		else {
+			if (!(event.motion.state & SDL_BUTTON_RMASK))
+				break;
+			x = event.motion.x;
+		}
+		if (seek_by_bytes || this->pFormatCtx->duration <= 0) {
+			uint64_t size = avio_size(this->pFormatCtx->pb);
+			OnStreamSeek(size * x / this->rect.w, 0, true);
+		}
+		else {
+			const int tns = this->pFormatCtx->duration / 1000000LL;
+			const int thh = tns / 3600;
+			const int tmm = (tns % 3600) / 60;
+			const int tss = (tns % 60);
+			const int frac = x / this->rect.w;
+			const int ns = frac * tns;
+			const int hh = ns / 3600;
+			const int mm = (ns % 3600) / 60;
+			const int ss = (ns % 60);
+			av_log(nullptr, AV_LOG_INFO, "Seek to %2.0f%% (%2d:%02d:%02d) of total duration (%2d:%02d:%02d)       \n", frac * 100,
+				hh, mm, ss, thh, tmm, tss);
+			int64_t ts = frac * this->pFormatCtx->duration;
+			if (this->pFormatCtx->start_time != AV_NOPTS_VALUE)
+				ts += this->pFormatCtx->start_time;
+			OnStreamSeek(ts, 0, false);
+		}
+		break;
+	case SDL_WINDOWEVENT:
+		switch (event.window.event) {
+		case SDL_WINDOWEVENT_SIZE_CHANGED:
+			screen_width = this->rect.w = event.window.data1;
+			screen_height = this->rect.h = event.window.data2;
+			if (this->vis_texture) {
+				SDL_DestroyTexture(this->vis_texture);
+				this->vis_texture = nullptr;
+			}
+		case SDL_WINDOWEVENT_EXPOSED:
+			this->force_refresh = true;
+		}
+		break;
+	case SDL_QUIT:
+	case FF_QUIT_EVENT:
+		return;
+	default:
+		break;
+		}
 }

@@ -147,7 +147,7 @@ public:
     /*
     * \@brief handle an event sent by the GUI
     */
-    void EventLoop();
+    void Tick();
 
     /*
    * \@brief

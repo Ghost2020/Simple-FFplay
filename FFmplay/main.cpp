@@ -183,7 +183,7 @@ int main(int argc, char** argv)
     parse_loglevel(argc, argv, options);
 
     std::unique_ptr<FMediaPlayer> pPlayer1 = std::make_unique<FMediaPlayer>();
-    //std::unique_ptr<FMediaPlayer> pPlayer2 = std::make_unique<FMediaPlayer>();
+    std::unique_ptr<FMediaPlayer> pPlayer2 = std::make_unique<FMediaPlayer>();
     if (pPlayer1 == nullptr)
     {
         av_log(nullptr, AV_LOG_FATAL, "Failed to Create FMediaPlayer\n");
@@ -213,25 +213,19 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    /*if (!pPlayer2->stream_open("F:/CXX/file/video/GB28181视频教程第一集（基础知识）.flv"))
+    if (!pPlayer2->StreamOpen("F:/CXX/file/video/GB28181视频教程第一集（基础知识）.flv"))
     {
         av_log(nullptr, AV_LOG_FATAL, "Failed to Open stream\n");
         return -1;
-    }*/
+    }
 
-    //std::this_thread::sleep_for(std::chrono::seconds(2));
-
-    pPlayer1->EventLoop();
     
     /* TODO #SEQ1 */
-    /*std::function<void()> func1 = std::bind(&FMediaPlayer::event_loop, &(*pPlayer1));
-    std::future<void> fut1 = std::async(std::launch::async, std::move(func1));*/
-
-    /*std::function<void()> func2 = std::bind(&FMediaPlayer::event_loop, &(*pPlayer2));
-    std::future<void> fut2 = std::async(std::launch::deferred, std::move(func2));*/
-
-    //fut1.get();
-    //fut2.get();
+    for (;;)
+    {
+        pPlayer1->Tick();
+        pPlayer2->Tick();
+    }
 
     uninit_opts();
 
