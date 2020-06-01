@@ -221,7 +221,7 @@ void FMediaPlayer::uninitRender()
 		SDL_DestroyWindow(pWindow);
 }
 
-void FMediaPlayer::set_default_window_size(int width, int height, AVRational sar)
+void FMediaPlayer::OnWindowSizeChange(int width, int height, AVRational sar)
 {
 	int max_width = screen_width ? screen_width : INT_MAX;
 	int max_height = screen_height ? screen_height : INT_MAX;
@@ -319,7 +319,7 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
 	SDL_BlendMode sdl_blendmode;
 	get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
 	if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))
-		return -1;
+		return false;
 	switch (sdl_pix_fmt) {
 	case SDL_PIXELFORMAT_UNKNOWN:
 		/* This should only happen if we are not using avfilter... */
@@ -398,7 +398,7 @@ void FMediaPlayer::video_image_display()
 			if (!sp->uploaded) {
 				uint8_t* pixels[4];
 				int pitch[4];
-				int i;
+				
 				if (!sp->width || !sp->height) {
 					sp->width = vp->width;
 					sp->height = vp->height;
@@ -406,7 +406,7 @@ void FMediaPlayer::video_image_display()
 				if (!realloc_texture(&this->sub_texture, SDL_PIXELFORMAT_ARGB8888, sp->width, sp->height, SDL_BLENDMODE_BLEND, true))
 					return;
 
-				for (i = 0; i < sp->sub.num_rects; i++) 
+				for (int i = 0; i < sp->sub.num_rects; i++)
 				{
 					AVSubtitleRect* sub_rect = sp->sub.rects[i];
 
@@ -455,17 +455,17 @@ void FMediaPlayer::video_image_display()
 #if USE_ONEPASS_SUBTITLE_RENDER
 		SDL_RenderCopy(renderer, this->sub_texture, nullptr, &rect);
 #else
-		int i;
+		
 		const double xratio = (double)rect.w / (double)sp->width;
 		const double yratio = (double)rect.h / (double)sp->height;
-		for (i = 0; i < sp->sub.num_rects; i++) 
+		for (int i = 0; i < sp->sub.num_rects; i++)
 		{
 			const SDL_Rect* sub_rect = (SDL_Rect*)sp->sub.rects[i];
 			SDL_Rect target;
-			target.x = rect.x + sub_rect->x * xratio;
-			target.y = rect.y + sub_rect->y * yratio;
-			target.w = sub_rect->w * xratio;
-			target.h = sub_rect->h * yratio;
+			target.x = int(rect.x + sub_rect->x * xratio);
+			target.y = int(rect.y + sub_rect->y * yratio);
+			target.w = int(sub_rect->w * xratio);
+			target.h = int(sub_rect->h * yratio);
 			SDL_RenderCopy(pRenderer, this->sub_texture, sub_rect, &target);
 		}
 #endif
@@ -1026,7 +1026,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 			if (this->pictq.NbRemaining() > 1) {
 				SFrame* nextvp = this->pictq.PeekNext();
 				duration = vp_duration(vp, nextvp);
-				if (!this->step && (framedrop > 0 || (framedrop && get_master_sync_type() != FMediaPlayer::ESyncType::AV_SYNC_VIDEO_MASTER)) && time > this->frame_timer + duration) {
+				if (!this->step && (framedrop || (framedrop && get_master_sync_type() != FMediaPlayer::ESyncType::AV_SYNC_VIDEO_MASTER)) && time > this->frame_timer + duration) {
 					this->frame_drops_late++;
 					this->pictq.Next();
 					goto retry;
@@ -1047,8 +1047,7 @@ void FMediaPlayer::video_refresh(double& remaining_time)
 						|| (sp2 && this->vidclk.pts > (sp2->pts + ((float)sp2->sub.start_display_time / 1000))))
 					{
 						if (sp->uploaded) {
-							int i;
-							for (i = 0; i < sp->sub.num_rects; i++) {
+							for (int i = 0; i < sp->sub.num_rects; i++) {
 								AVSubtitleRect* sub_rect = sp->sub.rects[i];
 								uint8_t* pixels;
 								int pitch, j;
@@ -1144,7 +1143,7 @@ int FMediaPlayer::queue_picture(AVFrame* src_frame, double pts, double duration,
 	vp->pos = pos;
 	vp->serial = serial;
 
-	set_default_window_size(vp->width, vp->height, vp->sar);
+	OnWindowSizeChange(vp->width, vp->height, vp->sar);
 
 	av_frame_move_ref(vp->frame, src_frame);
 	this->pictq.Push();
@@ -1167,7 +1166,7 @@ int FMediaPlayer::get_video_frame(AVFrame* frame)
 
 		frame->sample_aspect_ratio = av_guess_sample_aspect_ratio(this->pFormatCtx, this->pVideoStream, frame);
 
-		if (framedrop > 0 || (framedrop && get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER)) 
+		if (framedrop || (framedrop && get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER)) 
 		{
 			if (frame->pts != AV_NOPTS_VALUE) 
 			{
@@ -1748,7 +1747,6 @@ AVDictionary** FMediaPlayer::setup_find_stream_info_opts(AVFormatContext* s, AVD
 		return ret;
 	};
 
-	int i;
 	AVDictionary** opts;
 
 	if (!s->nb_streams)
@@ -1759,7 +1757,7 @@ AVDictionary** FMediaPlayer::setup_find_stream_info_opts(AVFormatContext* s, AVD
 			"Could not alloc memory for stream options.\n");
 		return NULL;
 	}
-	for (i = 0; i < s->nb_streams; i++)
+	for (int i = 0; i < s->nb_streams; i++)
 		opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
 			s, s->streams[i], NULL);
 	return opts;
@@ -1831,7 +1829,7 @@ int FMediaPlayer::read_thread()
 
 	{
 		AVDictionary** opts = setup_find_stream_info_opts(ic, codec_opts);
-		unsigned int orig_nb_streams = ic->nb_streams;
+		const unsigned int orig_nb_streams = ic->nb_streams;
 
 		err = avformat_find_stream_info(ic, opts);
 
@@ -1849,7 +1847,7 @@ int FMediaPlayer::read_thread()
 	if (ic->pb)
 		ic->pb->eof_reached = 0; // FIXME hack, ffplay maybe should not use avio_feof() to test for the end
 
-	if (this->seek_by_bytes < 0)
+	if (!this->seek_by_bytes)
 		this->seek_by_bytes = !!(ic->iformat->flags & AVFMT_TS_DISCONT) && strcmp("ogg", ic->iformat->name);
 
 	this->max_frame_duration = (ic->iformat->flags & AVFMT_TS_DISCONT) ? 10.0 : 3600.0;
@@ -1872,7 +1870,7 @@ int FMediaPlayer::read_thread()
 	/* 输出媒体流的详细信息 */
 	av_dump_format(ic, 0, this->sURL.c_str(), 0);
 
-	for (i = 0; i < ic->nb_streams; i++) {
+	for (uint32_t i = 0; i < ic->nb_streams; i++) {
 		AVStream* st = ic->streams[i];
 		enum AVMediaType type = st->codecpar->codec_type;
 		st->discard = AVDISCARD_ALL;
@@ -1880,7 +1878,7 @@ int FMediaPlayer::read_thread()
 			if (avformat_match_stream_specifier(ic, st, wanted_stream_spec[type]) > 0)
 				st_index[type] = i;
 	}
-	for (i = 0; i < AVMEDIA_TYPE_NB; i++) {
+	for (uint32_t i = 0; i < AVMEDIA_TYPE_NB; i++) {
 		if (wanted_stream_spec[i] && st_index[i] == -1) {
 			av_log(nullptr, AV_LOG_ERROR, "Stream specifier %s does not match any %s stream\n", wanted_stream_spec[i], av_get_media_type_string(static_cast<AVMediaType>(i)));
 			st_index[i] = INT_MAX;
@@ -1897,7 +1895,7 @@ int FMediaPlayer::read_thread()
 		AVStream* st = ic->streams[st_index[AVMEDIA_TYPE_VIDEO]];
 		AVRational sar = av_guess_sample_aspect_ratio(ic, st, nullptr);
 		if (st->codecpar->width)
-			this->set_default_window_size(st->codecpar->width, st->codecpar->height, sar);
+			this->OnWindowSizeChange(st->codecpar->width, st->codecpar->height, sar);
 	}
 
 	/* open the streams */
@@ -2558,7 +2556,7 @@ bool FMediaPlayer::is_realtime()
 	return false;
 }
 
-bool FMediaPlayer::StreamOpen(const std::string& sURL, AVInputFormat* iformat)
+bool FMediaPlayer::OnStreamOpen(const std::string& sURL, AVInputFormat* iformat)
 {
 	if (sURL.empty())
 		return false;
@@ -2759,18 +2757,19 @@ void FMediaPlayer::OnSeekChapter(int incr)
 	OnStreamSeek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, false);
 }
 
-void FMediaPlayer::Tick()
+void FMediaPlayer::OnTick()
 {
 	SDL_Event event;
-	double incr, pos, frac;
+	double incr, pos;
 
 	double x = 0;
 	refresh_loop_wait_event(event);
 	switch (event.type) {
 	case SDL_KEYDOWN:
 		if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
+		{
 			this->OnExit();
-			return;
+		}
 
 		// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
 		if (!this->rect.w)

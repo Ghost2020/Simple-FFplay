@@ -374,7 +374,7 @@ private:
 	int pkt_serial;
 	int finished;
 	bool packet_pending = false;
-	std::shared_ptr<std::condition_variable> empty_queue_cond;
+	std::shared_ptr<std::condition_variable> empty_queue_cond = nullptr;
 	int64_t start_pts;
 	AVRational start_pts_tb;
 	int64_t next_pts;

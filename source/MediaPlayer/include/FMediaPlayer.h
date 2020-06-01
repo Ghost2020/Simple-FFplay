@@ -7,7 +7,6 @@
 
 extern "C"
 {
-#include "config.h"
 #include <signal.h>
 #include <stdint.h>
 
@@ -25,24 +24,11 @@ extern "C"
 #endif
 
 #include <SDL.h>
-
-//#include "cmdutils.h"
 }
 
 /* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
 /* TODO: We assume that a decoded and resampled frame fits into this buffer */
 constexpr uint32_t SAMPLE_ARRAY_SIZE = (8 * 65536);
-
-struct AudioParams
-{
-    int freq;
-    int channels;
-    /* @TODO */
-    int64_t channel_layout = -1;
-    AVSampleFormat fmt;
-    int frame_size;
-    int bytes_per_sec;
-};
 
 /*
 * \@brief 用于媒体间同步用
@@ -66,11 +52,11 @@ public:
     void SetSpeed(double speed);
 
 private:
-    double pts;           /* clock base */
-    double pts_drift;     /* clock base minus time at which we updated the clock */
-    double last_updated;
+    double pts = 0;                 /* clock base */
+    double pts_drift = 0;           /* clock base minus time at which we updated the clock */
+    double last_updated = 0;
     double speed = 1.0;
-    int serial;           /* clock is based on a packet with this serial */
+    int serial = -1;                /* clock is based on a packet with this serial */
     bool paused = false;
     int* queue_serial = nullptr;    /* pointer to the current packet queue serial, used for obsolete clock detection */
 };
@@ -98,6 +84,18 @@ public:
         AV_SYNC_AUDIO_MASTER,   /* 音频为基准同步 */
         AV_SYNC_VIDEO_MASTER,   /* 视频为基准同步 */
         AV_SYNC_EXTERNAL_CLOCK, /* 外部时钟同步 */
+    };
+
+private:
+    struct AudioParams
+    {
+        int freq;
+        int channels;
+        /* @TODO */
+        int64_t channel_layout = -1;
+        AVSampleFormat fmt;
+        int frame_size;
+        int bytes_per_sec;
     };
 
 public:
@@ -137,7 +135,7 @@ public:
     * \@param iformat:[in] 指定输入的格式，默认可以设置为nullptr
     * \@return true::打开成功 false::失败
     */
-    bool StreamOpen(const std::string& sURL, AVInputFormat* iformat = nullptr);
+    bool OnStreamOpen(const std::string& sURL, AVInputFormat* iformat = nullptr);
 
     /*
     * \@brief 关闭媒体流
@@ -147,7 +145,7 @@ public:
     /*
     * \@brief handle an event sent by the GUI
     */
-    void Tick();
+    void OnTick();
 
     /*
    * \@brief
@@ -202,6 +200,14 @@ public:
     void OnUpdateVolume(int sign, double step);
 
     /*
+    * \@brief 设置窗口的默认大小
+    * \@param width[in] 窗口宽度
+    * \@param height[in] 窗口高度
+    * \@param sar[in]
+    */
+    void OnWindowSizeChange(int width, int height, AVRational sar);
+
+    /*
     * \@brief 退出操作
     */
     void OnExit();
@@ -212,14 +218,6 @@ public:
     static void sigterm_handler(int sig);
 
 private:
-    /*
-    * \@brief 设置窗口的默认大小
-    * \@param width[in] 窗口宽度
-    * \@param height[in] 窗口高度
-    * \@param sar[in]
-    */
-    void set_default_window_size(int width, int height, AVRational sar);
-
     /*
     * \@brief 填充矩形，用于显示声纹波形
     * \@param nXPos[in]：
