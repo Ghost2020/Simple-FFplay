@@ -18,10 +18,10 @@
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaPlayer\src\FDecoder.cpp">
+    <ClCompile Include="..\..\..\source\MediaPlayer\src\FDecoder.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\source\MediaPlayer\src\FMediaPlayer.cpp">
+    <ClCompile Include="..\..\..\source\MediaPlayer\src\FMediaPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
