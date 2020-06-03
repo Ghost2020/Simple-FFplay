@@ -21,9 +21,6 @@ constexpr uint32_t SDL_AUDIO_MIN_BUFFER_SIZE = 512;
 /* Calculate actual buffer size keeping in mind not cause too frequent audio callbacks */
 constexpr uint32_t SDL_AUDIO_MAX_CALLBACKS_PER_SEC = 30;
 
-/* Step size for volume control in dB */
-constexpr double SDL_VOLUME_STEP = (0.75);
-
 /* no AV sync correction is done if below the minimum AV sync threshold */
 constexpr double AV_SYNC_THRESHOLD_MIN = 0.04;
 /* AV sync correction is done if above the maximum AV sync threshold */
@@ -43,11 +40,6 @@ constexpr double EXTERNAL_CLOCK_SPEED_STEP = 0.001;
 
 /* we use about AUDIO_DIFF_AVG_NB A-V differences to make the average */
 constexpr uint32_t AUDIO_DIFF_AVG_NB = 20;
-
-/* polls for possible required screen refresh at least this often, should be less than 1/fps */
-constexpr double REFRESH_RATE = 0.01;
-
-constexpr uint32_t CURSOR_HIDE_DELAY = 1000000;
 
 constexpr uint32_t USE_ONEPASS_SUBTITLE_RENDER = 1;
 
@@ -1757,7 +1749,7 @@ AVDictionary** FMediaPlayer::setup_find_stream_info_opts(AVFormatContext* s, AVD
 			"Could not alloc memory for stream options.\n");
 		return NULL;
 	}
-	for (int i = 0; i < s->nb_streams; i++)
+    for (uint32_t i = 0; i < s->nb_streams; i++)
 		opts[i] = filter_codec_opts(codec_opts, s->streams[i]->codecpar->codec_id,
 			s, s->streams[i], NULL);
 	return opts;
@@ -1771,7 +1763,7 @@ int FMediaPlayer::read_thread()
 	AVPacket pkt1, * pkt = &pkt1;
 	int64_t stream_start_time;
 	int pkt_in_play_range = 0;
-	AVDictionaryEntry* t = nullptr;
+    //AVDictionaryEntry* t = nullptr;
 	std::mutex wait_mutex;
 	int scan_all_pmts_set = 0;
 	int64_t pkt_ts;
@@ -1810,7 +1802,7 @@ int FMediaPlayer::read_thread()
 		if (av_strerror(err, errbuf, sizeof(errbuf)) < 0)
 			errbuf_ptr = strerror(AVUNERROR(err));
 
-		av_log(NULL, AV_LOG_ERROR, "%s: %s\n", this->sURL.c_str(), errbuf_ptr);
+        av_log(nullptr, AV_LOG_ERROR, "%s: %s\n", this->sURL.c_str(), errbuf_ptr);
 		ret = -1;
 		goto fail;
 	}
@@ -1985,7 +1977,7 @@ int FMediaPlayer::read_thread()
 		}
 		if (this->queue_attachments_req) {
 			if (this->pVideoStream && this->pVideoStream->disposition & AV_DISPOSITION_ATTACHED_PIC) {
-				AVPacket copy = { 0 };
+                AVPacket copy;
 				if ((ret = av_packet_ref(&copy, &this->pVideoStream->attached_pic)) < 0)
 					goto fail;
 				this->videoq.Put(&copy);
@@ -2389,7 +2381,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 	AVCodecContext* avctx = nullptr;
 	AVCodec* codec = nullptr;
 	AVDictionary* opts = nullptr;
-	AVDictionaryEntry* t = nullptr;
+    //AVDictionaryEntry* t = nullptr;
 	int sample_rate, nb_channels;
 	int64_t channel_layout;
 	int ret = 0;
@@ -2465,7 +2457,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 #else
 		sample_rate = avctx->sample_rate;
 		nb_channels = avctx->channels;
-		channel_layout = avctx->channel_layout;
+        channel_layout = static_cast<int64_t>(avctx->channel_layout);
 #endif
 
 		/* prepare audio output */
@@ -2482,7 +2474,7 @@ int FMediaPlayer::stream_component_open(int stream_index)
 		this->audio_diff_avg_count = 0;
 		/* since we do not have a precise anough audio FIFO fullness,
 		   we correct audio sync only if larger than this threshold */
-		this->audio_diff_threshold = (double)(this->audio_hw_buf_size) / this->audio_tgt.bytes_per_sec;
+        this->audio_diff_threshold = double(this->audio_hw_buf_size) / this->audio_tgt.bytes_per_sec;
 
 		this->audio_stream = stream_index;
 		this->pAudioStream = pFormatCtx->streams[stream_index];
@@ -2733,7 +2725,7 @@ void FMediaPlayer::refresh_loop_wait_event(SDL_Event& event)
 
 void FMediaPlayer::OnSeekChapter(int incr)
 {
-	int64_t pos = get_master_clock() * AV_TIME_BASE;
+    int64_t pos = int64_t(get_master_clock() * AV_TIME_BASE);
 	int i;
 
 	if (!pFormatCtx->nb_chapters)

@@ -6,7 +6,8 @@
     <RemoteDebuggerCommandArguments>D:\File\Movie\Interstellar\Interstellar.mkv</RemoteDebuggerCommandArguments>
   </PropertyGroup>
   <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
-    <LocalDebuggerCommandArguments>F:\CXX\file\video\GB28181视频教程第一集（基础知识）.flv</LocalDebuggerCommandArguments>
+    <LocalDebuggerCommandArguments>-f dshow -i video="Logitech HD Webcam C270"</LocalDebuggerCommandArguments>
     <DebuggerFlavor>WindowsLocalDebugger</DebuggerFlavor>
+    <RemoteDebuggerCommandArguments>-f dshow -i video="Logitech HD Webcam C270"</RemoteDebuggerCommandArguments>
   </PropertyGroup>
 </Project>

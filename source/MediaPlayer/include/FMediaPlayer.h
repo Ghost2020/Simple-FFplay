@@ -62,11 +62,19 @@ private:
 };
 
 
+/* Step size for volume control in dB */
+constexpr double SDL_VOLUME_STEP = (0.75);
+/* polls for possible required screen refresh at least this often, should be less than 1/fps */
+constexpr double REFRESH_RATE = 0.01;
+
+constexpr uint32_t CURSOR_HIDE_DELAY = 1000000;
+
 /*
 * \@brief 媒体播放接口
 */
 class FMediaPlayer
 {
+    friend class MainWindow;
 public:
     /* 显示方式 */
     enum struct EShowMode : uint8_t
@@ -511,7 +519,7 @@ private:
 #pragma region Rendering
     SDL_Window* pWindow = nullptr;
     SDL_Renderer* pRenderer = nullptr;
-    SDL_RendererInfo renderer_info = { 0 };
+    SDL_RendererInfo renderer_info;
     SDL_AudioDeviceID audio_dev = 0;
 
     SDL_Texture* vis_texture = nullptr;
@@ -524,8 +532,8 @@ private:
     uint16_t default_height = 480;
     uint16_t screen_width = 0;
     uint16_t screen_height = 0;
-    uint16_t screen_left = SDL_WINDOWPOS_CENTERED;
-    uint16_t screen_top = SDL_WINDOWPOS_CENTERED;
+    uint32_t screen_left = SDL_WINDOWPOS_CENTERED;
+    uint32_t screen_top = SDL_WINDOWPOS_CENTERED;
 #pragma endregion Rendering
 
     /* @TODO */

@@ -39,7 +39,6 @@ void init_dynload(void)
 
         捕获camera图像信息并播放
         -f dshow -i video="Logitech HD Webcam C270"
-
 */
 
 /* Called from the main */
@@ -70,7 +69,7 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    signal(SIGINT, FMediaPlayer::sigterm_handler); /* Interrupt (ANSI).    */
+    signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
     signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
 
     if (!pPlayer1->OnStreamOpen(input_filename))
