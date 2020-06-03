@@ -22,6 +22,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 
 # SDL库所需的宏
 DEFINES += SDL_MAIN_HANDLED
+DEFINES += _CRT_SECURE_NO_WARNINGS
 
 INCLUDEPATH += $$PWD/../../../thirdparty/ffmpeg/include
 INCLUDEPATH += $$PWD/../../../thirdparty/SDL2-2.0.12/include

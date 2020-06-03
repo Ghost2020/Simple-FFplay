@@ -881,7 +881,7 @@ void FMediaPlayer::stream_toggle_pause()
 void FMediaPlayer::OnTogglePause()
 {
 	stream_toggle_pause();
-	this->step = 0;
+	this->step = false;
 }
 
 void FMediaPlayer::OnToggleMute()
@@ -901,7 +901,7 @@ void FMediaPlayer::OnStepToNextFrame()
 	/* if the stream is paused unpause it, then step */
 	if (this->paused)
 		stream_toggle_pause();
-	this->step = 1;
+	this->step = true;
 }
 
 double FMediaPlayer::compute_target_delay(double delay)
@@ -909,7 +909,8 @@ double FMediaPlayer::compute_target_delay(double delay)
 	double sync_threshold = 0, diff = 0;
 
 	/* update delay to follow master synchronisation source */
-	if (get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER) {
+	if (get_master_sync_type() != ESyncType::AV_SYNC_VIDEO_MASTER) 
+	{
 		/* if video is slave, we try to correct big delays by duplicating or deleting a frame */
 		diff = this->vidclk.Get() - get_master_clock();
 
@@ -917,7 +918,8 @@ double FMediaPlayer::compute_target_delay(double delay)
 		   delay to compute the threshold. I still don't know
 		   if it is the best guess */
 		sync_threshold = FFMAX(AV_SYNC_THRESHOLD_MIN, FFMIN(AV_SYNC_THRESHOLD_MAX, delay));
-		if (!std::isnan(diff) && std::fabs(diff) < this->max_frame_duration) {
+		if (!std::isnan(diff) && std::fabs(diff) < this->max_frame_duration) 
+		{
 			if (diff <= -sync_threshold)
 				delay = FFMAX(0, delay + diff);
 			else if (diff >= sync_threshold && delay > AV_SYNC_FRAMEDUP_THRESHOLD)
@@ -2319,7 +2321,8 @@ int FMediaPlayer::audio_decode_frame()
 		this->audio_src.fmt = static_cast<AVSampleFormat>(af->frame->format);
 	}
 
-	if (this->swr_ctx) {
+	if (this->swr_ctx) 
+	{
 		const uint8_t** in = (const uint8_t**)af->frame->extended_data;
 		uint8_t** out = &this->audio_buf1;
 		int out_count = (int64_t)wanted_nb_samples * this->audio_tgt.freq / af->frame->sample_rate + 256;
@@ -2749,7 +2752,7 @@ void FMediaPlayer::OnSeekChapter(int incr)
 	OnStreamSeek(av_rescale_q(this->pFormatCtx->chapters[i]->start, this->pFormatCtx->chapters[i]->time_base, AVRational{ 1, AV_TIME_BASE }), 0, false);
 }
 
-void FMediaPlayer::OnTick()
+bool FMediaPlayer::OnTick()
 {
 	SDL_Event event;
 	double incr, pos;
@@ -2761,11 +2764,12 @@ void FMediaPlayer::OnTick()
 		if (event.key.keysym.sym == SDLK_ESCAPE || event.key.keysym.sym == SDLK_q)
 		{
 			this->OnExit();
+			return false;
 		}
 
 		// If we don't yet have a window, skip all key events, because read_thread might still be initializing...
 		if (!this->rect.w)
-			return;
+			return true;
 		switch (event.key.keysym.sym)
 		{
 		case SDLK_f:
@@ -2936,8 +2940,10 @@ void FMediaPlayer::OnTick()
 		break;
 	case SDL_QUIT:
 	case FF_QUIT_EVENT:
-		return;
+		return true;
 	default:
 		break;
 		}
+
+		return true;
 }

@@ -81,7 +81,8 @@ int main(int argc, char** argv)
     /* TODO #SEQ1 */
     for (;;)
     {
-        pPlayer1->OnTick();
+        if (!pPlayer1->OnTick())
+            break;
     }
 
     /* never returns */

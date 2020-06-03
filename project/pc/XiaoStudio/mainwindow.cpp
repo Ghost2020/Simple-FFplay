@@ -63,10 +63,11 @@ void MainWindow::onBeginPlay(bool b)
     }
     else
     {
-        m_future = std::async(std::launch::async, [&] () -> bool
+        m_future = std::async(std::launch::deferred, [&] () -> bool
         {
+            std::this_thread::sleep_for(std::chrono::milliseconds(200));
             double remaining_time = 0.0;
-            while(!m_pMediaPlayer->abort_request)
+            while(m_pMediaPlayer && !m_pMediaPlayer->abort_request)
             {
                 std::cout << "Loop" << std::endl;
                 if (!m_pMediaPlayer->cursor_hidden && av_gettime_relative() - m_pMediaPlayer->cursor_last_shown > CURSOR_HIDE_DELAY)
@@ -77,7 +78,7 @@ void MainWindow::onBeginPlay(bool b)
                     std::this_thread::sleep_for(std::chrono::microseconds((int64_t)(remaining_time * 1000000.0)));
                 remaining_time = REFRESH_RATE;
                 if (m_pMediaPlayer->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_NONE && (!m_pMediaPlayer->paused || m_pMediaPlayer->force_refresh))
-                    m_pMediaPlayer->video_refresh(remaining_time);
+                    ;//m_pMediaPlayer->video_refresh(remaining_time);
             }
 
             return true;

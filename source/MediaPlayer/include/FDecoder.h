@@ -177,7 +177,7 @@ private:
 	int size = 0;
 	int64_t duration = 0;
 	bool abort_request = false;
-	int serial;
+	int serial = -1;
 	std::mutex mutex;
 	std::condition_variable cond;
 };
@@ -189,13 +189,13 @@ struct SFrame
 	AVFrame* frame = nullptr;
 	/* 字幕相关数据 */
 	AVSubtitle sub{};
-	int serial;
-	double pts;           /* presentation timestamp for the frame */
-	double duration;      /* estimated duration of the frame */
-	int64_t pos;          /* byte position of the frame in the input file */
-	int width;
-	int height;
-	int format;
+	int serial = -1;
+	double pts = 0;           /* presentation timestamp for the frame */
+	double duration = 0;      /* estimated duration of the frame */
+	int64_t pos = 0;          /* byte position of the frame in the input file */
+	int width = 0;
+	int height = 0;
+	int format = 0;
 	AVRational sar{};
 	bool uploaded = false;
 	int flip_v;
@@ -371,13 +371,13 @@ private:
 	AVPacket pkt;
 	PacketQueue* pQueue = nullptr;
 	AVCodecContext* pAvCtx = nullptr;
-	int pkt_serial;
-	int finished;
+	int pkt_serial = -1;
+	int finished = -1;
 	bool packet_pending = false;
 	std::shared_ptr<std::condition_variable> empty_queue_cond = nullptr;
-	int64_t start_pts;
+	int64_t start_pts = 0;
 	AVRational start_pts_tb;
-	int64_t next_pts;
+	int64_t next_pts = 0;
 	AVRational next_pts_tb;
 	std::future<int> future;
 };

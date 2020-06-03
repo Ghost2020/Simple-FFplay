@@ -152,8 +152,9 @@ public:
 
     /*
     * \@brief handle an event sent by the GUI
+    * \@return true: normal false: exit
     */
-    void OnTick();
+    bool OnTick();
 
     /*
    * \@brief
@@ -548,14 +549,14 @@ private:
     bool last_paused = false;
     bool queue_attachments_req = false;
     bool seek_req = false;
-    int seek_flags;
+    int seek_flags = 0;
     int loop = 1;
     bool framedrop = false;
     /* 无限缓冲区 */
     bool infinite_buffer = false;
-    int64_t seek_pos;
-    int64_t seek_rel;
-    int read_pause_return;
+    int64_t seek_pos = 0;
+    int64_t seek_rel = 0;
+    int read_pause_return = 0;
     /*  */
     AVFormatContext* pFormatCtx = nullptr;
 
@@ -581,10 +582,10 @@ private:
 
     /* current context */
     bool is_full_screen = false;
-    int64_t audio_callback_time;
+    int64_t audio_callback_time = 0;
 
     /* 鼠标上次显示的时间 */
-    int64_t cursor_last_shown;
+    int64_t cursor_last_shown = 0;
     int cursor_hidden = 0;
 
     int64_t start_time = AV_NOPTS_VALUE;
@@ -612,21 +613,21 @@ private:
     /* 音画同步类型 */
     ESyncType av_sync_type;
 
-    double audio_clock;
+    double audio_clock = 0;
     int audio_clock_serial = -1;
-    double audio_diff_cum; /* used for AV difference average computation */
-    double audio_diff_avg_coef;
-    double audio_diff_threshold;
-    int audio_diff_avg_count;
+    double audio_diff_cum = 0; /* used for AV difference average computation */
+    double audio_diff_avg_coef = 0;
+    double audio_diff_threshold = 0;
+    int audio_diff_avg_count = 0;
     AVStream* pAudioStream = nullptr;
     PacketQueue audioq;
-    int audio_hw_buf_size;
+    int audio_hw_buf_size = 0;
     uint8_t* audio_buf = nullptr;
     uint8_t* audio_buf1 = nullptr;
-    unsigned int audio_buf_size; /* in bytes */
-    unsigned int audio_buf1_size;
-    int audio_buf_index; /* in bytes */
-    int audio_write_buf_size;
+    unsigned int audio_buf_size = 0; /* in bytes */
+    unsigned int audio_buf1_size = 0;
+    int audio_buf_index = 0; /* in bytes */
+    int audio_write_buf_size = 0;
     /* 音量<0~100> */
     uint8_t audio_volume = 100;
     bool muted = false;
@@ -640,25 +641,25 @@ private:
     int frame_drops_late;
 
     int16_t sample_array[SAMPLE_ARRAY_SIZE];
-    int sample_array_index;
-    int last_i_start;
+    int sample_array_index = 0;
+    int last_i_start = 0;
     RDFTContext* rdft = nullptr;
-    int rdft_bits;
+    int rdft_bits = 0;
     FFTSample* rdft_data = nullptr;
-    int xpos;
-    double last_vis_time;
+    int xpos = 0;
+    double last_vis_time = 0;
 
     int subtitle_stream = -1;
     AVStream* pSubtitleStream = nullptr;
     PacketQueue subtitleq;
 
-    double frame_timer;
-    double frame_last_returned_time;
-    double frame_last_filter_delay;
+    double frame_timer = 0;
+    double frame_last_returned_time = 0;
+    double frame_last_filter_delay = 0;
     int video_stream = -1;
     AVStream* pVideoStream = nullptr;
     PacketQueue videoq;
-    double max_frame_duration;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
+    double max_frame_duration = 0;      // maximum duration of a frame - above this, we consider the jump a timestamp discontinuity
     struct SwsContext* img_convert_ctx = nullptr;
     /* 字幕信息 */
     struct SwsContext* sub_convert_ctx = nullptr;
@@ -666,7 +667,7 @@ private:
 
     std::string sURL = "";
     SDL_Rect rect{};
-    int step;
+    bool step = false;
 
 #if CONFIG_AVFILTER
     int vfilter_idx;
