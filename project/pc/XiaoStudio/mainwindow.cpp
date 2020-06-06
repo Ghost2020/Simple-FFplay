@@ -2,9 +2,8 @@
 #include "ui_mainwindow.h"
 
 #include <QMessageBox>
-#include <QFileDialog>
-#include <QKeyEvent>
-#include <iostream>
+#include <QStatusBar>
+#include <string>
 
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
@@ -12,7 +11,39 @@ MainWindow::MainWindow(QWidget *parent)
 {
     ui->setupUi(this);
 
-    Init();
+    /* no border */
+    this->setWindowFlags(Qt::FramelessWindowHint | Qt::Widget);
+
+    ui->gridLayout->setSizeConstraint(QLayout::SizeConstraint::SetDefaultConstraint);
+    this->setMouseTracking(true);
+    this->setWindowTitle("XiaoStudio");
+    this->statusBar()->setHidden(true);
+
+    this->m_pSettings = new QSettings(this);
+
+    connect(ui->pushButton_Minmum, SIGNAL(clicked(bool)), this, SLOT(showMinimized()));
+    connect(ui->pushButton_Maxmum, SIGNAL(clicked(bool)), this, SLOT(showMaximized()));
+    connect(ui->pushButton_Exit, SIGNAL(clicked(bool)), this, SLOT(close()));
+   
+    ui->pushButton_Minmum->setStyleSheet("QPushButton{background-color:black;\
+        color: white;   border - radius: 10px;  border: 2px groove gray; \
+        border - style: outset;}" \
+        "QPushButton:hover{background-color:white; color: black;}"
+        "QPushButton:pressed{background-color:rgb(85, 170, 255);\
+        border - style: inset; }");
+    ui->pushButton_Maxmum->setStyleSheet("QPushButton{background-color:black;\
+        color: white;   border - radius: 10px;  border: 2px groove gray; \
+        border - style: outset;}" \
+        "QPushButton:hover{background-color:white; color: black;}"
+        "QPushButton:pressed{background-color:rgb(85, 170, 255);\
+        border - style: inset; }");
+    ui->pushButton_Exit->setStyleSheet("QPushButton{background-color:black;\
+        color: white;   border - radius: 10px;  border: 2px groove gray; \
+        border - style: outset;}" \
+        "QPushButton:hover{ background-color:red; color: black;}"
+        "QPushButton:pressed{background-color:rgb(85, 170, 255);\
+        border - style: inset; }");
+    //ui->horizontalLayout_MainBar->set
 }
 
 MainWindow::~MainWindow()
@@ -22,29 +53,6 @@ MainWindow::~MainWindow()
 
 bool MainWindow::Init()
 {
-#pragma region menu
-    m_pMenu = new QMenu();
-    QAction *beginPlayAction = m_pMenu->addAction(QString("Play"));
-    QAction *stopPlayAction = m_pMenu->addAction(QString("Stop"));
-    QAction *previousAction = m_pMenu->addAction(QString("Previous"));
-    QAction *nextAction = m_pMenu->addAction(QString("Next"));
-    QAction *recordAction = m_pMenu->addAction(QString("Record"));
-    m_pMenu->addSeparator();
-    QAction *quitAction = m_pMenu->addAction(QString("Quit"));
-
-    connect(beginPlayAction, SIGNAL(triggered(bool)), this, SLOT(onBeginPlay(bool)));
-    connect(stopPlayAction, SIGNAL(triggered(bool)), this, SLOT(onStopPlay(bool)));
-    connect(previousAction, SIGNAL(triggered(bool)), this, SLOT(onPrevious(bool)));
-    connect(nextAction, SIGNAL(triggered(bool)), this, SLOT(onNext(bool)));
-    connect(recordAction, SIGNAL(triggered(bool)), this, SLOT(onRecord()));
-    connect(quitAction, SIGNAL(triggered(bool)), this, SLOT(onQuit()));
-
-    ui->screen->setContextMenuPolicy(Qt::CustomContextMenu);
-    connect(ui->screen, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onShowMenu()));
-#pragma endregion menu
-
-    this->m_pMediaPlayer = std::make_shared<FMediaPlayer>();
-
     return true;
 }
 
@@ -53,171 +61,131 @@ void MainWindow::Uninit()
 
 }
 
-void MainWindow::onBeginPlay(bool b)
-{
-    m_sURL = QFileDialog::getOpenFileName();
-
-    if(!m_pMediaPlayer->OnStreamOpen(m_sURL.toStdString()))
-    {
-        QMessageBox::warning(this, "Warning", "Can't open this media file!");
-    }
-    else
-    {
-        m_future = std::async(std::launch::deferred, [&] () -> bool
-        {
-            std::this_thread::sleep_for(std::chrono::milliseconds(200));
-            double remaining_time = 0.0;
-            while(m_pMediaPlayer && !m_pMediaPlayer->abort_request)
-            {
-                std::cout << "Loop" << std::endl;
-                if (!m_pMediaPlayer->cursor_hidden && av_gettime_relative() - m_pMediaPlayer->cursor_last_shown > CURSOR_HIDE_DELAY)
-                {
-                    m_pMediaPlayer->cursor_hidden = 1;
-                }
-                if (remaining_time > 0.0)
-                    std::this_thread::sleep_for(std::chrono::microseconds((int64_t)(remaining_time * 1000000.0)));
-                remaining_time = REFRESH_RATE;
-                if (m_pMediaPlayer->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_NONE && (!m_pMediaPlayer->paused || m_pMediaPlayer->force_refresh))
-                    ;//m_pMediaPlayer->video_refresh(remaining_time);
-            }
-
-            return true;
-        });
-    }
-}
-
-void MainWindow::onStopPlay(bool b)
-{
-    QMessageBox::information(this, "onStopPlay", "onStopPlay");
-}
-
-void MainWindow::onPrevious(bool b)
-{
-    QMessageBox::information(this, "onPrevious", "onPrevious");
-}
-
-void MainWindow::onNext(bool b)
-{
-    QMessageBox::information(this, "onNext", "onNext");
-}
-
-void MainWindow::onRecord()
-{
-    QMessageBox::information(this, "onRecord", "onRecord");
-}
-
-void MainWindow::onQuit()
-{
-    this->close();
-}
-
 void MainWindow::keyPressEvent(QKeyEvent* event)
 {
-    if(m_pMediaPlayer == nullptr)
-        QMainWindow::keyPressEvent(event);
-
-    double incr = 0, pos = 0;
-
-    std::cout << "keyPressEvent" << std::endl;
-
     switch(event->key())
     {
-        case Qt::Key_F :
-            m_pMediaPlayer->OnToggleFullScreen();
-            break;
-        case Qt::Key_Escape :
-            m_pMediaPlayer->StreamClose();
-            break;
-        case Qt::Key_P :
-        case Qt::Key_Space:
-            m_pMediaPlayer->OnTogglePause();
-            break;
-        case Qt::Key_M:
-            m_pMediaPlayer->OnToggleMute();
-            break;
-        case Qt::Key_Minus:
-            m_pMediaPlayer->OnUpdateVolume(-1, SDL_VOLUME_STEP);
-            break;
-        case Qt::Key_Plus:
-            m_pMediaPlayer->OnUpdateVolume( 1, SDL_VOLUME_STEP);
-            break;
-        case Qt::Key_S:
-            m_pMediaPlayer->OnStepToNextFrame();
-            break;
-        case Qt::Key_A:
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
-            break;
-        case Qt::Key_V:
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
-            break;
-        case Qt::Key_T:
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
-            break;
-        case Qt::Key_C:
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_VIDEO);
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_AUDIO);
-            m_pMediaPlayer->OnStreamCycleChannel(AVMEDIA_TYPE_SUBTITLE);
-            break;
-        case Qt::Key_PageUp:
-            if(m_pMediaPlayer->pFormatCtx->nb_chapters <= 1)
+        case Qt::Key::Key_F11:
+        {
+            if (!this->isMaximized())
             {
-                incr = 600.0;
-                goto do_seek;
+                this->showMaximized();
             }
-            m_pMediaPlayer->OnSeekChapter(1);
-            break;
-        case Qt::Key_PageDown:
-            if (m_pMediaPlayer->pFormatCtx->nb_chapters <= 1)
+            else
             {
-                incr = -600.0;
-                goto do_seek;
+                this->showNormal();
             }
-            m_pMediaPlayer->OnSeekChapter(-1);
-            break;
-        case Qt::Key_Left:
-            incr = m_pMediaPlayer->seek_interval ? -m_pMediaPlayer->seek_interval : -10.0;
-            goto do_seek;
-        case Qt::Key_Right:
-            incr = m_pMediaPlayer->seek_interval ? m_pMediaPlayer->seek_interval : 10.0;
-            goto do_seek;
-        case Qt::Key_Up:
-            incr = 60.0;
-            goto do_seek;
-        case Qt::Key_Down:
-            incr = -60.0;
-            do_seek:
-            if (m_pMediaPlayer->seek_by_bytes) {
-                pos = -1;
-                if (pos < 0 && m_pMediaPlayer->video_stream >= 0)
-                    pos = m_pMediaPlayer->pictq.LastPos();
-                if (pos < 0 && m_pMediaPlayer->audio_stream >= 0)
-                    pos = m_pMediaPlayer->sampq.LastPos();
-                if (pos < 0)
-                    pos = avio_tell(m_pMediaPlayer->pFormatCtx->pb);
-                if (m_pMediaPlayer->pFormatCtx->bit_rate)
-                    incr *= m_pMediaPlayer->pFormatCtx->bit_rate / 8.0;
-                else
-                    incr *= 180000.0;
-                pos += incr;
-                m_pMediaPlayer->OnStreamSeek(pos, incr, true);
-            }
-            else {
-                pos = m_pMediaPlayer->get_master_clock();
-                if (isnan(pos))
-                    pos = (double)m_pMediaPlayer->seek_pos / AV_TIME_BASE;
-                pos += incr;
-                if (m_pMediaPlayer->pFormatCtx->start_time != AV_NOPTS_VALUE && pos < m_pMediaPlayer->pFormatCtx->start_time / (double)AV_TIME_BASE)
-                    pos = m_pMediaPlayer->pFormatCtx->start_time / (double)AV_TIME_BASE;
-                m_pMediaPlayer->OnStreamSeek((int64_t)(pos * AV_TIME_BASE), (int64_t)(incr * AV_TIME_BASE), false);
-            }
-            break;
-        default:
-            QMainWindow::keyPressEvent(event);
+        }
+        break;
+    default:
+        ;
+    }
+
+    QMainWindow::keyPressEvent(event);
+}
+
+void MainWindow::mousePressEvent(QMouseEvent* event)
+{
+    /*int y1 = event->globalPos().y();
+    int y2 = this->pos().y();*/
+    auto pos1 = event->localPos();
+    auto pos2 = event->windowPos();
+    auto pos3 = event->screenPos();
+    if ( (event->button() == Qt::LeftButton) ||
+         (event->pos().y() < 50) )
+    {
+        mouse_press = true;
+
+        //鼠标相对于窗体的位置（或者使用 event->globalPos() - this->pos()）
+        move_point = event->pos();
+
     }
 }
 
-void MainWindow::onShowMenu()
+void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 {
-    m_pMenu->exec(QCursor::pos());
+    mouse_press = false;
 }
 
+void MainWindow::mouseMoveEvent(QMouseEvent* event)
+{
+    if (mouse_press)
+    {
+        QPoint move_pos = event->globalPos();
+
+        this->move(move_pos - move_point);
+    }
+}
+
+void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
+{
+    if (event->button() == Qt::LeftButton)
+    {
+        if (!this->isFullScreen())
+            this->showFullScreen();
+        else
+            this->showNormal();
+    }
+}
+
+void MainWindow::on_pushButton_Invite_clicked()
+{
+    const auto rowCount = ui->gridLayout->rowCount();
+    const auto colCount = ui->gridLayout->columnCount();
+
+    int row = 0, col = 0;
+    int lastRow = 0, lastCol = 0;
+    if (m_String2Screen.size() >= 1)
+    {
+        const auto& item = m_String2Screen.last();
+        lastRow = item.first / 10;
+        lastCol = item.first % 10;
+    }
+    
+    if (rowCount == colCount)
+    {
+        if (lastRow == lastCol)
+        {
+            row = 0;
+            col = lastCol + 1;
+        }
+        else
+        {
+            row = lastRow;
+            col = lastCol + 1;
+        }
+    }
+    else if (rowCount < colCount)
+    {
+        if (lastRow < lastCol && (lastRow + 1) == lastCol)
+        {
+            row = lastRow + 1;
+            col = 0;
+        }
+        else
+        {
+            row = lastRow + 1 ;
+            col = lastCol;
+        }
+    }
+
+    QMediaPlayer* screen = new QMediaPlayer(ui->centralwidget);
+    const int screenSeq = row * 10 + col;
+    screen->setObjectName(std::to_string(screenSeq).c_str());
+    QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    sizePolicy.setHorizontalStretch(0);
+    sizePolicy.setVerticalStretch(0);
+    sizePolicy.setHeightForWidth(screen->sizePolicy().hasHeightForWidth());
+    screen->setSizePolicy(sizePolicy);
+
+    ui->gridLayout->addWidget(screen, row, col);
+
+    m_String2Screen.push_back(qMakePair<int, QMediaPlayer*>(screenSeq, screen));
+}
+
+void MainWindow::on_pushButton_Settings_clicked()
+{
+    //m_pSettings->showNormal();
+    m_pSettings->setModal(true);
+    m_pSettings->showNormal();
+}

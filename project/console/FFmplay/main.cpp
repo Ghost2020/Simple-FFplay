@@ -69,8 +69,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
-    signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
+    //signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
+    //signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
 
     if (!pPlayer1->OnStreamOpen(input_filename))
     {

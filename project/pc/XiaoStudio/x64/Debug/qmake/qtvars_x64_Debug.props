@@ -30,7 +30,7 @@
 <QMake_QMAKE_VERSION_>3.1</QMake_QMAKE_VERSION_>
 <QMake_QT_VERSION_>5.14.0</QMake_QT_VERSION_>
 <Qt_INCLUDEPATH_
-      >$(Qt_INCLUDEPATH_);build\Qt_5_14_0_MSVC2017_64bit-Debug\debug;F:\CXX\project\github\Ghost2020\Simple-FFmplay\project\pc\XiaoStudio</Qt_INCLUDEPATH_>
+      >$(Qt_INCLUDEPATH_);Debug;F:\CXX\project\github\Ghost2020\Simple-FFmplay\project\pc\XiaoStudio</Qt_INCLUDEPATH_>
     <QtBkup_QtInstall
       >5.14</QtBkup_QtInstall>
     <QtBkup_QtModules

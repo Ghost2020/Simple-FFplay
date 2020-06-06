@@ -131,8 +131,13 @@ int FDecoder::Start(std::function<int(void)>& func)
 
 void FDecoder::Destroy()
 {
-	av_packet_unref(&this->pkt);
-	avcodec_free_context(&this->pAvCtx);
+	if(this->pkt.stream_index > 0)
+		av_packet_unref(&this->pkt);
+
+	if(this->pAvCtx)
+		avcodec_free_context(&this->pAvCtx);
+
+	this->pAvCtx = nullptr;
 }
 
 void FDecoder::Abort(FrameQueue* fq)

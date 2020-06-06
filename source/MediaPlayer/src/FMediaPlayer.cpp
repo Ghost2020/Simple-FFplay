@@ -116,7 +116,8 @@ static FMediaPlayer::ESyncType av_sync_type = FMediaPlayer::ESyncType::AV_SYNC_A
 
 FMediaPlayer::EShowMode FMediaPlayer::eShow_mode = FMediaPlayer::EShowMode::SHOW_MODE_VIDEO;
 
-FMediaPlayer::FMediaPlayer() 
+FMediaPlayer::FMediaPlayer(void* windowID)
+	:m_pWindowID(windowID)
 {
 	if (++g_nInstance == 1)
 		initContext();
@@ -156,8 +157,8 @@ bool FMediaPlayer::initContext()
 		return false;
 	}
 
-	SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
-	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
+	/*SDL_EventState(SDL_SYSWMEVENT, SDL_IGNORE);
+	SDL_EventState(SDL_USEREVENT, SDL_IGNORE);*/
 	/*-----------------------------------渲染相关设置---------------------------------------*/
 
 	return true;
@@ -175,9 +176,10 @@ bool FMediaPlayer::initRender()
 	int flags = SDL_WINDOW_HIDDEN;
 
 	flags |= SDL_WINDOW_RESIZABLE;
-	std::string windowName = std::string("FFmplay") + std::to_string(g_nInstance);
-	//SDL_CreateWindowFrom();
-	pWindow = SDL_CreateWindow(windowName.c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+	if(m_pWindowID)
+		pWindow = SDL_CreateWindowFrom(m_pWindowID);
+	else
+		pWindow = SDL_CreateWindow((std::string("FFmplay") + std::to_string(g_nInstance)).c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
 	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	if (pWindow)
 	{
@@ -191,7 +193,8 @@ bool FMediaPlayer::initRender()
 				av_log(nullptr, AV_LOG_VERBOSE, "Initialized %s renderer.\n", renderer_info.name);
 		}
 	}
-	if (!pWindow || !pRenderer || !renderer_info.num_texture_formats) {
+	if (!pWindow || !pRenderer || !renderer_info.num_texture_formats) 
+	{
 		av_log(nullptr, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
 		return false;
 	}
@@ -836,13 +839,11 @@ double FMediaPlayer::get_master_clock()
 void FMediaPlayer::check_external_clock_speed()
 {
 	if (this->video_stream >= 0 && this->videoq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES ||
-		this->audio_stream >= 0 && this->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) {
+		this->audio_stream >= 0 && this->audioq.nb_packets <= EXTERNAL_CLOCK_MIN_FRAMES) 
 		this->extclk.SetSpeed(FFMAX(EXTERNAL_CLOCK_SPEED_MIN, this->extclk.speed - EXTERNAL_CLOCK_SPEED_STEP));
-	}
 	else if ((this->video_stream < 0 || this->videoq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES) &&
-		(this->audio_stream < 0 || this->audioq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES)) {
+		(this->audio_stream < 0 || this->audioq.nb_packets > EXTERNAL_CLOCK_MAX_FRAMES)) 
 		this->extclk.SetSpeed(FFMIN(EXTERNAL_CLOCK_SPEED_MAX, this->extclk.speed + EXTERNAL_CLOCK_SPEED_STEP));
-	}
 	else {
 		double speed = this->extclk.speed;
 		if (speed != 1.0)
@@ -956,7 +957,7 @@ void FMediaPlayer::update_video_pts(double pts, int64_t pos, int serial)
 
 void FMediaPlayer::video_refresh(double& remaining_time)
 {
-	double time = 0.0f;
+    double time = 0.0;
 
 	SFrame* sp = nullptr, * sp2 = nullptr;
 
@@ -1146,14 +1147,14 @@ int FMediaPlayer::queue_picture(AVFrame* src_frame, double pts, double duration,
 
 int FMediaPlayer::get_video_frame(AVFrame* frame)
 {
-	int got_picture;
+    int got_picture = -1;
 
 	if ((got_picture = this->viddec.Decode(frame, nullptr)) < 0)
 		return -1;
 
 	if (got_picture) 
 	{
-		double dpts = NAN;
+        double dpts{double(NAN)};
 
 		if (frame->pts != AV_NOPTS_VALUE)
 			dpts = av_q2d(this->pVideoStream->time_base) * frame->pts;
@@ -1534,9 +1535,9 @@ the_end:
 int FMediaPlayer::video_thread()
 {
 	AVFrame* frame = av_frame_alloc();
-	double pts;
-	double duration;
-	int ret;
+    double pts = 0.0;
+    double duration = 0.0;
+    int ret = -1;
 	AVRational tb = this->pVideoStream->time_base;
 	AVRational frame_rate = av_guess_frame_rate(this->pFormatCtx, this->pVideoStream, nullptr);
 
@@ -1765,7 +1766,6 @@ int FMediaPlayer::read_thread()
 	AVPacket pkt1, * pkt = &pkt1;
 	int64_t stream_start_time;
 	int pkt_in_play_range = 0;
-    //AVDictionaryEntry* t = nullptr;
 	std::mutex wait_mutex;
 	int scan_all_pmts_set = 0;
 	int64_t pkt_ts;
@@ -1789,11 +1789,6 @@ int FMediaPlayer::read_thread()
 	/* 注册终止回调函数数据 */
 	ic->interrupt_callback.callback = decode_interrupt_cb;
 	ic->interrupt_callback.opaque = this;
-	/* 为了摆脱cmdutil.h */
-	/*if (!av_dict_get(format_opts, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE)) {
-		av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
-		scan_all_pmts_set = 1;
-	}*/
 
 	av_dict_set(&format_opts, "scan_all_pmts", "1", AV_DICT_DONT_OVERWRITE);
 	err = avformat_open_input(&ic, this->sURL.c_str(), this->pInputformat, &format_opts);
@@ -1811,12 +1806,6 @@ int FMediaPlayer::read_thread()
 	if (scan_all_pmts_set)
 		av_dict_set(&format_opts, "scan_all_pmts", nullptr, AV_DICT_MATCH_CASE);
 
-	/* @TODO 解除了只能在主线程中运行 */
-	/*if ((t = av_dict_get(format_opts, "", nullptr, AV_DICT_IGNORE_SUFFIX))) {
-		av_log(nullptr, AV_LOG_ERROR, "Option %s not found.\n", t->key);
-		ret = AVERROR_OPTION_NOT_FOUND;
-		goto fail;
-	}*/
 	this->pFormatCtx = ic;
 
 	av_format_inject_global_side_data(ic);
@@ -1849,9 +1838,8 @@ int FMediaPlayer::read_thread()
 	/* if seeking requested, we execute it */
 	if (this->start_time != AV_NOPTS_VALUE) 
 	{
-		int64_t timestamp;
+		int64_t timestamp = this->start_time;
 
-		timestamp = this->start_time;
 		/* add the stream start time */
 		if (ic->start_time != AV_NOPTS_VALUE)
 			timestamp += ic->start_time;
@@ -2613,6 +2601,9 @@ bool FMediaPlayer::OnStreamOpen(const std::string& sURL, AVInputFormat* iformat)
 
 void FMediaPlayer::OnStreamCycleChannel(AVMediaType codec_type)
 {
+	if (!pFormatCtx)
+		return;
+
 	int start_index, stream_index;
 	int old_index;
 	AVStream* st = nullptr;
@@ -2709,21 +2700,25 @@ void FMediaPlayer::OnToggleAudioDisplay()
 void FMediaPlayer::refresh_loop_wait_event(SDL_Event& event)
 {
 	double remaining_time = 0.0;
-	SDL_PumpEvents();
+#ifdef SDL_MAIN_HANDLED
+    SDL_PumpEvents();
 	while (!SDL_PeepEvents(&event, 1, SDL_GETEVENT, SDL_FIRSTEVENT, SDL_LASTEVENT))
-	{
+    {
+#endif 
 		if (!cursor_hidden && av_gettime_relative() - cursor_last_shown > CURSOR_HIDE_DELAY)
 		{
 			SDL_ShowCursor(0);
-			cursor_hidden = 1;
+            cursor_hidden = true;
 		}
 		if (remaining_time > 0.0)
-			std::this_thread::sleep_for(std::chrono::microseconds((int64_t)(remaining_time * 1000000.0)));
+			std::this_thread::sleep_for(std::chrono::microseconds(int64_t(remaining_time * 1000000.0)));
 		remaining_time = REFRESH_RATE;
 		if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_NONE && (!this->paused || this->force_refresh))
 			video_refresh(remaining_time);
-		SDL_PumpEvents();
-	}
+#ifdef SDL_MAIN_HANDLED
+        SDL_PumpEvents();
+    }
+#endif
 }
 
 void FMediaPlayer::OnSeekChapter(int incr)
@@ -2890,7 +2885,7 @@ bool FMediaPlayer::OnTick()
 	case SDL_MOUSEMOTION:
 		if (cursor_hidden) {
 			SDL_ShowCursor(1);
-			cursor_hidden = 0;
+            cursor_hidden = false;
 		}
 		cursor_last_shown = av_gettime_relative();
 		if (event.type == SDL_MOUSEBUTTONDOWN) {
@@ -2940,7 +2935,7 @@ bool FMediaPlayer::OnTick()
 		break;
 	case SDL_QUIT:
 	case FF_QUIT_EVENT:
-		return true;
+		return false;
 	default:
 		break;
 		}

@@ -1,3 +1,10 @@
+/**
+* \@brief Author			Ghost Chen
+* \@brief Email				cxx2020@outlook.com
+* \@brief Date				2020/05/20
+* \@brief File				FMediaPlayer.h
+* \@brief Desc:				Encapsulated the ffplay
+*/
 #pragma once
 
 #include <string>
@@ -75,6 +82,7 @@ constexpr uint32_t CURSOR_HIDE_DELAY = 1000000;
 class FMediaPlayer
 {
     friend class MainWindow;
+    friend class QMediaPlayer;
 public:
     /* 显示方式 */
     enum struct EShowMode : uint8_t
@@ -97,17 +105,21 @@ public:
 private:
     struct AudioParams
     {
-        int freq;
-        int channels;
+        int freq = -1;
+        int channels = -1;
         /* @TODO */
         int64_t channel_layout = -1;
         AVSampleFormat fmt;
-        int frame_size;
-        int bytes_per_sec;
+        int frame_size = 0;
+        int bytes_per_sec = 0;
     };
 
 public:
-    explicit FMediaPlayer();
+    /*
+    * \@brief construction
+    * \@param windowID[in]:window ID
+    */
+    explicit FMediaPlayer(void* windowID = nullptr);
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;
@@ -137,9 +149,10 @@ private:
     */
     void uninitRender();
 public:
+
     /*
     * \@brief 打开媒体流
-    * \@param sURL:媒体流的存放位置，或者是直播的地址，也可是本地的摄像头
+    * \@param sURL[in]:媒体流的存放位置，或者是直播的地址，也可是本地的摄像头
     * \@param iformat:[in] 指定输入的格式，默认可以设置为nullptr
     * \@return true::打开成功 false::失败
     */
@@ -203,8 +216,8 @@ public:
 
     /*
     * \@brief 调节播放的音量
-    * \@param sign: 大小方向
-    * \@param step: 音量大小
+    * \@param sign[in]: 大小方向
+    * \@param step[in]: 音量大小
     */
     void OnUpdateVolume(int sign, double step);
 
@@ -225,6 +238,12 @@ public:
     * \@brief @TODO
     */
     static void sigterm_handler(int sig);
+
+    /*
+    * \@brief 刷新交互事件,以获取事件类型
+    * \@param event[in, out]
+    */
+    void refresh_loop_wait_event(SDL_Event& event);
 
 private:
     /*
@@ -507,17 +526,12 @@ private:
     */
     bool is_realtime();
 
-    /*
-    * \@brief 刷新交互事件,以获取事件类型
-    * \@param event[in, out] 
-    */
-    void refresh_loop_wait_event(SDL_Event& event);
-
 public:
     static EShowMode eShow_mode;
 
 private:
 #pragma region Rendering
+    void* m_pWindowID = nullptr;
     SDL_Window* pWindow = nullptr;
     SDL_Renderer* pRenderer = nullptr;
     SDL_RendererInfo renderer_info;
@@ -586,7 +600,7 @@ private:
 
     /* 鼠标上次显示的时间 */
     int64_t cursor_last_shown = 0;
-    int cursor_hidden = 0;
+    bool cursor_hidden = false;
 
     int64_t start_time = AV_NOPTS_VALUE;
     int64_t duration = AV_NOPTS_VALUE;

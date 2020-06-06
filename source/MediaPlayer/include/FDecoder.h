@@ -1,3 +1,9 @@
+/**
+* \@brief Author			Ghost Chen
+* \@brief Email				cxx2020@outlook.com
+* \@brief Date				2020/05/20
+* \@brief File				FDecoder.h
+*/
 #pragma once
 
 #include <memory>

@@ -78,7 +78,7 @@
   </PropertyGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;..\..\..\thirdparty\ffmpeg\include;..\..\..\thirdparty\SDL2-2.0.12\include;..\..\..\source\MediaPlayer\include;release;F:\CXX\third_party\VulkanSDK1.2.135.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;..\..\..\thirdparty\ffmpeg\include;..\..\..\thirdparty\SDL2-2.0.12\include;..\..\..\source\MediaPlayer\include;source;release;F:\CXX\third_party\VulkanSDK1.2.135.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>release\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -88,7 +88,7 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>MaxSpeed</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_DEPRECATED_WARNINGS;_CRT_SECURE_NO_WARNINGS;QT_NO_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
       <RuntimeLibrary>MultiThreadedDLL</RuntimeLibrary>
@@ -117,7 +117,7 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_DEPRECATED_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;NDEBUG;QT_DEPRECATED_WARNINGS;_CRT_SECURE_NO_WARNINGS;QT_NO_DEBUG;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <QtMoc>
       <CompilerFlavor>msvc</CompilerFlavor>
@@ -135,7 +135,7 @@
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">
     <ClCompile>
-      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;..\..\..\thirdparty\ffmpeg\include;..\..\..\thirdparty\SDL2-2.0.12\include;..\..\..\source\MediaPlayer\include;debug;F:\CXX\third_party\VulkanSDK1.2.135.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>.\GeneratedFiles\$(ConfigurationName);.\GeneratedFiles;.;..\..\..\thirdparty\ffmpeg\include;..\..\..\thirdparty\SDL2-2.0.12\include;..\..\..\source\MediaPlayer\include;source;debug;F:\CXX\third_party\VulkanSDK1.2.135.0\include;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <AdditionalOptions>-Zc:rvalueCast -Zc:inline -Zc:strictStrings -Zc:throwingNew -Zc:referenceBinding -Zc:__cplusplus -w34100 -w34189 -w44996 -w44456 -w44457 -w44458 %(AdditionalOptions)</AdditionalOptions>
       <AssemblerListingLocation>debug\</AssemblerListingLocation>
       <BrowseInformation>false</BrowseInformation>
@@ -145,7 +145,7 @@
       <LanguageStandard>stdcpp14</LanguageStandard>
       <ObjectFileName>$(IntDir)</ObjectFileName>
       <Optimization>Disabled</Optimization>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;_CRT_SECURE_NO_WARNINGS;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <PreprocessToFile>false</PreprocessToFile>
       <RuntimeLibrary>MultiThreadedDebugDLL</RuntimeLibrary>
       <SuppressStartupBanner>true</SuppressStartupBanner>
@@ -155,7 +155,7 @@
       <ProgramDataBaseFileName>$(IntDir)vc$(PlatformToolsetVersion).pdb</ProgramDataBaseFileName>
     </ClCompile>
     <Link>
-      <AdditionalDependencies>F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avcodec.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avdevice.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avfilter.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avformat.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avutil.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\postproc.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\swresample.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\swscale.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64\SDL2.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64\SDL2main.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64\SDL2main.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <AdditionalDependencies>F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avcodec.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avdevice.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avfilter.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avformat.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\avutil.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\postproc.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\swresample.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32\swscale.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64\SDL2.lib;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64\SDL2main.lib;shell32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <AdditionalLibraryDirectories>F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\ffmpeg\lib\win32;F:\CXX\project\github\Ghost2020\Simple-FFmplay\thirdparty\SDL2-2.0.12\lib\win32\x64;C:\openssl\lib;C:\Utils\my_sql\mysql-5.7.25-winx64\lib;C:\Utils\postgresql\pgsql\lib;%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
       <AdditionalOptions>"/MANIFESTDEPENDENCY:type='win32' name='Microsoft.Windows.Common-Controls' version='6.0.0.0' publicKeyToken='6595b64144ccf1df' language='*' processorArchitecture='*'" %(AdditionalOptions)</AdditionalOptions>
       <DataExecutionPrevention>true</DataExecutionPrevention>
@@ -172,14 +172,14 @@
       <WarningLevel>0</WarningLevel>
     </Midl>
     <ResourceCompile>
-      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>_WINDOWS;UNICODE;_UNICODE;WIN32;_ENABLE_EXTENDED_ALIGNED_STORAGE;WIN64;QT_DEPRECATED_WARNINGS;_CRT_SECURE_NO_WARNINGS;QT_WIDGETS_LIB;QT_GUI_LIB;QT_CORE_LIB;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
     </ResourceCompile>
     <QtMoc>
       <CompilerFlavor>msvc</CompilerFlavor>
       <Include>./$(Configuration)/moc_predefs.h</Include>
       <ExecutionDescription>Moc'ing %(Identity)...</ExecutionDescription>
       <DynamicSource>output</DynamicSource>
-      <QtMocDir>build\Qt_5_14_0_MSVC2017_64bit-Debug\debug</QtMocDir>
+      <QtMocDir>$(Configuration)</QtMocDir>
       <QtMocFileName>moc_%(Filename).cpp</QtMocFileName>
     </QtMoc>
     <QtUic>
@@ -191,12 +191,18 @@
   <ItemGroup>
     <ClCompile Include="..\..\..\source\MediaPlayer\src\FDecoder.cpp" />
     <ClCompile Include="..\..\..\source\MediaPlayer\src\FMediaPlayer.cpp" />
+    <ClCompile Include="source\QMediaPlayer.cpp" />
+    <ClCompile Include="ui\QSettings.cpp" />
     <ClCompile Include="main.cpp" />
     <ClCompile Include="mainwindow.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\..\..\source\MediaPlayer\include\FDecoder.h" />
     <ClInclude Include="..\..\..\source\MediaPlayer\include\FMediaPlayer.h" />
+    <QtMoc Include="source\QMediaPlayer.h">
+    </QtMoc>
+    <QtMoc Include="ui\QSettings.h">
+    </QtMoc>
     <QtMoc Include="mainwindow.h">
     </QtMoc>
   </ItemGroup>
@@ -219,6 +225,8 @@
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="ui\QSettings.ui">
+    </QtUic>
     <QtUic Include="mainwindow.ui">
     </QtUic>
   </ItemGroup>

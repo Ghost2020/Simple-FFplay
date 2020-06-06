@@ -1,9 +1,22 @@
+/**
+* \@brief Author			Ghost Chen
+* \@brief Email				cxx2020@outlook.com
+* \@brief Date				2020/05/20
+* \@brief File				mainwindow.h
+* \@brief Desc:				mainwindow
+*/
 #ifndef MAINWINDOW_H
 #define MAINWINDOW_H
 
 #include <QMainWindow>
-#include <QString>
-#include "FMediaPlayer.h"
+#include <QKeyEvent>
+#include <QDragEnterEvent>
+#include <QPair>
+#include <QList>
+
+#include "QMediaPlayer.h"
+
+#include "ui/QSettings.h"
 
 QT_BEGIN_NAMESPACE
 namespace Ui { class MainWindow; }
@@ -21,24 +34,32 @@ private:
     bool Init();
     void Uninit();
 
-public slots:
-    void onShowMenu();
-    void onBeginPlay(bool b);
-    void onStopPlay(bool b);
-    void onPrevious(bool b);
-    void onNext(bool b);
-    void onRecord();
-    void onQuit();
-
 protected:
     void keyPressEvent(QKeyEvent* event) override;
 
-private:
-    Ui::MainWindow *ui;
+    void mousePressEvent(QMouseEvent* event) override;
 
-    std::future<bool> m_future;
-    QString m_sURL = "";
-    QMenu* m_pMenu = nullptr;
-    std::shared_ptr<FMediaPlayer> m_pMediaPlayer = nullptr;
+    void mouseReleaseEvent(QMouseEvent* event) override;
+
+    void mouseMoveEvent(QMouseEvent* event) override;
+
+    void mouseDoubleClickEvent(QMouseEvent* event) override;
+
+private slots:
+    void on_pushButton_Invite_clicked();
+
+    void on_pushButton_Settings_clicked();
+
+private:
+    QPoint move_point;
+    bool mouse_press;
+
+    Ui::MainWindow *ui = nullptr;
+
+    QSettings* m_pSettings = nullptr;
+
+    /* record the mediaPlayer */
+    QList<QPair<int, QMediaPlayer*>> m_String2Screen;
+
 };
 #endif // MAINWINDOW_H

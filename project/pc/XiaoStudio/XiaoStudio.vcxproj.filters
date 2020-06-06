@@ -43,6 +43,12 @@
     <ClCompile Include="..\..\..\source\MediaPlayer\src\FMediaPlayer.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="source\QMediaPlayer.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="ui\QSettings.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
     <ClCompile Include="main.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
@@ -54,22 +60,39 @@
     <ClInclude Include="..\..\..\source\MediaPlayer\include\FDecoder.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <QtMoc Include="mainwindow.h">
-      <Filter>Header Files</Filter>
-    </QtMoc>
     <ClInclude Include="..\..\..\source\MediaPlayer\include\FMediaPlayer.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <QtMoc Include="source\QMediaPlayer.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="ui\QSettings.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
+    <QtMoc Include="mainwindow.h">
+      <Filter>Header Files</Filter>
+    </QtMoc>
   </ItemGroup>
   <ItemGroup>
+    
+    
+    
+    
+    
+    
     <CustomBuild Include="debug\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
     <CustomBuild Include="release\moc_predefs.h.cbt">
       <Filter>Generated Files</Filter>
     </CustomBuild>
+    
+    
   </ItemGroup>
   <ItemGroup>
+    <QtUic Include="ui\QSettings.ui">
+      <Filter>Form Files</Filter>
+    </QtUic>
     <QtUic Include="mainwindow.ui">
       <Filter>Form Files</Filter>
     </QtUic>
