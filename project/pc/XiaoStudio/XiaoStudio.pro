@@ -1,4 +1,4 @@
-QT       += core gui widgets
+QT       += core gui
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -24,28 +24,35 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #DEFINES += SDL_MAIN_HANDLED
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
-INCLUDEPATH += $$PWD/../../../thirdparty/ffmpeg/include
-INCLUDEPATH += $$PWD/../../../thirdparty/SDL2-2.0.12/include
+
 INCLUDEPATH += $$PWD/../../../source/MediaPlayer/include
 INCLUDEPATH += $$PWD/source/
 
 win32{
-    LIBS += -L$$PWD/../../../thirdparty/ffmpeg/lib/win32 -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-    LIBS += -L$$PWD/../../../thirdparty/SDL2-2.0.12/lib/win32/x64 -lSDL2 -lSDL2main
+THIRD_PARTY_PATH = $$PWD/../../../thirdparty
+    INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
+    INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2-2.0.12/include
+    LIBS += -L$$THIRD_PARTY_PATH/ffmpeg/lib/win32 -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
+    LIBS += -L$$THIRD_PARTY_PATH/SDL2-2.0.12/lib/win32/x64 -lSDL2 -lSDL2main
 }
 unix{
 
 }
 mac{
+THIRD_PARTY_PATH = $$/usr/local/Cellar
+    INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/include
+    INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/2.0.12_1/include
+    LIBS += -L$$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
+    LIBS += -L$$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib -lSDL2 #-lSDL2main
+    LIBS += -framework Foundation
 
+    SOURCES += source/QMediaPlayer.mm
 }
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
-    ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
-    source/QMediaPlayer.cpp \
     ui/QSettings.cpp
 
 HEADERS += \
