@@ -43,7 +43,6 @@ MainWindow::MainWindow(QWidget *parent)
         "QPushButton:hover{ background-color:red; color: black;}"
         "QPushButton:pressed{background-color:rgb(85, 170, 255);\
         border - style: inset; }");
-    //ui->horizontalLayout_MainBar->set
 }
 
 MainWindow::~MainWindow()

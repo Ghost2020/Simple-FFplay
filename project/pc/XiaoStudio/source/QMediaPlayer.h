@@ -8,7 +8,6 @@
 #ifndef QMEDIAPLAYER_H
 #define QMEDIAPLAYER_H
 
-#include <QtWidgets/QOpenGLWidget>
 #include <QSlider>
 #include <QKeyEvent>
 #include <QDragEnterEvent>
@@ -18,11 +17,17 @@
 
 #include "FMediaPlayer.h"
 
+//#if defined(Q_OS_WIN32)
+#include <QtWidgets/QOpenGLWidget>
 class QMediaPlayer : public QOpenGLWidget
+//#elif defined (Q_OS_MACOS)
+//#include <QMacNativeWidget>
+//class QMediaPlayer : public QMacNativeWidget
+//#endif
 {
 Q_OBJECT
-public:
-    QMediaPlayer(QWidget *parent = nullptr);
+public :
+    QMediaPlayer(QWidget* parent = nullptr);
     ~QMediaPlayer() override;
 
 public:

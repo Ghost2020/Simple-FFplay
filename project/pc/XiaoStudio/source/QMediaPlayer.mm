@@ -11,8 +11,12 @@
 #import <Appkit/NSWindow.h>
 #endif
 
-QMediaPlayer::QMediaPlayer(QWidget *parent)
-    : QOpenGLWidget(parent)
+QMediaPlayer::QMediaPlayer(QWidget* parent)
+//#if defined(Q_OS_WIN32)
+    :  QOpenGLWidget(parent)
+//#elif defined(Q_OS_MAC64)
+//    : QMacNativeWidget(reinterpret_cast<NSView*>(parent))
+//#endif
 {
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
@@ -64,10 +68,11 @@ void QMediaPlayer::openStream()
 
 #if defined(Q_OS_WIN32)
     this->m_pCorePlayer = std::make_unique<FMediaPlayer>(HWND(this->winId()));
-#elif defined(Q_OS_MACOS)
-    NSView* view = (NSView*)this->effectiveWinId();
-    NSWindow* wnd = [view window];
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(static_cast<void*>(wnd));
+#elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
+    NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
+    //NSWindow* wnd = [view window];
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(reinterpret_cast<void*>(view.window));
+
 #elif defined(Q_OS_LINUX)
     ;
 #endif
@@ -241,7 +246,7 @@ void QMediaPlayer::keyPressEvent(QKeyEvent* event)
         }
     }
 
-    QOpenGLWidget::keyPressEvent(event);
+    QWidget::keyPressEvent(event);
 }
 
 void QMediaPlayer::mousePressEvent(QMouseEvent *event)
@@ -326,7 +331,7 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
     this->m_pProgressSlider->show();*/
 
     if(event)
-        QOpenGLWidget::resizeEvent(event);
+        QWidget::resizeEvent(event);
 }
 
 void QMediaPlayer::dragEnterEvent(QDragEnterEvent *event)
