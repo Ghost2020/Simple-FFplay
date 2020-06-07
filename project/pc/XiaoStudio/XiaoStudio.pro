@@ -24,36 +24,44 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 #DEFINES += SDL_MAIN_HANDLED
 DEFINES += _CRT_SECURE_NO_WARNINGS
 
+# 第三方库的路径
+THIRD_PARTY_PATH
+# ffmpeg 路径
+FFMPEG_LIB_PATH
+# SDL2 路径
+SDL_LIB_PATH
 
 INCLUDEPATH += $$PWD/../../../source/MediaPlayer/include
 INCLUDEPATH += $$PWD/source/
 
 win32{
-THIRD_PARTY_PATH = $$PWD/../../../thirdparty
+    THIRD_PARTY_PATH = $$PWD/../../../thirdparty
+    FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/lib/win32
+    SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2-2.0.12/lib/win32/x64
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2-2.0.12/include
-    LIBS += -L$$THIRD_PARTY_PATH/ffmpeg/lib/win32 -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-    LIBS += -L$$THIRD_PARTY_PATH/SDL2-2.0.12/lib/win32/x64 -lSDL2 -lSDL2main
+    SOURCES += source/QMediaPlayer.cpp
 }
 unix{
 
 }
 mac{
-THIRD_PARTY_PATH = $$/usr/local/Cellar
+    THIRD_PARTY_PATH = $$/usr/local/Cellar
+    FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/lib
+    SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/include
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/2.0.12_1/include
-    LIBS += -L$$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-    LIBS += -L$$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib  -lSDL2
-    LIBS += -framework Foundation
-
+    SOURCES += source/QMediaPlayer.mm
 }
+
+LIBS += -L$$FFMPEG_LIB_PATH -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
+LIBS += -L$$SDL_LIB_PATH -lSDL2
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
     ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
-    source/QMediaPlayer.mm \
     ui/QSettings.cpp
 
 HEADERS += \
