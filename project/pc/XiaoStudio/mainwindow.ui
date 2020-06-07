@@ -1271,7 +1271,7 @@ QPushButton#extraPanelDelete:pressed {
           </property>
           <property name="icon">
            <iconset>
-            <normaloff>ui/res/icon/ic_voice_search.png</normaloff>ui/res/icon/ic_voice_search.png</iconset>
+            <normaloff>ui/res/icon/ic_lock_ringer_on_alpha.png</normaloff>ui/res/icon/ic_lock_ringer_on_alpha.png</iconset>
           </property>
           <property name="iconSize">
            <size>

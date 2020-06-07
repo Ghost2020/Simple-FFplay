@@ -30,7 +30,7 @@ extern "C"
 # include "libavfilter/buffersrc.h"
 #endif
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 }
 
 /* NOTE: the size must be big enough to compensate the hardware audio buffersize size */

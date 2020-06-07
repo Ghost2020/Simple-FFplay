@@ -88,9 +88,9 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
 {
     /*int y1 = event->globalPos().y();
     int y2 = this->pos().y();*/
-    auto pos1 = event->localPos();
-    auto pos2 = event->windowPos();
-    auto pos3 = event->screenPos();
+//    const auto pos1 = event->localPos();
+//    const auto pos2 = event->windowPos();
+//    auto pos3 = event->screenPos();
     if ( (event->button() == Qt::LeftButton) ||
          (event->pos().y() < 50) )
     {
@@ -105,6 +105,7 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
 void MainWindow::mouseReleaseEvent(QMouseEvent* event)
 {
     mouse_press = false;
+    event->accept();
 }
 
 void MainWindow::mouseMoveEvent(QMouseEvent* event)

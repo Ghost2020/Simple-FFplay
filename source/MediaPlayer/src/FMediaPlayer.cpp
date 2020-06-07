@@ -1,5 +1,6 @@
 #include "FMediaPlayer.h"
 
+#include <cmath>
 #include <inttypes.h>
 
 extern "C"

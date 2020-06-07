@@ -43,16 +43,17 @@ THIRD_PARTY_PATH = $$/usr/local/Cellar
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/include
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/2.0.12_1/include
     LIBS += -L$$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-    LIBS += -L$$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib -lSDL2 #-lSDL2main
+    LIBS += -L$$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib  -lSDL2
     LIBS += -framework Foundation
 
-    SOURCES += source/QMediaPlayer.mm
 }
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
+    ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
+    source/QMediaPlayer.mm \
     ui/QSettings.cpp
 
 HEADERS += \
