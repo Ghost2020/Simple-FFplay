@@ -14,7 +14,7 @@ EQ            = =
 
 CC            = gcc
 CXX           = g++
-DEFINES       = -DQT_DEPRECATED_WARNINGS -D_CRT_SECURE_NO_WARNINGS -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
+DEFINES       = -DQT_DEPRECATED_WARNINGS -D_CRT_SECURE_NO_WARNINGS -D__GTK_H_INSIDE__ -DQT_QML_DEBUG -DQT_WIDGETS_LIB -DQT_GUI_LIB -DQT_CORE_LIB
 CFLAGS        = -pipe -g -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 CXXFLAGS      = -pipe -g -std=gnu++1y -Wall -Wextra -D_REENTRANT -fPIC $(DEFINES)
 INCPATH       = -I. -I../../../source/MediaPlayer/include -Isource -I/home/ghostchen/Project/ThirdParty/ffmpeg/include -I/home/ghostchen/App/Qt/5.14.2/gcc_64/include -I/home/ghostchen/App/Qt/5.14.2/gcc_64/include/QtWidgets -I/home/ghostchen/App/Qt/5.14.2/gcc_64/include/QtGui -I/home/ghostchen/App/Qt/5.14.2/gcc_64/include/QtCore -I. -I/usr/include/libdrm -I. -I/home/ghostchen/App/Qt/5.14.2/gcc_64/mkspecs/linux-g++

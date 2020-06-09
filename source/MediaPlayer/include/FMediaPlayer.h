@@ -119,7 +119,7 @@ public:
     * \@brief construction
     * \@param windowID[in]:window ID
     */
-    explicit FMediaPlayer(void* windowID = nullptr);
+    explicit FMediaPlayer(void* constwindowID = nullptr);
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;
@@ -128,6 +128,8 @@ public:
 private:
     /* 被实例化的数量 用于自动管理核心资源*/
     static uint8_t g_nInstance;
+
+    /*  */
 
     /*
     * \@brief 初始化FFmpeg、SDL

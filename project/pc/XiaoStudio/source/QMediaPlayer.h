@@ -47,6 +47,7 @@ public slots:
     void ON_TEST();
 
 protected:
+    bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
