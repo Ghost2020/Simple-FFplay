@@ -22,22 +22,22 @@ void init_dynload(void)
 }
 
 /*
-Ê¹ÓÃ·½·¨ÈçÏÂ:
-    ·½Ê½Ò»:±¾µØÃ½ÌåÎÄ¼þÂ·¾¶
+Ê¹ï¿½Ã·ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½:
+    ï¿½ï¿½Ê½Ò»:ï¿½ï¿½ï¿½ï¿½Ã½ï¿½ï¿½ï¿½Ä¼ï¿½Â·ï¿½ï¿½
 
-    ·½Ê½¶þ:Ö±²¥µØÖ·ÈçÏÂ:
+    ï¿½ï¿½Ê½ï¿½ï¿½:Ö±ï¿½ï¿½ï¿½ï¿½Ö·ï¿½ï¿½ï¿½ï¿½:
 
-        ºþÄÏÎÀÊÓ rtmp://58.200.131.2:1935/livetv/hunantv
-        ¹ãÎ÷ÎÀÊÓ £ºrtmp://58.200.131.2:1935/livetv/gxtv
-        ¹ã¶«ÎÀÊÓ£ºrtmp://58.200.131.2:1935/livetv/gdtv
-        ¶«·½ÎÀÊÓ£ºrtmp://58.200.131.2:1935/livetv/dftv
+        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ rtmp://58.200.131.2:1935/livetv/hunantv
+        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ ï¿½ï¿½rtmp://58.200.131.2:1935/livetv/gxtv
+        ï¿½ã¶«ï¿½ï¿½ï¿½Ó£ï¿½rtmp://58.200.131.2:1935/livetv/gdtv
+        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½Ó£ï¿½rtmp://58.200.131.2:1935/livetv/dftv
 
-    ·½Ê½Èý:»ñÈ¡²¥·ÅÉè±¸
+    ï¿½ï¿½Ê½ï¿½ï¿½:ï¿½ï¿½È¡ï¿½ï¿½ï¿½ï¿½ï¿½è±¸
         ./ffmpeg -f dshow -list_devices true -i dummy
 
-        ±¾»ú²¥·ÅÉè±¸: "Logitech HD Webcam C270"
+        ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½è±¸: "Logitech HD Webcam C270"
 
-        ²¶»ñcameraÍ¼ÏñÐÅÏ¢²¢²¥·Å
+        ï¿½ï¿½ï¿½ï¿½cameraÍ¼ï¿½ï¿½ï¿½ï¿½Ï¢ï¿½ï¿½ï¿½ï¿½ï¿½ï¿½
         -f dshow -i video="Logitech HD Webcam C270"
 */
 
@@ -69,8 +69,8 @@ int main(int argc, char** argv)
         return -1;
     }
 
-    //signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
-    //signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
+    signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
+    signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
 
     if (!pPlayer1->OnStreamOpen(input_filename))
     {

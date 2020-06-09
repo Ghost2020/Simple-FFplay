@@ -43,6 +43,8 @@ static LONG WINAPI handle_exception(LPEXCEPTION_POINTERS lpExceptionInfo)
 }
 #elif defined(Q_OS_MACOS)
 ;
+#elif defined(Q_OS_LINUX)
+#include "zlib.h"
 #endif
 
 

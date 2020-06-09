@@ -20,6 +20,9 @@ qnx: target.path = /tmp/$${TARGET}/bin
 else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
+# set the program icon
+RC_ICONS = $$PWD/ui/res/icon/logo.ico
+
 # SDL库所需的宏
 #DEFINES += SDL_MAIN_HANDLED
 DEFINES += _CRT_SECURE_NO_WARNINGS
@@ -43,7 +46,10 @@ win32{
     SOURCES += source/QMediaPlayer.cpp
 }
 unix{
-
+    THIRD_PARTY_PATH = $$/home/ghostchen/Project/ThirdParty
+    FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/lib
+    INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
+    SOURCES += source/QMediaPlayer.cpp
 }
 mac{
     THIRD_PARTY_PATH = $$/usr/local/Cellar
@@ -54,26 +60,27 @@ mac{
     SOURCES += source/QMediaPlayer.mm
 }
 
-LIBS += -L$$FFMPEG_LIB_PATH -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale
-LIBS += -L$$SDL_LIB_PATH -lSDL2
+LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale #-lavcodec -lavformat -lavfilter -lavutil -lavdevice -lswresample -lswscale -lpostproc -lswresample
+#LIBS += -L$$SDL_LIB_PATH -lSDL2
+LIBS += -L./usr/lib/x86_64-linux-gnu/ -lz -lm -lvdpau -lva -lx264 -lx265 -lSDL2 -lSDL2main -llzma -lva-drm  -lX11 -lva-x11
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
     ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
-    ui/QSettings.cpp
+    #ui/QSettings.cpp
 
 HEADERS += \
     ../../../source/MediaPlayer/include/FDecoder.h \
     ../../../source/MediaPlayer/include/FMediaPlayer.h \
     mainwindow.h \
     source/QMediaPlayer.h \
-    ui/QSettings.h
+    #ui/QSettings.h
 
 FORMS += \
     mainwindow.ui \
-    ui/QSettings.ui
+    #ui/QSettings.ui
 
 DISTFILES += \
     ui/res/icon/ic_lock_ringer_off_alpha.png \
@@ -82,5 +89,8 @@ DISTFILES += \
     ui/res/icon/ic_menu_cc_am.png \
     ui/res/icon/ic_menu_delete.png \
     ui/res/icon/ic_settings.png
+
+RESOURCES += \
+    ui/Xiao.qrc
 
 

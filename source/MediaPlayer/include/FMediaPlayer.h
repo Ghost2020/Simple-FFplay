@@ -680,7 +680,7 @@ private:
     bool eof = false;
 
     std::string sURL = "";
-    SDL_Rect rect{};
+    SDL_Rect rect{0, 0, 0, 0};
     bool step = false;
 
 #if CONFIG_AVFILTER

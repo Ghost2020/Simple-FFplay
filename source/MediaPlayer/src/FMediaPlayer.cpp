@@ -1,11 +1,14 @@
 #include "FMediaPlayer.h"
 
 #include <cmath>
+#include <functional>
 #include <inttypes.h>
 
 extern "C"
 {
 #include "libavutil/dict.h"
+#include "libavutil/opt.h"
+#include "libavcodec/avfft.h"
 #ifdef CONFIG_AVFILTER
 #include "libavutil/avstring.h"
 #include "libavutil/pixdesc.h"
@@ -570,7 +573,7 @@ void FMediaPlayer::video_audio_display()
 		if (rdft_bits != this->rdft_bits) {
 			av_rdft_end(this->rdft);
 			av_free(this->rdft_data);
-			this->rdft = av_rdft_init(rdft_bits, DFT_R2C);
+            this->rdft = av_rdft_init(rdft_bits, DFT_R2C);
 			this->rdft_bits = rdft_bits;
 			this->rdft_data = static_cast<FFTSample*>(av_malloc_array(nb_freq, 4 * sizeof(*this->rdft_data)));
 		}
@@ -752,6 +755,10 @@ bool FMediaPlayer::video_open()
 	const int w = screen_width ? screen_width : default_width;
 	const int h = screen_height ? screen_height : default_height;
 
+#if defined(SDL_MAIN_HANDLED)
+    SDL_SetWindowTitle(pWindow, "Ubuntu");
+#endif
+
 	SDL_SetWindowSize(pWindow, w, h);
 	SDL_SetWindowPosition(pWindow, screen_left, screen_top);
 	if (is_full_screen)
@@ -770,7 +777,7 @@ void FMediaPlayer::video_display()
 	try
 	{
 		if (!this->rect.w)
-			video_open();
+            video_open();
 
 		SDL_SetRenderDrawColor(pRenderer, 0, 0, 0, 255);
 		SDL_RenderClear(pRenderer);
@@ -1939,7 +1946,7 @@ int FMediaPlayer::read_thread()
 
 			ret = avformat_seek_file(this->pFormatCtx, -1, seek_min, seek_target, seek_max, this->seek_flags);
 			if (ret < 0) {
-				av_log(nullptr, AV_LOG_ERROR, "%s: error while seeking\n", this->pFormatCtx->url);
+                av_log(nullptr, AV_LOG_ERROR, "%s: error while seeking\n", this->sURL.c_str()/*this->pFormatCtx->url*/);
 			}
 			else 
 			{
@@ -2534,7 +2541,7 @@ bool FMediaPlayer::is_realtime()
 	if (!strcmp(pFormatCtx->iformat->name, "rtp") || !strcmp(pFormatCtx->iformat->name, "rtsp") || !strcmp(pFormatCtx->iformat->name, "sdp"))
 		return true;
 
-	if (pFormatCtx->pb && (!strncmp(pFormatCtx->url, "rtp:", 4) || !strncmp(pFormatCtx->url, "udp:", 4) || !strncmp(pFormatCtx->url, "rtmp:", 4)))
+    if (pFormatCtx->pb && (!strncmp(this->sURL.c_str()/*pFormatCtx->url*/, "rtp:", 4) || !strncmp(/*pFormatCtx->url*/this->sURL.c_str(), "udp:", 4) || !strncmp(this->sURL.c_str()/*pFormatCtx->url*/, "rtmp:", 4)))
 		return true;
 
 	return false;
@@ -2717,7 +2724,7 @@ void FMediaPlayer::refresh_loop_wait_event(SDL_Event& event)
 		if (this->eShow_mode != FMediaPlayer::EShowMode::SHOW_MODE_NONE && (!this->paused || this->force_refresh))
 			video_refresh(remaining_time);
 #ifdef SDL_MAIN_HANDLED
-        SDL_PumpEvents();
+        //SDL_PumpEvents();
     }
 #endif
 }

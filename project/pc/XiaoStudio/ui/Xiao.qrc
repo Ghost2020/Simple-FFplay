@@ -1,0 +1,26 @@
+<RCC>
+    <qresource prefix="/">
+        <file>res/icon/minimize_pressed.png</file>
+        <file>res/icon/minimize.png</file>
+        <file>res/icon/maximize_hover.png</file>
+        <file>res/icon/maximize.png</file>
+        <file>res/icon/logo.jpg</file>
+        <file>res/icon/ic_voice_search.png</file>
+        <file>res/icon/ic_settings.png</file>
+        <file>res/icon/ic_menu_start_conversation.png</file>
+        <file>res/icon/ic_menu_invite.png</file>
+        <file>res/icon/ic_menu_emoticons.png</file>
+        <file>res/icon/ic_menu_delete.png</file>
+        <file>res/icon/ic_menu_cc_am.png</file>
+        <file>res/icon/ic_menu_camera.png</file>
+        <file>res/icon/ic_menu_blocked_user.png</file>
+        <file>res/icon/ic_menu_allfriends.png</file>
+        <file>res/icon/ic_lock_ringer_on_alpha.png</file>
+        <file>res/icon/ic_lock_ringer_off_alpha.png</file>
+        <file>res/icon/ic_dialog_usb.png</file>
+        <file>res/icon/ic_aggregated.png</file>
+        <file>res/icon/close-white.png</file>
+        <file>res/icon/btn_close_normal.png</file>
+        <file>res/icon/btn_close.png</file>
+    </qresource>
+</RCC>

@@ -8,18 +8,20 @@
 #ifndef QMEDIAPLAYER_H
 #define QMEDIAPLAYER_H
 
-#include <QSlider>
 #include <QKeyEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
 #include <QTimer>
 #include <QMenu>
 
+//#include <QWindow>
+//#include <QScreen>
+
 #include "FMediaPlayer.h"
 
 //#if defined(Q_OS_WIN32)
 #include <QtWidgets/QOpenGLWidget>
-class QMediaPlayer : public QOpenGLWidget
+class QMediaPlayer : public  QOpenGLWidget
 //#elif defined (Q_OS_MACOS)
 //#include <QMacNativeWidget>
 //class QMediaPlayer : public QMacNativeWidget
@@ -56,8 +58,7 @@ private:
     int64_t m_nLast_mouse_left_click = 0;
     QString m_sURL = "";
     QMenu* m_pMenu = nullptr;
-    QTimer* m_pTimer;
-    //QSlider* m_pProgressSlider = nullptr;
+    QTimer* m_pTimer = nullptr;
     std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
 };
 

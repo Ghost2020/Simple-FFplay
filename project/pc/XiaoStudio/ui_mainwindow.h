@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.14.0
+** Created by: Qt User Interface Compiler version 5.14.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -78,6 +78,9 @@ public:
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
         MainWindow->resize(962, 691);
         MainWindow->setMouseTracking(true);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/res/icon/logo.jpg"), QSize(), QIcon::Normal, QIcon::Off);
+        MainWindow->setWindowIcon(icon);
         MainWindow->setStyleSheet(QString::fromUtf8("/* XiaoTheme, main QApplication palette and QML values */\n"
 "XiaoTheme {\n"
 "    window: #181819;\n"
@@ -1130,8 +1133,6 @@ public:
         pushButton_4 = new QPushButton(MainBar);
         pushButton_4->setObjectName(QString::fromUtf8("pushButton_4"));
         pushButton_4->setMaximumSize(QSize(32, 32));
-        QIcon icon;
-        icon.addFile(QString::fromUtf8("ui/res/icon/logo.jpg"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_4->setIcon(icon);
         pushButton_4->setIconSize(QSize(32, 32));
 
@@ -1153,7 +1154,7 @@ public:
         pushButton_Minmum->setObjectName(QString::fromUtf8("pushButton_Minmum"));
         pushButton_Minmum->setMaximumSize(QSize(26, 18));
         QIcon icon1;
-        icon1.addFile(QString::fromUtf8("ui/res/icon/minimize.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QString::fromUtf8(":/res/icon/minimize.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Minmum->setIcon(icon1);
         pushButton_Minmum->setIconSize(QSize(26, 18));
 
@@ -1163,7 +1164,7 @@ public:
         pushButton_Maxmum->setObjectName(QString::fromUtf8("pushButton_Maxmum"));
         pushButton_Maxmum->setMaximumSize(QSize(25, 18));
         QIcon icon2;
-        icon2.addFile(QString::fromUtf8("ui/res/icon/maximize.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon2.addFile(QString::fromUtf8(":/res/icon/maximize.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Maxmum->setIcon(icon2);
         pushButton_Maxmum->setIconSize(QSize(25, 18));
 
@@ -1179,7 +1180,7 @@ public:
         pushButton_Exit->setMaximumSize(QSize(25, 18));
         pushButton_Exit->setStyleSheet(QString::fromUtf8("QPushButton#pushButton_exit:hover { border - image: url(: /ui/res/btn_close.png);}"));
         QIcon icon3;
-        icon3.addFile(QString::fromUtf8("ui/res/icon/close-white.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon3.addFile(QString::fromUtf8(":/res/icon/close-white.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Exit->setIcon(icon3);
         pushButton_Exit->setIconSize(QSize(25, 18));
 
@@ -1228,7 +1229,7 @@ public:
         pushButton_Audio->setSizePolicy(sizePolicy3);
         pushButton_Audio->setMaximumSize(QSize(128, 128));
         QIcon icon4;
-        icon4.addFile(QString::fromUtf8("ui/res/icon/ic_voice_search.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon4.addFile(QString::fromUtf8(":/res/icon/ic_lock_ringer_on_alpha.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Audio->setIcon(icon4);
         pushButton_Audio->setIconSize(QSize(48, 48));
 
@@ -1249,7 +1250,7 @@ public:
         pushButton_Video->setObjectName(QString::fromUtf8("pushButton_Video"));
         pushButton_Video->setMaximumSize(QSize(16777215, 64));
         QIcon icon5;
-        icon5.addFile(QString::fromUtf8("ui/res/icon/ic_menu_camera.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon5.addFile(QString::fromUtf8(":/res/icon/ic_menu_camera.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Video->setIcon(icon5);
         pushButton_Video->setIconSize(QSize(48, 48));
 
@@ -1270,7 +1271,7 @@ public:
         pushButton_ShareScreen->setObjectName(QString::fromUtf8("pushButton_ShareScreen"));
         pushButton_ShareScreen->setMaximumSize(QSize(16777215, 64));
         QIcon icon6;
-        icon6.addFile(QString::fromUtf8("ui/res/icon/ic_dialog_usb.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon6.addFile(QString::fromUtf8(":/res/icon/ic_dialog_usb.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_ShareScreen->setIcon(icon6);
         pushButton_ShareScreen->setIconSize(QSize(48, 48));
 
@@ -1291,7 +1292,7 @@ public:
         pushButton_ManageMenber->setObjectName(QString::fromUtf8("pushButton_ManageMenber"));
         pushButton_ManageMenber->setMaximumSize(QSize(16777215, 64));
         QIcon icon7;
-        icon7.addFile(QString::fromUtf8("ui/res/icon/ic_menu_allfriends.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon7.addFile(QString::fromUtf8(":/res/icon/ic_menu_allfriends.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_ManageMenber->setIcon(icon7);
         pushButton_ManageMenber->setIconSize(QSize(48, 48));
 
@@ -1312,7 +1313,7 @@ public:
         pushButton_Invite->setObjectName(QString::fromUtf8("pushButton_Invite"));
         pushButton_Invite->setMaximumSize(QSize(16777215, 64));
         QIcon icon8;
-        icon8.addFile(QString::fromUtf8("ui/res/icon/ic_menu_invite.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon8.addFile(QString::fromUtf8(":/res/icon/ic_menu_invite.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Invite->setIcon(icon8);
         pushButton_Invite->setIconSize(QSize(48, 48));
 
@@ -1333,7 +1334,7 @@ public:
         pushButton_Talk->setObjectName(QString::fromUtf8("pushButton_Talk"));
         pushButton_Talk->setMaximumSize(QSize(16777215, 64));
         QIcon icon9;
-        icon9.addFile(QString::fromUtf8("ui/res/icon/ic_menu_start_conversation.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon9.addFile(QString::fromUtf8(":/res/icon/ic_menu_start_conversation.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Talk->setIcon(icon9);
         pushButton_Talk->setIconSize(QSize(48, 48));
 
@@ -1354,7 +1355,7 @@ public:
         pushButton_Expression->setObjectName(QString::fromUtf8("pushButton_Expression"));
         pushButton_Expression->setMaximumSize(QSize(16777215, 64));
         QIcon icon10;
-        icon10.addFile(QString::fromUtf8("ui/res/icon/ic_menu_emoticons.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon10.addFile(QString::fromUtf8(":/res/icon/ic_menu_emoticons.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Expression->setIcon(icon10);
         pushButton_Expression->setIconSize(QSize(48, 48));
 
@@ -1375,7 +1376,7 @@ public:
         pushButton_Document->setObjectName(QString::fromUtf8("pushButton_Document"));
         pushButton_Document->setMaximumSize(QSize(16777215, 64));
         QIcon icon11;
-        icon11.addFile(QString::fromUtf8("ui/res/icon/ic_aggregated.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon11.addFile(QString::fromUtf8(":/res/icon/ic_aggregated.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Document->setIcon(icon11);
         pushButton_Document->setIconSize(QSize(48, 48));
 
@@ -1396,7 +1397,7 @@ public:
         pushButton_Settings->setObjectName(QString::fromUtf8("pushButton_Settings"));
         pushButton_Settings->setMaximumSize(QSize(16777215, 64));
         QIcon icon12;
-        icon12.addFile(QString::fromUtf8("ui/res/icon/ic_settings.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon12.addFile(QString::fromUtf8(":/res/icon/ic_settings.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Settings->setIcon(icon12);
         pushButton_Settings->setIconSize(QSize(48, 48));
 

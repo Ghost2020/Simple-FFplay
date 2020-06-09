@@ -8,6 +8,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
+    //, m_pSettings(nullptr)
 {
     ui->setupUi(this);
 
@@ -19,10 +20,10 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("XiaoStudio");
     this->statusBar()->setHidden(true);
 
-    this->m_pSettings = new QSettings(this);
+    //this->m_pSettings = new QSettings(this);
 
     connect(ui->pushButton_Minmum, SIGNAL(clicked(bool)), this, SLOT(showMinimized()));
-    connect(ui->pushButton_Maxmum, SIGNAL(clicked(bool)), this, SLOT(showMaximized()));
+    connect(ui->pushButton_Maxmum, SIGNAL(clicked(bool)), this, SLOT(on_pushButton_ShowMaxMin()));
     connect(ui->pushButton_Exit, SIGNAL(clicked(bool)), this, SLOT(close()));
    
     ui->pushButton_Minmum->setStyleSheet("QPushButton{background-color:black;\
@@ -65,17 +66,8 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     switch(event->key())
     {
         case Qt::Key::Key_F11:
-        {
-            if (!this->isMaximized())
-            {
-                this->showMaximized();
-            }
-            else
-            {
-                this->showNormal();
-            }
-        }
-        break;
+            on_pushButton_ShowMaxMin();
+            break;
     default:
         ;
     }
@@ -97,7 +89,6 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
 
         //鼠标相对于窗体的位置（或者使用 event->globalPos() - this->pos()）
         move_point = event->pos();
-
     }
 }
 
@@ -121,10 +112,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 {
     if (event->button() == Qt::LeftButton)
     {
-        if (!this->isFullScreen())
-            this->showFullScreen();
-        else
-            this->showNormal();
+        on_pushButton_ShowMaxMin();
     }
 }
 
@@ -185,7 +173,14 @@ void MainWindow::on_pushButton_Invite_clicked()
 
 void MainWindow::on_pushButton_Settings_clicked()
 {
-    //m_pSettings->showNormal();
-    m_pSettings->setModal(true);
-    m_pSettings->showNormal();
+//    m_pSettings->setModal(true);
+//    m_pSettings->showNormal();
+}
+
+void MainWindow::on_pushButton_ShowMaxMin()
+{
+    if (!this->isFullScreen())
+        this->showFullScreen();
+    else
+        this->showNormal();
 }
