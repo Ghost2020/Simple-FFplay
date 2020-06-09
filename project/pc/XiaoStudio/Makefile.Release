@@ -68,7 +68,12 @@ OBJECTS       = release\FDecoder.obj \
 		release\moc_QMediaPlayer.obj \
 		release\moc_QSettings.obj
 
-DIST          =  ..\..\..\source\MediaPlayer\include\FDecoder.h \
+DIST          = ui/res/icon/ic_lock_ringer_off_alpha.png \
+		ui/res/icon/ic_lock_ringer_on_alpha.png \
+		ui/res/icon/ic_menu_blocked_user.png \
+		ui/res/icon/ic_menu_cc_am.png \
+		ui/res/icon/ic_menu_delete.png \
+		ui/res/icon/ic_settings.png ..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		mainwindow.h \
 		source\QMediaPlayer.h \
@@ -345,7 +350,8 @@ release\moc_mainwindow.cpp: mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QKeyEvent \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QDragEnterEvent \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QMap \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QPair \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QOpenGLWidget \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qopenglwidget.h \
@@ -372,7 +378,6 @@ release\moc_mainwindow.cpp: mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmenu.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \
@@ -599,7 +604,6 @@ release\moc_QMediaPlayer.cpp: source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \
@@ -942,7 +946,6 @@ ui_mainwindow.h: mainwindow.ui \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \
@@ -1273,7 +1276,8 @@ release\main.obj: main.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QKeyEvent \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QDragEnterEvent \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QMap \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QPair \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QOpenGLWidget \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qopenglwidget.h \
@@ -1300,7 +1304,6 @@ release\main.obj: main.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmenu.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \
@@ -1509,7 +1512,8 @@ release\mainwindow.obj: mainwindow.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QKeyEvent \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QDragEnterEvent \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QMap \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QPair \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QOpenGLWidget \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qopenglwidget.h \
@@ -1536,7 +1540,6 @@ release\mainwindow.obj: mainwindow.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmenu.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \
@@ -1629,6 +1632,7 @@ release\mainwindow.obj: mainwindow.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qdialog.h \
 		ui_mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QVariant \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\QIcon \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QApplication \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qapplication.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\qcoreapplication.h \
@@ -1636,25 +1640,24 @@ release\mainwindow.obj: mainwindow.cpp mainwindow.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qdesktopwidget.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qguiapplication.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qinputmethod.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QHBoxLayout \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qboxlayout.h \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QGridLayout \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qgridlayout.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qlayout.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qlayoutitem.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qgridlayout.h \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qboxlayout.h \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QHBoxLayout \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QLabel \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qlabel.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qframe.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QMenuBar \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmenubar.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QPushButton \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qpushbutton.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qabstractbutton.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QSpacerItem \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QStatusBar \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qstatusbar.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QVBoxLayout \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QMessageBox \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmessagebox.h
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qmessagebox.h \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QStatusBar \
+		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qstatusbar.h
 
 release\QMediaPlayer.obj: source\QMediaPlayer.cpp source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\QOpenGLWidget \
@@ -1788,7 +1791,6 @@ release\QMediaPlayer.obj: source\QMediaPlayer.cpp source\QMediaPlayer.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtGui\qicon.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qaction.h \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtWidgets\qactiongroup.h \
-		F:\CXX\app\Qt\5.14.0\msvc2017_64\include\QtCore\QList \
 		..\..\..\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\..\source\MediaPlayer\include\FDecoder.h \
 		..\..\..\thirdparty\ffmpeg\include\libavcodec\avcodec.h \

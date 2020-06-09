@@ -57,7 +57,7 @@ void QMediaPlayer::openStream()
 {
     onStopPlay();
 
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(HWND(this->winId()));
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*HWND*/(void*)(this->winId()));
 
     if (!this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
     {

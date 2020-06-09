@@ -66,8 +66,8 @@
     <Import Project="$(QtMsBuild)\qt.props" />
   </ImportGroup>
   <PropertyGroup>
-    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">release\</OutDir>
-    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">$(Platform)\$(Configuration)\</IntDir>
+    <OutDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">build\Qt_5_14_0_MSVC2017_64bit-Release\release</OutDir>
+    <IntDir Condition="'$(Configuration)|$(Platform)'=='Release|x64'">build\Qt_5_14_0_MSVC2017_64bit-Release\release</IntDir>
     <TargetName Condition="'$(Configuration)|$(Platform)'=='Release|x64'">XiaoStudio</TargetName>
     <IgnoreImportLibrary Condition="'$(Configuration)|$(Platform)'=='Release|x64'">true</IgnoreImportLibrary>
     <LinkIncremental Condition="'$(Configuration)|$(Platform)'=='Release|x64'">false</LinkIncremental>
