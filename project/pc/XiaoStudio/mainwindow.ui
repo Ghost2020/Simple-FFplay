@@ -16,6 +16,10 @@
   <property name="windowTitle">
    <string>MainWindow</string>
   </property>
+  <property name="windowIcon">
+   <iconset resource="ui/Xiao.qrc">
+    <normaloff>:/res/icon/logo.jpg</normaloff>:/res/icon/logo.jpg</iconset>
+  </property>
   <property name="styleSheet">
    <string notr="true">/* XiaoTheme, main QApplication palette and QML values */
 XiaoTheme {
@@ -1083,8 +1087,8 @@ QPushButton#extraPanelDelete:pressed {
           <string/>
          </property>
          <property name="icon">
-          <iconset>
-           <normaloff>ui/res/icon/logo.jpg</normaloff>ui/res/icon/logo.jpg</iconset>
+          <iconset resource="ui/Xiao.qrc">
+           <normaloff>:/res/icon/logo.jpg</normaloff>:/res/icon/logo.jpg</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -1131,8 +1135,8 @@ QPushButton#extraPanelDelete:pressed {
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>ui/res/icon/minimize.png</normaloff>ui/res/icon/minimize.png</iconset>
+            <iconset resource="ui/Xiao.qrc">
+             <normaloff>:/res/icon/minimize.png</normaloff>:/res/icon/minimize.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1154,8 +1158,8 @@ QPushButton#extraPanelDelete:pressed {
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>ui/res/icon/maximize.png</normaloff>ui/res/icon/maximize.png</iconset>
+            <iconset resource="ui/Xiao.qrc">
+             <normaloff>:/res/icon/maximize.png</normaloff>:/res/icon/maximize.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1186,8 +1190,8 @@ QPushButton#extraPanelDelete:pressed {
             <string/>
            </property>
            <property name="icon">
-            <iconset>
-             <normaloff>ui/res/icon/close-white.png</normaloff>ui/res/icon/close-white.png</iconset>
+            <iconset resource="ui/Xiao.qrc">
+             <normaloff>:/res/icon/close-white.png</normaloff>:/res/icon/close-white.png</iconset>
            </property>
            <property name="iconSize">
             <size>
@@ -1270,8 +1274,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_voice_search.png</normaloff>ui/res/icon/ic_voice_search.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_lock_ringer_on_alpha.png</normaloff>:/res/icon/ic_lock_ringer_on_alpha.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1307,8 +1311,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_menu_camera.png</normaloff>ui/res/icon/ic_menu_camera.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_menu_camera.png</normaloff>:/res/icon/ic_menu_camera.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1344,8 +1348,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_dialog_usb.png</normaloff>ui/res/icon/ic_dialog_usb.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_dialog_usb.png</normaloff>:/res/icon/ic_dialog_usb.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1381,8 +1385,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_menu_allfriends.png</normaloff>ui/res/icon/ic_menu_allfriends.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_menu_allfriends.png</normaloff>:/res/icon/ic_menu_allfriends.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1418,8 +1422,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_menu_invite.png</normaloff>ui/res/icon/ic_menu_invite.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_menu_invite.png</normaloff>:/res/icon/ic_menu_invite.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1455,8 +1459,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_menu_start_conversation.png</normaloff>ui/res/icon/ic_menu_start_conversation.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_menu_start_conversation.png</normaloff>:/res/icon/ic_menu_start_conversation.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1492,8 +1496,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_menu_emoticons.png</normaloff>ui/res/icon/ic_menu_emoticons.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_menu_emoticons.png</normaloff>:/res/icon/ic_menu_emoticons.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1529,8 +1533,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_aggregated.png</normaloff>ui/res/icon/ic_aggregated.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_aggregated.png</normaloff>:/res/icon/ic_aggregated.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1566,8 +1570,8 @@ QPushButton#extraPanelDelete:pressed {
            <string/>
           </property>
           <property name="icon">
-           <iconset>
-            <normaloff>ui/res/icon/ic_settings.png</normaloff>ui/res/icon/ic_settings.png</iconset>
+           <iconset resource="ui/Xiao.qrc">
+            <normaloff>:/res/icon/ic_settings.png</normaloff>:/res/icon/ic_settings.png</iconset>
           </property>
           <property name="iconSize">
            <size>
@@ -1614,6 +1618,8 @@ QPushButton#extraPanelDelete:pressed {
    <header location="global">QMediaPlayer.h</header>
   </customwidget>
  </customwidgets>
- <resources/>
+ <resources>
+  <include location="ui/Xiao.qrc"/>
+ </resources>
  <connections/>
 </ui>

@@ -36,19 +36,15 @@ private:
 
 protected:
     void keyPressEvent(QKeyEvent* event) override;
-
     void mousePressEvent(QMouseEvent* event) override;
-
     void mouseReleaseEvent(QMouseEvent* event) override;
-
     void mouseMoveEvent(QMouseEvent* event) override;
-
     void mouseDoubleClickEvent(QMouseEvent* event) override;
 
 private slots:
     void on_pushButton_Invite_clicked();
-
     void on_pushButton_Settings_clicked();
+    void on_pushButton_ShowMaxMin();
 
 private:
     QPoint move_point;
@@ -56,7 +52,7 @@ private:
 
     Ui::MainWindow *ui = nullptr;
 
-    QSettings* m_pSettings = nullptr;
+    //QSettings m_Settings/* = nullptr*/;
 
     /* record the mediaPlayer */
     QList<QPair<int, QMediaPlayer*>> m_String2Screen;

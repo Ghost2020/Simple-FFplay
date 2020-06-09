@@ -29,7 +29,7 @@ extern "C"
 # include "libavfilter/buffersrc.h"
 #endif
 
-#include <SDL.h>
+#include <SDL2/SDL.h>
 }
 
 /* NOTE: the size must be big enough to compensate the hardware audio buffersize size */
@@ -118,7 +118,7 @@ public:
     * \@brief construction
     * \@param windowID[in]:window ID
     */
-    explicit FMediaPlayer(void* windowID = nullptr);
+    explicit FMediaPlayer(void* constwindowID = nullptr);
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;
@@ -127,6 +127,8 @@ public:
 private:
     /* 被实例化的数量 用于自动管理核心资源*/
     static uint8_t g_nInstance;
+
+    /*  */
 
     /*
     * \@brief 初始化FFmpeg、SDL
@@ -679,7 +681,7 @@ private:
     bool eof = false;
 
     std::string sURL = "";
-    SDL_Rect rect{};
+    SDL_Rect rect{0, 0, 0, 0};
     bool step = false;
 
 #if CONFIG_AVFILTER

@@ -6,8 +6,24 @@
 #include <QFileInfo>
 #include <iostream>
 
-QMediaPlayer::QMediaPlayer(QWidget *parent)
-    : QOpenGLWidget(parent)
+#if defined(Q_OS_MACOS)
+//#import<cocoa/cocoa.h>
+#import <Appkit/NSWindow.h>
+#elif defined(Q_OS_LINUX)
+#include <QWindow>
+//#include "X11/X.h"
+extern "C"
+{
+    //#include "gtk/gtkwindow.h"
+}
+#endif
+
+QMediaPlayer::QMediaPlayer(QWidget* parent)
+//#if defined(Q_OS_WIN32)
+    :  QOpenGLWidget(parent)
+//#elif defined(Q_OS_MAC64)
+//    : QMacNativeWidget(reinterpret_cast<NSView*>(parent))
+//#endif
 {
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
@@ -18,13 +34,13 @@ QMediaPlayer::QMediaPlayer(QWidget *parent)
     /* Set the widget palatee */
 
     this->m_pMenu = new QMenu(this);
-    QAction *beginPlayAction = this->m_pMenu->addAction(QString("Play"));
+    QAction* beginPlayAction = this->m_pMenu->addAction(QString("Play"));
     QAction* pausePlayAction = this->m_pMenu->addAction(QString("Pause"));
     pausePlayAction->setCheckable(true);
     QAction* AudioPlayAction = this->m_pMenu->addAction(QString("Audio"));
     AudioPlayAction->setCheckable(true);
-    QAction *stopPlayAction = this->m_pMenu->addAction(QString("Stop"));
-    QAction *recordAction = this->m_pMenu->addAction(QString("Record"));
+    QAction* stopPlayAction = this->m_pMenu->addAction(QString("Stop"));
+    QAction* recordAction = this->m_pMenu->addAction(QString("Record"));
     recordAction->setCheckable(true);
     this->m_pMenu->addSeparator();
     QAction *quitAction = this->m_pMenu->addAction(QString("Quit"));
@@ -42,10 +58,6 @@ QMediaPlayer::QMediaPlayer(QWidget *parent)
     this->m_pTimer = new QTimer(this);
     this->m_pTimer->setInterval(20);
     connect(this->m_pTimer, SIGNAL(timeout()), this, SLOT(ON_TEST()));
-
-    /*this->m_pProgressSlider = new QSlider(this);
-    this->m_pProgressSlider->setOrientation(Qt::Orientation::Horizontal);
-    this->m_pProgressSlider->showNormal();*/
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -57,7 +69,17 @@ void QMediaPlayer::openStream()
 {
     onStopPlay();
 
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*HWND*/(void*)(this->winId()));
+#if defined(Q_OS_WIN32)
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(HWND(this->winId()));
+#elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
+    NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
+    //NSWindow* wnd = [view window];
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(reinterpret_cast<void*>(view.window));
+#elif defined(Q_OS_LINUX)
+//#if defined(Q_GTK)
+
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*(GtkWindow*)*/(void*)(this->winId()));
+#endif
 
     if (!this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
     {
@@ -84,7 +106,7 @@ void QMediaPlayer::onShowMenu()
 
 void QMediaPlayer::onBeginPlay()
 {
-    this->m_sURL = QFileDialog::getOpenFileName();
+    this->m_sURL = QFileDialog::getOpenFileName(this, QString("Select a media file"));
 
     if(!this->m_sURL.isEmpty())
         openStream();
@@ -126,6 +148,16 @@ void QMediaPlayer::ON_TEST()
     SDL_Event event;
     if(this->m_pCorePlayer)
         this->m_pCorePlayer->refresh_loop_wait_event(event);
+}
+
+bool QMediaPlayer::event(QEvent *event)
+{
+    if(event->type() == QEvent::WinIdChange)
+    {
+        std::cout << "Window ID is changed!currentID<%d>" << this->winId() << std::endl;
+    }
+
+    return QWidget::event(event);
 }
 
 void QMediaPlayer::keyPressEvent(QKeyEvent* event)
@@ -228,7 +260,7 @@ void QMediaPlayer::keyPressEvent(QKeyEvent* event)
         }
     }
 
-    QOpenGLWidget::keyPressEvent(event);
+    QWidget::keyPressEvent(event);
 }
 
 void QMediaPlayer::mousePressEvent(QMouseEvent *event)
@@ -313,7 +345,7 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
     this->m_pProgressSlider->show();*/
 
     if(event)
-        QOpenGLWidget::resizeEvent(event);
+        QWidget::resizeEvent(event);
 }
 
 void QMediaPlayer::dragEnterEvent(QDragEnterEvent *event)

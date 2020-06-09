@@ -41,6 +41,10 @@ static LONG WINAPI handle_exception(LPEXCEPTION_POINTERS lpExceptionInfo)
 {
     return GenerateMiniDump(lpExceptionInfo);
 }
+#elif defined(Q_OS_MACOS)
+;
+#elif defined(Q_OS_LINUX)
+;
 #endif
 
 
@@ -64,7 +68,9 @@ int main(int argc, char *argv[])
 
     std::cout << "Program Ending..." << std::endl;
 
+#if defined(Q_OS_WIN32)
     assert(_CrtCheckMemory());
+#endif
     return appRes;
 }
 
