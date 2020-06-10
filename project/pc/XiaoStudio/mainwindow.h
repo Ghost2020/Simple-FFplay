@@ -24,7 +24,7 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
-    Q_OBJECT
+Q_OBJECT
 
 public:
     MainWindow(QWidget *parent = nullptr);
@@ -47,12 +47,19 @@ private slots:
     void on_pushButton_ShowMaxMin();
 
 private:
+    /* 初始化一些硬件相关资源 */
+    bool initContext();
+
+private:
+
     QPoint move_point;
-    bool mouse_press;
+
+    bool mouse_press = false;
 
     Ui::MainWindow *ui = nullptr;
 
-    //QSettings m_Settings/* = nullptr*/;
+    /* 设置相关GUI操作 */
+    QSettings* m_pSettings = nullptr;
 
     /* record the mediaPlayer */
     QList<QPair<int, QMediaPlayer*>> m_String2Screen;

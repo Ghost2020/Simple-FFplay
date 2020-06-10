@@ -21,6 +21,8 @@ public:
     explicit QSettings(QWidget *parent = nullptr);
     ~QSettings();
 
+public slots:
+
 private:
     Ui::QSettings *ui;
 };

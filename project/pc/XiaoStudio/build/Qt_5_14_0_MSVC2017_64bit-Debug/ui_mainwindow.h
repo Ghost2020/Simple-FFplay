@@ -1253,7 +1253,7 @@ public:
         pushButton_Video->setObjectName(QString::fromUtf8("pushButton_Video"));
         pushButton_Video->setMaximumSize(QSize(16777215, 64));
         QIcon icon5;
-        icon5.addFile(QString::fromUtf8(":/res/icon/ic_menu_camera.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon5.addFile(QString::fromUtf8(":/res/icon/AnswerWithVideo.scale-200.png"), QSize(), QIcon::Normal, QIcon::Off);
         pushButton_Video->setIcon(icon5);
         pushButton_Video->setIconSize(QSize(48, 48));
 

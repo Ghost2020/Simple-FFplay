@@ -22,5 +22,14 @@
         <file>res/icon/close-white.png</file>
         <file>res/icon/btn_close_normal.png</file>
         <file>res/icon/btn_close.png</file>
+        <file>res/icon/AnswerWithVideo.scale-150.png</file>
+        <file>res/icon/AnswerWithVideo.scale-200.png</file>
+        <file>res/icon/btn_next.png</file>
+        <file>res/icon/btn_prev.png</file>
+        <file>res/icon/video.svg</file>
+        <file>res/icon/hotkeys.svg</file>
+        <file>res/icon/output.svg</file>
+        <file>res/icon/stream.svg</file>
+        <file>res/icon/camera_white_balance_cloudy.png</file>
     </qresource>
 </RCC>

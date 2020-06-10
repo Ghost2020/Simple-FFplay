@@ -1313,7 +1313,7 @@ QPushButton#extraPanelDelete:pressed {
            </property>
            <property name="icon">
             <iconset resource="ui/Xiao.qrc">
-             <normaloff>:/res/icon/ic_menu_camera.png</normaloff>:/res/icon/ic_menu_camera.png</iconset>
+             <normaloff>:/res/icon/AnswerWithVideo.scale-200.png</normaloff>:/res/icon/AnswerWithVideo.scale-200.png</iconset>
            </property>
            <property name="iconSize">
             <size>

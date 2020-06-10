@@ -13,9 +13,7 @@
 #include <QDropEvent>
 #include <QTimer>
 #include <QMenu>
-
-//#include <QWindow>
-//#include <QScreen>
+#include <QLabel>
 
 #include "FMediaPlayer.h"
 
@@ -60,6 +58,7 @@ private:
     QString m_sURL = "";
     QMenu* m_pMenu = nullptr;
     QTimer* m_pTimer = nullptr;
+    QLabel* m_pStatusPic = nullptr;
     std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
 };
 

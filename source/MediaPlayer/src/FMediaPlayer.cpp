@@ -2134,6 +2134,9 @@ int FMediaPlayer::audio_open(int64_t wanted_channel_layout, int wanted_nb_channe
 	wanted_spec.callback = FMediaPlayer::sdl_audio_callback;
 	wanted_spec.userdata = this;
 
+    SDL_GetNumAudioDrivers();
+    //SDL_GetAudioDeviceName();
+
 	/* 打开音频设备 */
 	while (!(audio_dev = SDL_OpenAudioDevice(nullptr, 0, &wanted_spec, &spec, SDL_AUDIO_ALLOW_FREQUENCY_CHANGE | SDL_AUDIO_ALLOW_CHANNELS_CHANGE))) 
 	{

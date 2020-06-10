@@ -8,7 +8,7 @@
 MainWindow::MainWindow(QWidget *parent)
     : QMainWindow(parent)
     , ui(new Ui::MainWindow)
-    //, m_pSettings(nullptr)
+    , m_pSettings(nullptr)
 {
     ui->setupUi(this);
 
@@ -20,7 +20,7 @@ MainWindow::MainWindow(QWidget *parent)
     this->setWindowTitle("XiaoStudio");
     this->statusBar()->setHidden(true);
 
-    //this->m_pSettings = new QSettings(this);
+    this->m_pSettings = new QSettings(this);
 
     connect(ui->pushButton_Minmum, SIGNAL(clicked(bool)), this, SLOT(showMinimized()));
     connect(ui->pushButton_Maxmum, SIGNAL(clicked(bool)), this, SLOT(on_pushButton_ShowMaxMin()));
@@ -184,8 +184,8 @@ void MainWindow::on_pushButton_Invite_clicked()
 
 void MainWindow::on_pushButton_Settings_clicked()
 {
-//    m_pSettings->setModal(true);
-//    m_pSettings->showNormal();
+    m_pSettings->setModal(true);
+    m_pSettings->showNormal();
 }
 
 void MainWindow::on_pushButton_ShowMaxMin()

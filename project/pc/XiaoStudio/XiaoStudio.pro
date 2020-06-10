@@ -46,14 +46,16 @@ win32{
     SOURCES += source/QMediaPlayer.cpp
 }
 unix{
-    DEFINES += __GTK_H_INSIDE__
-    #QMAKE_CFLAGS += `pkg-config --cflags glib-2.0`
-    #QMAKE_LIBDIR_FLAGS += `pkg-config --libs glib-2.0`
+    #GTK 库相关
+    DEFINES += __GTK_H_INSIDE__    
+    QMAKE_CFLAGS += `pkg-config --cflags glib-2.0`
+    QMAKE_LIBDIR_FLAGS += `pkg-config --libs glib-2.0`
 
     THIRD_PARTY_PATH = $$/home/ghostchen/Project/ThirdParty
     FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/lib
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
-    INCLUDEPATH += /usr/include/gtk-3.0 #Gtk+ 跨平台的图形工具包
+    #Gtk+ 跨平台的图形工具包
+    INCLUDEPATH += /usr/include/gtk-3.0
     INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
     INCLUDEPATH += /usr/include/pango-1.0/
     INCLUDEPATH += /usr/include/cairo
@@ -84,18 +86,17 @@ SOURCES += \
     ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
-    #ui/QSettings.cpp
+    ui/QSettings.cpp
 
 HEADERS += \
-    ../../../source/MediaPlayer/include/FDecoder.h \
     ../../../source/MediaPlayer/include/FMediaPlayer.h \
     mainwindow.h \
     source/QMediaPlayer.h \
-    #ui/QSettings.h
+    ui/QSettings.h
 
 FORMS += \
     mainwindow.ui \
-    #ui/QSettings.ui
+    ui/QSettings.ui
 
 DISTFILES += \
     ui/res/icon/ic_lock_ringer_off_alpha.png \

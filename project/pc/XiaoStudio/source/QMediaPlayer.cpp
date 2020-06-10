@@ -51,6 +51,12 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     this->m_pTimer = new QTimer(this);
     this->m_pTimer->setInterval(20);
     connect(this->m_pTimer, SIGNAL(timeout()), this, SLOT(ON_TEST()));
+
+    /* @TODO 设置播放器状态图片 */
+    this->m_pStatusPic = new QLabel(this);
+    static QPixmap pixmap("../../ui/res/icon/AnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
+    this->m_pStatusPic->setPixmap(pixmap);
+    this->m_pStatusPic->showNormal();
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -63,7 +69,9 @@ void QMediaPlayer::openStream()
     onStopPlay();
 
 #if defined(Q_OS_WIN32)
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(HWND(this->winId()));
+    std::cout << "Window Type" << this->windowType() << std::endl;
+    //this->windowHandle()
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->winId());
 #elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
     NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
     //NSWindow* wnd = [view window];
@@ -320,11 +328,12 @@ void QMediaPlayer::mouseMoveEvent(QMouseEvent* event)
 
 void QMediaPlayer::resizeEvent(QResizeEvent *event)
 {
+    const QSize size = this->size();
     /* resize the Canvas */
     if (this->m_pCorePlayer)
     {
-        this->m_pCorePlayer->screen_width = uint16_t(this->m_pCorePlayer->rect.w = size().width());
-        this->m_pCorePlayer->screen_height = uint16_t(this->m_pCorePlayer->rect.h = size().height());
+        this->m_pCorePlayer->screen_width = uint16_t(this->m_pCorePlayer->rect.w = size.width());
+        this->m_pCorePlayer->screen_height = uint16_t(this->m_pCorePlayer->rect.h = size.height());
         if (this->m_pCorePlayer->vis_texture) 
         {
             SDL_DestroyTexture(this->m_pCorePlayer->vis_texture);
@@ -336,6 +345,11 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
    /* QSize size = this->size();
     this->m_pProgressSlider->setGeometry(5, size.rheight() - 20, size.rwidth() - 10, 20);
     this->m_pProgressSlider->show();*/
+
+    /* resize the status picture */
+    this->m_pStatusPic->move(size.width() / 2, size.height() / 2);
+    //this->m_pStatusPic->setGeometry(size.width() / 2,);
+    this->m_pStatusPic->show();
 
     if(event)
         QWidget::resizeEvent(event);
