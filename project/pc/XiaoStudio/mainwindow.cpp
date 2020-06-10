@@ -66,20 +66,20 @@ void MainWindow::keyPressEvent(QKeyEvent* event)
     switch(event->key())
     {
         case Qt::Key::Key_F11:
-        if (!this->isFullScreen())
-        {
-            this->ui->MainBar->hide();
-            this->ui->Toolbar->hide();
-            this->showFullScreen();
-        }
-        else
-        {
-            this->showNormal();
-            this->ui->MainBar->show();
-            this->ui->Toolbar->show();
-        }
+            if (!this->isFullScreen())
+            {
+                this->ui->MainBar->hide();
+                this->ui->Toolbar->hide();
+                this->showFullScreen();
+            }
+            else
+            {
+                this->showNormal();
+                this->ui->MainBar->show();
+                this->ui->Toolbar->show();
+            }
             break;
-    default:
+        default:
         ;
     }
 

@@ -29,7 +29,7 @@ extern "C"
 # include "libavfilter/buffersrc.h"
 #endif
 
-#if defined __LINUX__
+#ifdef __linux__
 #include <SDL2/SDL.h>
 #elif defined _WIN32
 #include "SDL.h"
@@ -122,7 +122,7 @@ public:
     * \@brief construction
     * \@param windowID[in]:window ID
     */
-    explicit FMediaPlayer(void* constwindowID = nullptr);
+    explicit FMediaPlayer(const uint64_t& windowID = 0);
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;
@@ -536,7 +536,7 @@ public:
 
 private:
 #pragma region Rendering
-    void* m_pWindowID = nullptr;
+    uint64_t m_nWindowID = 0;
     SDL_Window* pWindow = nullptr;
     SDL_Renderer* pRenderer = nullptr;
     SDL_RendererInfo renderer_info;

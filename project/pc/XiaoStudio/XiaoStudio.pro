@@ -53,13 +53,13 @@ unix{
     THIRD_PARTY_PATH = $$/home/ghostchen/Project/ThirdParty
     FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/lib
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
-#    INCLUDEPATH += /usr/include/gtk-3.0 #Gtk+ 跨平台的图形工具包
-#    INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
-#    INCLUDEPATH += /usr/include/pango-1.0/
-#    INCLUDEPATH += /usr/include/cairo
-#    INCLUDEPATH += /usr/include/gdk-pixbuf-2.0
-#    INCLUDEPATH += /usr/include/atk-1.0
-#    INCLUDEPATH += /usr/include/glib-2.0 #
+    INCLUDEPATH += /usr/include/gtk-3.0 #Gtk+ 跨平台的图形工具包
+    INCLUDEPATH += /usr/lib/x86_64-linux-gnu/glib-2.0/include
+    INCLUDEPATH += /usr/include/pango-1.0/
+    INCLUDEPATH += /usr/include/cairo
+    INCLUDEPATH += /usr/include/gdk-pixbuf-2.0
+    INCLUDEPATH += /usr/include/atk-1.0
+    INCLUDEPATH += /usr/include/glib-2.0
     SOURCES += source/QMediaPlayer.cpp
 }
 mac{

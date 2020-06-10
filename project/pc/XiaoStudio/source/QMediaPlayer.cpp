@@ -9,13 +9,6 @@
 #if defined(Q_OS_MACOS)
 //#import<cocoa/cocoa.h>
 #import <Appkit/NSWindow.h>
-#elif defined(Q_OS_LINUX)
-#include <QWindow>
-//#include "X11/X.h"
-extern "C"
-{
-    //#include "gtk/gtkwindow.h"
-}
 #endif
 
 QMediaPlayer::QMediaPlayer(QWidget* parent)
@@ -77,8 +70,8 @@ void QMediaPlayer::openStream()
     this->m_pCorePlayer = std::make_unique<FMediaPlayer>(reinterpret_cast<void*>(view.window));
 #elif defined(Q_OS_LINUX)
 //#if defined(Q_GTK)
-
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*(GtkWindow*)*/(void*)(this->winId()));
+    //auto winID = ;
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->winId());
 #endif
 
     if (!this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
@@ -154,8 +147,7 @@ bool QMediaPlayer::event(QEvent *event)
 {
     if(event->type() == QEvent::WinIdChange)
     {
-        void* p = (void*)(this->winId());
-        std::cout << "Window ID is changed!currentID<%d>" << this->winId() << std::endl;
+        std::cout << "Window ID is changed!currentID<" << this->winId() << '>' << std::endl;
     }
 
     return QWidget::event(event);

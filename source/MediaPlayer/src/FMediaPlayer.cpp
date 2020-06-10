@@ -15,6 +15,15 @@ extern "C"
 #endif 
 }
 
+#if defined(__linux__)
+//#include <QWindow>
+//#include "X11/X.h"
+extern "C"
+{
+    #include "gtk/gtk.h"
+}
+#endif
+
 constexpr uint32_t MAX_QUEUE_SIZE = (15 * 1024 * 1024);
 constexpr uint32_t MIN_FRAMES = 25;
 constexpr uint32_t EXTERNAL_CLOCK_MIN_FRAMES = 2;
@@ -120,8 +129,8 @@ static FMediaPlayer::ESyncType g_av_sync_type = FMediaPlayer::ESyncType::AV_SYNC
 
 FMediaPlayer::EShowMode FMediaPlayer::eShow_mode = FMediaPlayer::EShowMode::SHOW_MODE_VIDEO;
 
-FMediaPlayer::FMediaPlayer(void* const windowID)
-	:m_pWindowID(windowID)
+FMediaPlayer::FMediaPlayer(const uint64_t& windowID)
+    :m_nWindowID(/*(GtkWindow*)*/(windowID))
 {
 	if (++g_nInstance == 1)
 		initContext();
@@ -165,7 +174,8 @@ bool FMediaPlayer::initContext()
     SDL_EventState(SDL_USEREVENT, SDL_IGNORE);
 	/*-----------------------------------äÖÈ¾Ïà¹ØÉèÖÃ---------------------------------------*/
 
-#ifdef __LINUX__
+#ifdef __linux__
+    /* signal capture */
     signal(SIGSEGV, [] (int signum) -> void
     {
         static uint32_t count = 0;
@@ -189,16 +199,18 @@ bool FMediaPlayer::initRender()
 	int flags = SDL_WINDOW_HIDDEN;
 
 	flags |= SDL_WINDOW_RESIZABLE;
-	if(m_pWindowID)
-		pWindow = SDL_CreateWindowFrom(m_pWindowID);
+    SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
+    //SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, "");
+    if(m_nWindowID)
+    {
+        pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
+    }
 	else
+    {
 		pWindow = SDL_CreateWindow((std::string("FFmplay") + std::to_string(g_nInstance)).c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+    }
 
-    const char * error = SDL_GetError();
-    if(error != nullptr)
-        av_log(nullptr, AV_LOG_VERBOSE, "SDL_CreateWindowFrom::Warrning:%s", error);
 
-	SDL_SetHint(SDL_HINT_RENDER_SCALE_QUALITY, "linear");
 	if (pWindow)
 	{
 		pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
