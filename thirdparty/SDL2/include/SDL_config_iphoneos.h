@@ -19,24 +19,20 @@
   3. This notice may not be removed or altered from any source distribution.
 */
 
-#ifndef SDL_config_macosx_h_
-#define SDL_config_macosx_h_
+#ifndef SDL_config_iphoneos_h_
+#define SDL_config_iphoneos_h_
 #define SDL_config_h_
 
 #include "SDL_platform.h"
 
-/* This gets us MAC_OS_X_VERSION_MIN_REQUIRED... */
-#include <AvailabilityMacros.h>
-
-/* This is a set of defines to configure the SDL features */
-
 #ifdef __LP64__
-    #define SIZEOF_VOIDP 8
+#define SIZEOF_VOIDP 8
 #else
-    #define SIZEOF_VOIDP 4
+#define SIZEOF_VOIDP 4
 #endif
 
-/* Useful headers */
+#define HAVE_GCC_ATOMICS    1
+
 #define HAVE_ALLOCA_H       1
 #define HAVE_SYS_TYPES_H    1
 #define HAVE_STDIO_H    1
@@ -57,6 +53,7 @@
 #define HAVE_GETENV 1
 #define HAVE_SETENV 1
 #define HAVE_PUTENV 1
+#define HAVE_SETENV 1
 #define HAVE_UNSETENV   1
 #define HAVE_QSORT  1
 #define HAVE_ABS    1
@@ -85,6 +82,11 @@
 #define HAVE_STRNCASECMP 1
 #define HAVE_VSSCANF 1
 #define HAVE_VSNPRINTF  1
+#define HAVE_M_PI   1
+#define HAVE_ATAN   1
+#define HAVE_ATAN2  1
+#define HAVE_ACOS  1
+#define HAVE_ASIN  1
 #define HAVE_CEIL   1
 #define HAVE_COPYSIGN   1
 #define HAVE_COS    1
@@ -105,22 +107,20 @@
 #define HAVE_NANOSLEEP  1
 #define HAVE_SYSCONF    1
 #define HAVE_SYSCTLBYNAME 1
-#define HAVE_ATAN 1
-#define HAVE_ATAN2 1
-#define HAVE_ACOS 1
-#define HAVE_ASIN 1
 
-/* Enable various audio drivers */
-#define SDL_AUDIO_DRIVER_COREAUDIO  1
-#define SDL_AUDIO_DRIVER_DISK   1
+/* enable iPhone version of Core Audio driver */
+#define SDL_AUDIO_DRIVER_COREAUDIO 1
+/* Enable the dummy audio driver (src/audio/dummy/\*.c) */
 #define SDL_AUDIO_DRIVER_DUMMY  1
 
-/* Enable various input drivers */
-#define SDL_JOYSTICK_IOKIT  1
-#define SDL_HAPTIC_IOKIT    1
+/* Enable the stub haptic driver (src/haptic/dummy/\*.c) */
+#define SDL_HAPTIC_DUMMY 1
 
-/* Enable various shared object loading systems */
-#define SDL_LOADSO_DLOPEN   1
+/* Enable MFi joystick support */
+#define SDL_JOYSTICK_MFI 1
+
+/* Enable Unix style SO loading */
+#define SDL_LOADSO_DLOPEN 1
 
 /* Enable various threading systems */
 #define SDL_THREAD_PTHREAD  1
@@ -129,69 +129,38 @@
 /* Enable various timer systems */
 #define SDL_TIMER_UNIX  1
 
-/* Enable various video drivers */
-#define SDL_VIDEO_DRIVER_COCOA  1
+/* Supported video drivers */
+#define SDL_VIDEO_DRIVER_UIKIT  1
 #define SDL_VIDEO_DRIVER_DUMMY  1
-#undef SDL_VIDEO_DRIVER_X11
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC "/usr/X11R6/lib/libX11.6.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XEXT "/usr/X11R6/lib/libXext.6.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XINERAMA "/usr/X11R6/lib/libXinerama.1.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XINPUT2 "/usr/X11R6/lib/libXi.6.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XRANDR "/usr/X11R6/lib/libXrandr.2.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XSS "/usr/X11R6/lib/libXss.1.dylib"
-#define SDL_VIDEO_DRIVER_X11_DYNAMIC_XVIDMODE "/usr/X11R6/lib/libXxf86vm.1.dylib"
-#define SDL_VIDEO_DRIVER_X11_XDBE 1
-#define SDL_VIDEO_DRIVER_X11_XINERAMA 1
-#define SDL_VIDEO_DRIVER_X11_XRANDR 1
-#define SDL_VIDEO_DRIVER_X11_XSCRNSAVER 1
-#define SDL_VIDEO_DRIVER_X11_XSHAPE 1
-#define SDL_VIDEO_DRIVER_X11_XVIDMODE 1
-#define SDL_VIDEO_DRIVER_X11_HAS_XKBKEYCODETOKEYSYM 1
 
-#ifdef MAC_OS_X_VERSION_10_8
-/*
- * No matter the versions targeted, this is the 10.8 or later SDK, so you have
- *  to use the external Xquartz, which is a more modern Xlib. Previous SDKs
- *  used an older Xlib.
- */
-#define SDL_VIDEO_DRIVER_X11_XINPUT2 1
-#define SDL_VIDEO_DRIVER_X11_SUPPORTS_GENERIC_EVENTS 1
-#define SDL_VIDEO_DRIVER_X11_CONST_PARAM_XEXTADDDISPLAY 1
-#endif
-
-#ifndef SDL_VIDEO_RENDER_OGL
-#define SDL_VIDEO_RENDER_OGL    1
-#endif
-
-/* Enable OpenGL support */
-#ifndef SDL_VIDEO_OPENGL
-#define SDL_VIDEO_OPENGL    1
-#endif
-#ifndef SDL_VIDEO_OPENGL_CGL
-#define SDL_VIDEO_OPENGL_CGL    1
-#endif
-#ifndef SDL_VIDEO_OPENGL_GLX
-#define SDL_VIDEO_OPENGL_GLX    1
-#endif
+/* enable OpenGL ES */
+#define SDL_VIDEO_OPENGL_ES2 1
+#define SDL_VIDEO_OPENGL_ES 1
+#define SDL_VIDEO_RENDER_OGL_ES 1
+#define SDL_VIDEO_RENDER_OGL_ES2    1
 
 /* Enable Vulkan support */
-/* Metal/MoltenVK/Vulkan only supported on 64-bit architectures with 10.11+ */
-#if TARGET_CPU_X86_64 && (MAC_OS_X_VERSION_MAX_ALLOWED >= 101100)
+#if !TARGET_OS_SIMULATOR && !TARGET_CPU_ARM // Only 64-bit devices have Metal
 #define SDL_VIDEO_VULKAN 1
 #else
-#define  SDL_VIDEO_VULKAN 0
+#define SDL_VIDEO_VULKAN 0
 #endif
 
 /* Enable system power support */
-#define SDL_POWER_MACOSX 1
+#define SDL_POWER_UIKIT 1
+
+/* enable iPhone keyboard support */
+#define SDL_IPHONE_KEYBOARD 1
+
+/* enable iOS extended launch screen */
+#define SDL_IPHONE_LAUNCHSCREEN 1
+
+/* Set max recognized G-force from accelerometer
+   See src/joystick/uikit/SDL_sysjoystick.m for notes on why this is needed
+ */
+#define SDL_IPHONE_MAX_GFORCE 5.0
 
 /* enable filesystem support */
 #define SDL_FILESYSTEM_COCOA   1
 
-/* Enable assembly routines */
-#define SDL_ASSEMBLY_ROUTINES   1
-#ifdef __ppc__
-#define SDL_ALTIVEC_BLITTERS    1
-#endif
-
-#endif /* SDL_config_macosx_h_ */
+#endif /* SDL_config_iphoneos_h_ */

@@ -154,6 +154,7 @@ bool QMediaPlayer::event(QEvent *event)
 {
     if(event->type() == QEvent::WinIdChange)
     {
+        void* p = (void*)(this->winId());
         std::cout << "Window ID is changed!currentID<%d>" << this->winId() << std::endl;
     }
 

@@ -291,6 +291,7 @@ Makefile: ..\..\XiaoStudio.pro F:\CXX\app\Qt\5.14.0\msvc2017_64\mkspecs\win32-ms
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Core.prl \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\qtmain.prl \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\mkspecs\features\build_pass.prf \
+		..\..\ui\Xiao.qrc \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Widgetsd.prl \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Guid.prl \
 		F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Cored.prl \
@@ -503,6 +504,7 @@ F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Gui.prl:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Core.prl:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\qtmain.prl:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\mkspecs\features\build_pass.prf:
+..\..\ui\Xiao.qrc:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Widgetsd.prl:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Guid.prl:
 F:\CXX\app\Qt\5.14.0\msvc2017_64\lib\Qt5Cored.prl:

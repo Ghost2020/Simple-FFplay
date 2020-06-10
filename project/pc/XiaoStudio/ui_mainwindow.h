@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.14.2
+** Created by: Qt User Interface Compiler version 5.14.0
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -41,6 +41,7 @@ public:
     QGridLayout *gridLayout;
     QMediaPlayer *screen;
     QSpacerItem *verticalSpacer;
+    QWidget *Toolbar;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer;
     QVBoxLayout *verticalLayout;
@@ -76,7 +77,7 @@ public:
     {
         if (MainWindow->objectName().isEmpty())
             MainWindow->setObjectName(QString::fromUtf8("MainWindow"));
-        MainWindow->resize(962, 691);
+        MainWindow->resize(1151, 706);
         MainWindow->setMouseTracking(true);
         QIcon icon;
         icon.addFile(QString::fromUtf8(":/res/icon/logo.jpg"), QSize(), QIcon::Normal, QIcon::Off);
@@ -1212,7 +1213,9 @@ public:
 
         verticalLayout_10->addItem(verticalSpacer);
 
-        horizontalLayout = new QHBoxLayout();
+        Toolbar = new QWidget(centralwidget);
+        Toolbar->setObjectName(QString::fromUtf8("Toolbar"));
+        horizontalLayout = new QHBoxLayout(Toolbar);
         horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
         horizontalSpacer = new QSpacerItem(98, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
 
@@ -1220,7 +1223,7 @@ public:
 
         verticalLayout = new QVBoxLayout();
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
-        pushButton_Audio = new QPushButton(centralwidget);
+        pushButton_Audio = new QPushButton(Toolbar);
         pushButton_Audio->setObjectName(QString::fromUtf8("pushButton_Audio"));
         QSizePolicy sizePolicy3(QSizePolicy::Preferred, QSizePolicy::Preferred);
         sizePolicy3.setHorizontalStretch(0);
@@ -1235,7 +1238,7 @@ public:
 
         verticalLayout->addWidget(pushButton_Audio);
 
-        label_Audio = new QLabel(centralwidget);
+        label_Audio = new QLabel(Toolbar);
         label_Audio->setObjectName(QString::fromUtf8("label_Audio"));
         label_Audio->setAlignment(Qt::AlignCenter);
 
@@ -1246,7 +1249,7 @@ public:
 
         verticalLayout_2 = new QVBoxLayout();
         verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
-        pushButton_Video = new QPushButton(centralwidget);
+        pushButton_Video = new QPushButton(Toolbar);
         pushButton_Video->setObjectName(QString::fromUtf8("pushButton_Video"));
         pushButton_Video->setMaximumSize(QSize(16777215, 64));
         QIcon icon5;
@@ -1256,7 +1259,7 @@ public:
 
         verticalLayout_2->addWidget(pushButton_Video);
 
-        label_Video = new QLabel(centralwidget);
+        label_Video = new QLabel(Toolbar);
         label_Video->setObjectName(QString::fromUtf8("label_Video"));
         label_Video->setAlignment(Qt::AlignCenter);
 
@@ -1267,7 +1270,7 @@ public:
 
         verticalLayout_3 = new QVBoxLayout();
         verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
-        pushButton_ShareScreen = new QPushButton(centralwidget);
+        pushButton_ShareScreen = new QPushButton(Toolbar);
         pushButton_ShareScreen->setObjectName(QString::fromUtf8("pushButton_ShareScreen"));
         pushButton_ShareScreen->setMaximumSize(QSize(16777215, 64));
         QIcon icon6;
@@ -1277,7 +1280,7 @@ public:
 
         verticalLayout_3->addWidget(pushButton_ShareScreen);
 
-        label_ShareScreen = new QLabel(centralwidget);
+        label_ShareScreen = new QLabel(Toolbar);
         label_ShareScreen->setObjectName(QString::fromUtf8("label_ShareScreen"));
         label_ShareScreen->setAlignment(Qt::AlignCenter);
 
@@ -1288,7 +1291,7 @@ public:
 
         verticalLayout_4 = new QVBoxLayout();
         verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
-        pushButton_ManageMenber = new QPushButton(centralwidget);
+        pushButton_ManageMenber = new QPushButton(Toolbar);
         pushButton_ManageMenber->setObjectName(QString::fromUtf8("pushButton_ManageMenber"));
         pushButton_ManageMenber->setMaximumSize(QSize(16777215, 64));
         QIcon icon7;
@@ -1298,7 +1301,7 @@ public:
 
         verticalLayout_4->addWidget(pushButton_ManageMenber);
 
-        label_ManageMenber = new QLabel(centralwidget);
+        label_ManageMenber = new QLabel(Toolbar);
         label_ManageMenber->setObjectName(QString::fromUtf8("label_ManageMenber"));
         label_ManageMenber->setAlignment(Qt::AlignCenter);
 
@@ -1309,7 +1312,7 @@ public:
 
         verticalLayout_9 = new QVBoxLayout();
         verticalLayout_9->setObjectName(QString::fromUtf8("verticalLayout_9"));
-        pushButton_Invite = new QPushButton(centralwidget);
+        pushButton_Invite = new QPushButton(Toolbar);
         pushButton_Invite->setObjectName(QString::fromUtf8("pushButton_Invite"));
         pushButton_Invite->setMaximumSize(QSize(16777215, 64));
         QIcon icon8;
@@ -1319,7 +1322,7 @@ public:
 
         verticalLayout_9->addWidget(pushButton_Invite);
 
-        label_Invite = new QLabel(centralwidget);
+        label_Invite = new QLabel(Toolbar);
         label_Invite->setObjectName(QString::fromUtf8("label_Invite"));
         label_Invite->setAlignment(Qt::AlignCenter);
 
@@ -1330,7 +1333,7 @@ public:
 
         verticalLayout_5 = new QVBoxLayout();
         verticalLayout_5->setObjectName(QString::fromUtf8("verticalLayout_5"));
-        pushButton_Talk = new QPushButton(centralwidget);
+        pushButton_Talk = new QPushButton(Toolbar);
         pushButton_Talk->setObjectName(QString::fromUtf8("pushButton_Talk"));
         pushButton_Talk->setMaximumSize(QSize(16777215, 64));
         QIcon icon9;
@@ -1340,7 +1343,7 @@ public:
 
         verticalLayout_5->addWidget(pushButton_Talk);
 
-        label_Talk = new QLabel(centralwidget);
+        label_Talk = new QLabel(Toolbar);
         label_Talk->setObjectName(QString::fromUtf8("label_Talk"));
         label_Talk->setAlignment(Qt::AlignCenter);
 
@@ -1351,7 +1354,7 @@ public:
 
         verticalLayout_6 = new QVBoxLayout();
         verticalLayout_6->setObjectName(QString::fromUtf8("verticalLayout_6"));
-        pushButton_Expression = new QPushButton(centralwidget);
+        pushButton_Expression = new QPushButton(Toolbar);
         pushButton_Expression->setObjectName(QString::fromUtf8("pushButton_Expression"));
         pushButton_Expression->setMaximumSize(QSize(16777215, 64));
         QIcon icon10;
@@ -1361,7 +1364,7 @@ public:
 
         verticalLayout_6->addWidget(pushButton_Expression);
 
-        label_Expression = new QLabel(centralwidget);
+        label_Expression = new QLabel(Toolbar);
         label_Expression->setObjectName(QString::fromUtf8("label_Expression"));
         label_Expression->setAlignment(Qt::AlignCenter);
 
@@ -1372,7 +1375,7 @@ public:
 
         verticalLayout_7 = new QVBoxLayout();
         verticalLayout_7->setObjectName(QString::fromUtf8("verticalLayout_7"));
-        pushButton_Document = new QPushButton(centralwidget);
+        pushButton_Document = new QPushButton(Toolbar);
         pushButton_Document->setObjectName(QString::fromUtf8("pushButton_Document"));
         pushButton_Document->setMaximumSize(QSize(16777215, 64));
         QIcon icon11;
@@ -1382,7 +1385,7 @@ public:
 
         verticalLayout_7->addWidget(pushButton_Document);
 
-        label_Document = new QLabel(centralwidget);
+        label_Document = new QLabel(Toolbar);
         label_Document->setObjectName(QString::fromUtf8("label_Document"));
         label_Document->setAlignment(Qt::AlignCenter);
 
@@ -1393,7 +1396,7 @@ public:
 
         verticalLayout_8 = new QVBoxLayout();
         verticalLayout_8->setObjectName(QString::fromUtf8("verticalLayout_8"));
-        pushButton_Settings = new QPushButton(centralwidget);
+        pushButton_Settings = new QPushButton(Toolbar);
         pushButton_Settings->setObjectName(QString::fromUtf8("pushButton_Settings"));
         pushButton_Settings->setMaximumSize(QSize(16777215, 64));
         QIcon icon12;
@@ -1403,7 +1406,7 @@ public:
 
         verticalLayout_8->addWidget(pushButton_Settings);
 
-        label_Settings = new QLabel(centralwidget);
+        label_Settings = new QLabel(Toolbar);
         label_Settings->setObjectName(QString::fromUtf8("label_Settings"));
         label_Settings->setAlignment(Qt::AlignCenter);
 
@@ -1417,7 +1420,7 @@ public:
         horizontalLayout->addItem(horizontalSpacer_2);
 
 
-        verticalLayout_10->addLayout(horizontalLayout);
+        verticalLayout_10->addWidget(Toolbar);
 
         MainWindow->setCentralWidget(centralwidget);
 

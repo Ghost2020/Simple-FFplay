@@ -21,7 +21,7 @@ else: unix:!android: target.path = /opt/$${TARGET}/bin
 !isEmpty(target.path): INSTALLS += target
 
 # set the program icon
-RC_ICONS = $$PWD/ui/res/icon/logo.ico
+#RC_ICONS = $$PWD/ui/res/icon/logo.jpg
 
 # SDL库所需的宏
 #DEFINES += SDL_MAIN_HANDLED
@@ -40,9 +40,9 @@ INCLUDEPATH += $$PWD/source/
 win32{
     THIRD_PARTY_PATH = $$PWD/../../../thirdparty
     FFMPEG_LIB_PATH = $$THIRD_PARTY_PATH/ffmpeg/lib/win32
-    SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2-2.0.12/lib/win32/x64
+    SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2/lib/win32/x64
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
-    INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2-2.0.12/include
+    INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/include
     SOURCES += source/QMediaPlayer.cpp
 }
 unix{
@@ -72,8 +72,12 @@ mac{
 }
 
 LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale #-lavcodec -lavformat -lavfilter -lavutil -lavdevice -lswresample -lswscale -lpostproc -lswresample
-#LIBS += -L$$SDL_LIB_PATH -lSDL2
+win32{
+LIBS += -L$$SDL_LIB_PATH -lSDL2 -lSDL2main
+}
+unix{
 LIBS += -L./usr/lib/x86_64-linux-gnu/ -lz -lm -lvdpau -lva -lx264 -lx265 -lSDL2 -lSDL2main -llzma -lva-drm  -lX11 -lva-x11
+}
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \

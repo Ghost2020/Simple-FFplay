@@ -60,11 +60,14 @@ int main(int argc, char *argv[])
 
     std::cout << "Program Start..." << std::endl;
 
-    QApplication a(argc, argv);
-    MainWindow w;
-    w.show();
+    int appRes = -1;
+    {
+        QApplication a(argc, argv);
+        MainWindow w;
+        w.show();
 
-    const int appRes = a.exec();
+        appRes = a.exec();
+    }
 
     std::cout << "Program Ending..." << std::endl;
 
