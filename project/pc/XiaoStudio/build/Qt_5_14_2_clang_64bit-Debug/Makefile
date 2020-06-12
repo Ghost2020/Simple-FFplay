@@ -40,7 +40,7 @@ DISTNAME      = XiaoStudio1.0.0
 DISTDIR = /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/project/pc/XiaoStudio/build/Qt_5_14_2_clang_64bit-Debug/.tmp/XiaoStudio1.0.0
 LINK          = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/clang++
 LFLAGS        = -stdlib=libc++ -headerpad_max_install_names $(EXPORT_ARCH_ARGS) -Wl,-syslibroot,/Applications/Xcode.app/Contents/Developer/Platforms/MacOSX.platform/Developer/SDKs/MacOSX10.15.sdk -mmacosx-version-min=10.13 -Wl,-rpath,@executable_path/../Frameworks -Wl,-rpath,/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib
-LIBS          = $(SUBLIBS) -F/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib -L/usr/local/Cellar/ffmpeg/4.2.3_1/lib -lavcodec -lavdevice -lavfilter -lavformat -lavutil -lpostproc -lswresample -lswscale -L/usr/local/Cellar/SDL2/2.0.12_1/lib -lSDL2 -framework QtWidgets -framework QtGui -framework AppKit -framework Metal -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL   
+LIBS          = $(SUBLIBS) -F/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib -L/usr/local/Cellar/ffmpeg/4.2.3_1/lib -lavformat -lavcodec -lavutil -lswresample -lswscale -L/usr/local/Cellar/SDL2/2.0.12_1/lib -lSDL2 -lSDL2main -framework QtWidgets -framework QtGui -framework AppKit -framework Metal -framework QtCore -framework DiskArbitration -framework IOKit -framework OpenGL -framework AGL   
 AR            = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ar cq
 RANLIB        = /Applications/Xcode.app/Contents/Developer/Toolchains/XcodeDefault.xctoolchain/usr/bin/ranlib -s
 SED           = sed
@@ -52,20 +52,22 @@ OBJECTS_DIR   = ./
 
 ####### Files
 
-SOURCES       = /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp \
+SOURCES       = ../../source/QMediaPlayer.mm \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FMediaPlayer.cpp \
 		../../main.cpp \
 		../../mainwindow.cpp \
-		../../source/QMediaPlayer.mm \
-		../../ui/QSettings.cpp moc_mainwindow.cpp \
+		../../ui/QSettings.cpp qrc_Xiao.cpp \
+		moc_mainwindow.cpp \
 		moc_QMediaPlayer.cpp \
 		moc_QSettings.cpp
-OBJECTS       = FDecoder.o \
+OBJECTS       = QMediaPlayer.o \
+		FDecoder.o \
 		FMediaPlayer.o \
 		main.o \
 		mainwindow.o \
-		QMediaPlayer.o \
 		QSettings.o \
+		qrc_Xiao.o \
 		moc_mainwindow.o \
 		moc_QMediaPlayer.o \
 		moc_QSettings.o
@@ -266,15 +268,14 @@ DIST          = ../../ui/res/icon/ic_lock_ringer_off_alpha.png \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/exceptions.prf \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/yacc.prf \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/lex.prf \
-		../../../../XiaoStudio.pro /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
-		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
+		../../../../XiaoStudio.pro /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		../../mainwindow.h \
 		../../source/QMediaPlayer.h \
-		../../ui/QSettings.h /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp \
+		../../ui/QSettings.h ../../source/QMediaPlayer.mm \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FMediaPlayer.cpp \
 		../../main.cpp \
 		../../mainwindow.cpp \
-		../../source/QMediaPlayer.mm \
 		../../ui/QSettings.cpp
 QMAKE_TARGET  = XiaoStudio
 DESTDIR       = 
@@ -490,6 +491,7 @@ Makefile: ../../XiaoStudio.pro /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspec
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/yacc.prf \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/lex.prf \
 		../../XiaoStudio.pro \
+		../../ui/Xiao.qrc \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Resources/QtWidgets.prl \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Resources/QtGui.prl \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Resources/QtCore.prl
@@ -686,6 +688,7 @@ Makefile: ../../XiaoStudio.pro /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspec
 /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/yacc.prf:
 /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/lex.prf:
 ../../XiaoStudio.pro:
+../../ui/Xiao.qrc:
 /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Resources/QtWidgets.prl:
 /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Resources/QtGui.prl:
 /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Resources/QtCore.prl:
@@ -718,9 +721,10 @@ dist: distdir FORCE
 distdir: FORCE
 	@test -d $(DISTDIR) || mkdir -p $(DISTDIR)
 	$(COPY_FILE) --parents $(DIST) $(DISTDIR)/
+	$(COPY_FILE) --parents ../../ui/Xiao.qrc $(DISTDIR)/
 	$(COPY_FILE) --parents /Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/features/data/dummy.cpp $(DISTDIR)/
-	$(COPY_FILE) --parents /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h ../../mainwindow.h ../../source/QMediaPlayer.h ../../ui/QSettings.h $(DISTDIR)/
-	$(COPY_FILE) --parents /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FMediaPlayer.cpp ../../main.cpp ../../mainwindow.cpp ../../source/QMediaPlayer.mm ../../ui/QSettings.cpp $(DISTDIR)/
+	$(COPY_FILE) --parents /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h ../../mainwindow.h ../../source/QMediaPlayer.h ../../ui/QSettings.h $(DISTDIR)/
+	$(COPY_FILE) --parents ../../source/QMediaPlayer.mm /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FMediaPlayer.cpp ../../main.cpp ../../mainwindow.cpp ../../ui/QSettings.cpp $(DISTDIR)/
 	$(COPY_FILE) --parents ../../mainwindow.ui ../../ui/QSettings.ui $(DISTDIR)/
 
 
@@ -747,8 +751,44 @@ check: first
 
 benchmark: first
 
-compiler_rcc_make_all:
+compiler_rcc_make_all: qrc_Xiao.cpp
 compiler_rcc_clean:
+	-$(DEL_FILE) qrc_Xiao.cpp
+qrc_Xiao.cpp: ../../ui/Xiao.qrc \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/rcc \
+		../../ui/res/icon/ic_menu_blocked_user.png \
+		../../ui/res/icon/ic_menu_delete.png \
+		../../ui/res/icon/close-white.png \
+		../../ui/res/icon/ic_menu_allfriends.png \
+		../../ui/res/icon/camera_white_balance_cloudy.png \
+		../../ui/res/icon/ic_voice_search.png \
+		../../ui/res/icon/ic_lock_ringer_on_alpha.png \
+		../../ui/res/icon/ic_menu_camera.png \
+		../../ui/res/icon/btn_next.png \
+		../../ui/res/icon/btn_prev.png \
+		../../ui/res/icon/ic_menu_invite.png \
+		../../ui/res/icon/ic_aggregated.png \
+		../../ui/res/icon/hotkeys.svg \
+		../../ui/res/icon/maximize_hover.png \
+		../../ui/res/icon/ic_menu_emoticons.png \
+		../../ui/res/icon/output.svg \
+		../../ui/res/icon/AnswerWithVideo.scale-200.png \
+		../../ui/res/icon/btn_close_normal.png \
+		../../ui/res/icon/ic_menu_start_conversation.png \
+		../../ui/res/icon/ic_menu_cc_am.png \
+		../../ui/res/icon/minimize_pressed.png \
+		../../ui/res/icon/ic_dialog_usb.png \
+		../../ui/res/icon/ic_settings.png \
+		../../ui/res/icon/btn_close.png \
+		../../ui/res/icon/logo.jpg \
+		../../ui/res/icon/video.svg \
+		../../ui/res/icon/stream.svg \
+		../../ui/res/icon/maximize.png \
+		../../ui/res/icon/AnswerWithVideo.scale-150.png \
+		../../ui/res/icon/ic_lock_ringer_off_alpha.png \
+		../../ui/res/icon/minimize.png
+	/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/rcc -name Xiao ../../ui/Xiao.qrc -o qrc_Xiao.cpp
+
 compiler_moc_predefs_make_all: moc_predefs.h
 compiler_moc_predefs_clean:
 	-$(DEL_FILE) moc_predefs.h
@@ -769,13 +809,13 @@ moc_mainwindow.cpp: ../../mainwindow.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QList \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qlist.h \
 		../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDropEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QTimer \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -871,8 +911,6 @@ moc_mainwindow.cpp: ../../mainwindow.h \
 	/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/moc $(DEFINES) --include /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/project/pc/XiaoStudio/build/Qt_5_14_2_clang_64bit-Debug/moc_predefs.h -I/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/mkspecs/macx-clang -I/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/project/pc/XiaoStudio -I/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include -I/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/project/pc/XiaoStudio/source -I/usr/local/Cellar/ffmpeg/4.2.3_1/include -I/usr/local/Cellar/SDL2/2.0.12_1/include -I/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers -I/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers -I/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers -I. -I'C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Tools\MSVC\14.16.27023\include' -I'C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um' -I'D:\Windows Kits\10\include\10.0.17763.0\ucrt' -I'D:\Windows Kits\10\include\10.0.17763.0\shared' -I'D:\Windows Kits\10\include\10.0.17763.0\um' -I'D:\Windows Kits\10\include\10.0.17763.0\winrt' -I'D:\Windows Kits\10\include\10.0.17763.0\cppwinrt' -F/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib ../../mainwindow.h -o moc_mainwindow.cpp
 
 moc_QMediaPlayer.cpp: ../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qevent.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDragEnterEvent \
@@ -881,6 +919,8 @@ moc_QMediaPlayer.cpp: ../../source/QMediaPlayer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -989,8 +1029,6 @@ compiler_uic_clean:
 ui_mainwindow.h: ../../mainwindow.ui \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/uic \
 		../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qevent.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDragEnterEvent \
@@ -999,6 +1037,8 @@ ui_mainwindow.h: ../../mainwindow.ui \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -1089,7 +1129,105 @@ ui_mainwindow.h: ../../mainwindow.ui \
 	/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/uic ../../mainwindow.ui -o ui_mainwindow.h
 
 ui_QSettings.h: ../../ui/QSettings.ui \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/uic
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/uic \
+		../../source/QMediaPlayer.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QKeyEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qevent.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDragEnterEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDropEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QTimer \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/samplefmt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/avutil.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/common.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/attributes.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/macros.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/avconfig.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/mem.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/error.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/rational.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/mathematics.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/intfloat.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/log.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/pixfmt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/buffer.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/cpu.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/channel_layout.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/dict.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/frame.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/hwcontext.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/time.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/avformat.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/avio.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswscale/swscale.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswscale/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avfft.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavdevice/avdevice.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavdevice/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/opt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswresample/swresample.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswresample/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/display.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/avfilter.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/buffersink.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/buffersrc.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_main.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_stdinc.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_config.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_platform.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/begin_code.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/close_code.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_assert.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_atomic.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_audio.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_error.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_endian.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_mutex.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_thread.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_rwops.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_clipboard.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_events.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_video.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_pixels.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_rect.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_surface.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_blendmode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_keyboard.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_keycode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_scancode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_mouse.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_joystick.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_quit.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_gesture.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_touch.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_filesystem.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_haptic.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_hints.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_loadso.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_log.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_messagebox.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_metal.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_power.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_render.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_sensor.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_shape.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_system.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_timer.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_version.h
 	/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/bin/uic ../../ui/QSettings.ui -o ui_QSettings.h
 
 compiler_rez_source_make_all:
@@ -1100,9 +1238,117 @@ compiler_yacc_impl_make_all:
 compiler_yacc_impl_clean:
 compiler_lex_make_all:
 compiler_lex_clean:
-compiler_clean: compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
+compiler_clean: compiler_rcc_clean compiler_moc_predefs_clean compiler_moc_header_clean compiler_uic_clean 
 
 ####### Compile
+
+QMediaPlayer.o: ../../source/QMediaPlayer.mm ../../source/QMediaPlayer.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QKeyEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qevent.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDragEnterEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDropEvent \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QTimer \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
+		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/samplefmt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/avutil.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/common.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/attributes.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/macros.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/avconfig.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/mem.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/error.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/rational.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/mathematics.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/intfloat.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/log.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/pixfmt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/buffer.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/cpu.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/channel_layout.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/dict.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/frame.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/hwcontext.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/time.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/avformat.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/avio.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavformat/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswscale/swscale.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswscale/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avfft.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavdevice/avdevice.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavdevice/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/opt.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswresample/swresample.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libswresample/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavutil/display.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/avfilter.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/version.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/buffersink.h \
+		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavfilter/buffersrc.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_main.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_stdinc.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_config.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_platform.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/begin_code.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/close_code.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_assert.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_atomic.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_audio.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_error.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_endian.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_mutex.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_thread.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_rwops.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_clipboard.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_cpuinfo.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_events.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_video.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_pixels.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_rect.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_surface.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_blendmode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_keyboard.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_keycode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_scancode.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_mouse.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_joystick.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_gamecontroller.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_quit.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_gesture.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_touch.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_filesystem.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_haptic.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_hints.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_loadso.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_log.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_messagebox.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_metal.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_power.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_render.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_sensor.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_shape.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_system.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_timer.h \
+		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_version.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMessageBox \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QFileDialog \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qfiledialog.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QMimeData \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qmimedata.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QFileInfo \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qfileinfo.h
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o QMediaPlayer.o ../../source/QMediaPlayer.mm
 
 FDecoder.o: /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/src/FDecoder.cpp /Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -1232,13 +1478,13 @@ main.o: ../../main.cpp ../../mainwindow.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QList \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qlist.h \
 		../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDropEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QTimer \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -1345,13 +1591,13 @@ mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QList \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qlist.h \
 		../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDropEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QTimer \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -1449,9 +1695,11 @@ mainwindow.o: ../../mainwindow.cpp ../../mainwindow.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qstatusbar.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o mainwindow.o ../../mainwindow.cpp
 
-QMediaPlayer.o: ../../source/QMediaPlayer.mm ../../source/QMediaPlayer.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QSlider \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qslider.h \
+QSettings.o: ../../ui/QSettings.cpp ../../ui/QSettings.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QDialog \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
+		../../ui_QSettings.h \
+		../../source/QMediaPlayer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QKeyEvent \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qevent.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDragEnterEvent \
@@ -1460,6 +1708,8 @@ QMediaPlayer.o: ../../source/QMediaPlayer.mm ../../source/QMediaPlayer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qtimer.h \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMenu \
 		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmenu.h \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QLabel \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qlabel.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FMediaPlayer.h \
 		/Users/Ghost/project/github/Simple-FFmplay/Simple-FFmplay/source/MediaPlayer/include/FDecoder.h \
 		/usr/local/Cellar/ffmpeg/4.2.3_1/include/libavcodec/avcodec.h \
@@ -1547,21 +1797,12 @@ QMediaPlayer.o: ../../source/QMediaPlayer.mm ../../source/QMediaPlayer.h \
 		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_system.h \
 		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_timer.h \
 		/usr/local/Cellar/SDL2/2.0.12_1/include/SDL2/SDL_version.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QMessageBox \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qmessagebox.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QFileDialog \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qfiledialog.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QMimeData \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qmimedata.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/QFileInfo \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtCore.framework/Headers/qfileinfo.h
-	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o QMediaPlayer.o ../../source/QMediaPlayer.mm
-
-QSettings.o: ../../ui/QSettings.cpp ../../ui/QSettings.h \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/QDialog \
-		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtWidgets.framework/Headers/qdialog.h \
-		../../ui_QSettings.h
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/QDesktopServices \
+		/Users/zhoukangyi/Qt5.14.2/5.14.2/clang_64/lib/QtGui.framework/Headers/qdesktopservices.h
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o QSettings.o ../../ui/QSettings.cpp
+
+qrc_Xiao.o: qrc_Xiao.cpp 
+	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o qrc_Xiao.o qrc_Xiao.cpp
 
 moc_mainwindow.o: moc_mainwindow.cpp 
 	$(CXX) -c $(CXXFLAGS) $(INCPATH) -o moc_mainwindow.o moc_mainwindow.cpp

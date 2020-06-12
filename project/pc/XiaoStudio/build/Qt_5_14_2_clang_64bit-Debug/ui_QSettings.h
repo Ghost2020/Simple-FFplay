@@ -9,11 +9,19 @@
 #ifndef UI_QSETTINGS_H
 #define UI_QSETTINGS_H
 
+#include <QMediaPlayer.h>
 #include <QtCore/QVariant>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QComboBox>
 #include <QtWidgets/QDialog>
 #include <QtWidgets/QHBoxLayout>
-#include <QtWidgets/QTabWidget>
+#include <QtWidgets/QLabel>
+#include <QtWidgets/QListWidget>
+#include <QtWidgets/QPushButton>
+#include <QtWidgets/QSlider>
+#include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
 
 QT_BEGIN_NAMESPACE
@@ -21,16 +29,81 @@ QT_BEGIN_NAMESPACE
 class Ui_QSettings
 {
 public:
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout_2;
+    QListWidget *listWidget;
+    QStackedWidget *stackedWidget;
+    QWidget *nomalPage;
+    QWidget *audioPage;
+    QWidget *layoutWidget;
+    QHBoxLayout *horizontalLayout_4;
+    QLabel *label_volume;
+    QSlider *horizontalSlider_volume;
+    QWidget *layoutWidget_2;
+    QHBoxLayout *horizontalLayout_5;
+    QLabel *labelMicrophone;
+    QComboBox *comboBox_Microphone;
+    QPushButton *pushButton_Microphone;
+    QWidget *layoutWidget_3;
+    QHBoxLayout *horizontalLayout_6;
+    QLabel *label_volume_Microphone;
+    QSlider *horizontalSlider_volume_Microphone;
+    QWidget *layoutWidget1;
+    QHBoxLayout *horizontalLayout_3;
+    QLabel *label_speaker;
+    QComboBox *comboBox_speakerDevice;
+    QPushButton *pushButton;
+    QWidget *videoPage;
+    QLabel *label_cameraDevice;
+    QComboBox *comboBox_cameraDevice;
+    QLabel *label_videoPicture;
+    QMediaPlayer *openGLWidget;
+    QWidget *virtualBGpage;
+    QWidget *networkPage;
+    QVBoxLayout *verticalLayout_3;
+    QVBoxLayout *verticalLayout_2;
+    QSpacerItem *verticalSpacer;
+    QHBoxLayout *horizontalLayout_7;
+    QSpacerItem *horizontalSpacer_2;
+    QLabel *label_networkShow;
+    QSpacerItem *horizontalSpacer_3;
+    QLabel *label;
+    QHBoxLayout *horizontalLayout_8;
+    QSpacerItem *horizontalSpacer_4;
+    QPushButton *pushButton_2;
+    QSpacerItem *horizontalSpacer_5;
+    QSpacerItem *verticalSpacer_2;
+    QWidget *aboutPage;
+    QVBoxLayout *verticalLayout_4;
+    QHBoxLayout *horizontalLayout_12;
+    QSpacerItem *horizontalSpacer_6;
+    QLabel *label_about;
+    QSpacerItem *horizontalSpacer_7;
+    QHBoxLayout *horizontalLayout_11;
+    QLabel *label_author;
+    QLabel *label_2;
+    QHBoxLayout *horizontalLayout_10;
+    QLabel *label_email;
+    QLabel *label_emailAddress;
+    QHBoxLayout *horizontalLayout_9;
+    QLabel *label_github;
+    QPushButton *pushButton_github;
     QHBoxLayout *horizontalLayout;
-    QTabWidget *tabWidget;
-    QWidget *tab;
-    QWidget *tab_2;
+    QSpacerItem *horizontalSpacer;
+    QPushButton *pushButton_OK;
+    QPushButton *pushButton_Cancel;
+    QPushButton *pushButton_Applay;
 
     void setupUi(QDialog *QSettings)
     {
         if (QSettings->objectName().isEmpty())
             QSettings->setObjectName(QString::fromUtf8("QSettings"));
-        QSettings->resize(640, 480);
+        QSettings->resize(642, 592);
+        QSizePolicy sizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(QSettings->sizePolicy().hasHeightForWidth());
+        QSettings->setSizePolicy(sizePolicy);
         QSettings->setStyleSheet(QString::fromUtf8("/* OBSTheme, main QApplication palette and QML values */\n"
 "XiaoTheme {\n"
 "    window: #181819;\n"
@@ -1062,27 +1135,356 @@ public:
 "    background-color: #161f41;\n"
 "}\n"
 ""));
-        horizontalLayout = new QHBoxLayout(QSettings);
-        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
-        tabWidget = new QTabWidget(QSettings);
-        tabWidget->setObjectName(QString::fromUtf8("tabWidget"));
-        tabWidget->setTabPosition(QTabWidget::West);
-        tabWidget->setTabShape(QTabWidget::Rounded);
-        tabWidget->setUsesScrollButtons(false);
-        tabWidget->setDocumentMode(true);
-        tab = new QWidget();
-        tab->setObjectName(QString::fromUtf8("tab"));
-        tabWidget->addTab(tab, QString());
-        tab_2 = new QWidget();
-        tab_2->setObjectName(QString::fromUtf8("tab_2"));
-        tabWidget->addTab(tab_2, QString());
+        verticalLayout = new QVBoxLayout(QSettings);
+        verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        listWidget = new QListWidget(QSettings);
+        QIcon icon;
+        icon.addFile(QString::fromUtf8(":/res/icon/ic_settings.png"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem = new QListWidgetItem(listWidget);
+        __qlistwidgetitem->setIcon(icon);
+        QIcon icon1;
+        icon1.addFile(QString::fromUtf8(":/res/icon/ic_lock_ringer_on_alpha.png"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem1 = new QListWidgetItem(listWidget);
+        __qlistwidgetitem1->setIcon(icon1);
+        QIcon icon2;
+        icon2.addFile(QString::fromUtf8(":/res/icon/video.svg"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem2 = new QListWidgetItem(listWidget);
+        __qlistwidgetitem2->setIcon(icon2);
+        QIcon icon3;
+        icon3.addFile(QString::fromUtf8(":/res/icon/camera_white_balance_cloudy.png"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem3 = new QListWidgetItem(listWidget);
+        __qlistwidgetitem3->setIcon(icon3);
+        QIcon icon4;
+        icon4.addFile(QString::fromUtf8(":/res/icon/stream.svg"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem4 = new QListWidgetItem(listWidget);
+        __qlistwidgetitem4->setIcon(icon4);
+        QIcon icon5;
+        icon5.addFile(QString::fromUtf8(":/res/icon/ic_menu_cc_am.png"), QSize(), QIcon::Normal, QIcon::Off);
+        QListWidgetItem *__qlistwidgetitem5 = new QListWidgetItem(listWidget);
+        __qlistwidgetitem5->setIcon(icon5);
+        listWidget->setObjectName(QString::fromUtf8("listWidget"));
+        QSizePolicy sizePolicy1(QSizePolicy::Fixed, QSizePolicy::Expanding);
+        sizePolicy1.setHorizontalStretch(0);
+        sizePolicy1.setVerticalStretch(0);
+        sizePolicy1.setHeightForWidth(listWidget->sizePolicy().hasHeightForWidth());
+        listWidget->setSizePolicy(sizePolicy1);
+        listWidget->setMaximumSize(QSize(100, 16777215));
+        listWidget->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        listWidget->setIconSize(QSize(32, 32));
+        listWidget->setItemAlignment(Qt::AlignCenter);
+        listWidget->setSortingEnabled(false);
 
-        horizontalLayout->addWidget(tabWidget);
+        horizontalLayout_2->addWidget(listWidget);
+
+        stackedWidget = new QStackedWidget(QSettings);
+        stackedWidget->setObjectName(QString::fromUtf8("stackedWidget"));
+        nomalPage = new QWidget();
+        nomalPage->setObjectName(QString::fromUtf8("nomalPage"));
+        stackedWidget->addWidget(nomalPage);
+        audioPage = new QWidget();
+        audioPage->setObjectName(QString::fromUtf8("audioPage"));
+        layoutWidget = new QWidget(audioPage);
+        layoutWidget->setObjectName(QString::fromUtf8("layoutWidget"));
+        layoutWidget->setGeometry(QRect(70, 74, 401, 30));
+        horizontalLayout_4 = new QHBoxLayout(layoutWidget);
+        horizontalLayout_4->setObjectName(QString::fromUtf8("horizontalLayout_4"));
+        horizontalLayout_4->setContentsMargins(0, 0, 0, 0);
+        label_volume = new QLabel(layoutWidget);
+        label_volume->setObjectName(QString::fromUtf8("label_volume"));
+        QSizePolicy sizePolicy2(QSizePolicy::Fixed, QSizePolicy::Preferred);
+        sizePolicy2.setHorizontalStretch(0);
+        sizePolicy2.setVerticalStretch(0);
+        sizePolicy2.setHeightForWidth(label_volume->sizePolicy().hasHeightForWidth());
+        label_volume->setSizePolicy(sizePolicy2);
+        label_volume->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_4->addWidget(label_volume);
+
+        horizontalSlider_volume = new QSlider(layoutWidget);
+        horizontalSlider_volume->setObjectName(QString::fromUtf8("horizontalSlider_volume"));
+        horizontalSlider_volume->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_4->addWidget(horizontalSlider_volume);
+
+        layoutWidget_2 = new QWidget(audioPage);
+        layoutWidget_2->setObjectName(QString::fromUtf8("layoutWidget_2"));
+        layoutWidget_2->setGeometry(QRect(70, 166, 402, 30));
+        horizontalLayout_5 = new QHBoxLayout(layoutWidget_2);
+        horizontalLayout_5->setObjectName(QString::fromUtf8("horizontalLayout_5"));
+        horizontalLayout_5->setContentsMargins(0, 0, 0, 0);
+        labelMicrophone = new QLabel(layoutWidget_2);
+        labelMicrophone->setObjectName(QString::fromUtf8("labelMicrophone"));
+        sizePolicy.setHeightForWidth(labelMicrophone->sizePolicy().hasHeightForWidth());
+        labelMicrophone->setSizePolicy(sizePolicy);
+        labelMicrophone->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_5->addWidget(labelMicrophone);
+
+        comboBox_Microphone = new QComboBox(layoutWidget_2);
+        comboBox_Microphone->setObjectName(QString::fromUtf8("comboBox_Microphone"));
+        comboBox_Microphone->setMinimumSize(QSize(200, 0));
+
+        horizontalLayout_5->addWidget(comboBox_Microphone);
+
+        pushButton_Microphone = new QPushButton(layoutWidget_2);
+        pushButton_Microphone->setObjectName(QString::fromUtf8("pushButton_Microphone"));
+        sizePolicy.setHeightForWidth(pushButton_Microphone->sizePolicy().hasHeightForWidth());
+        pushButton_Microphone->setSizePolicy(sizePolicy);
+
+        horizontalLayout_5->addWidget(pushButton_Microphone);
+
+        layoutWidget_3 = new QWidget(audioPage);
+        layoutWidget_3->setObjectName(QString::fromUtf8("layoutWidget_3"));
+        layoutWidget_3->setGeometry(QRect(70, 210, 401, 30));
+        horizontalLayout_6 = new QHBoxLayout(layoutWidget_3);
+        horizontalLayout_6->setObjectName(QString::fromUtf8("horizontalLayout_6"));
+        horizontalLayout_6->setContentsMargins(0, 0, 0, 0);
+        label_volume_Microphone = new QLabel(layoutWidget_3);
+        label_volume_Microphone->setObjectName(QString::fromUtf8("label_volume_Microphone"));
+        sizePolicy2.setHeightForWidth(label_volume_Microphone->sizePolicy().hasHeightForWidth());
+        label_volume_Microphone->setSizePolicy(sizePolicy2);
+        label_volume_Microphone->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_6->addWidget(label_volume_Microphone);
+
+        horizontalSlider_volume_Microphone = new QSlider(layoutWidget_3);
+        horizontalSlider_volume_Microphone->setObjectName(QString::fromUtf8("horizontalSlider_volume_Microphone"));
+        horizontalSlider_volume_Microphone->setOrientation(Qt::Horizontal);
+
+        horizontalLayout_6->addWidget(horizontalSlider_volume_Microphone);
+
+        layoutWidget1 = new QWidget(audioPage);
+        layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(70, 30, 401, 30));
+        horizontalLayout_3 = new QHBoxLayout(layoutWidget1);
+        horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
+        horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
+        label_speaker = new QLabel(layoutWidget1);
+        label_speaker->setObjectName(QString::fromUtf8("label_speaker"));
+        sizePolicy.setHeightForWidth(label_speaker->sizePolicy().hasHeightForWidth());
+        label_speaker->setSizePolicy(sizePolicy);
+        label_speaker->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_3->addWidget(label_speaker);
+
+        comboBox_speakerDevice = new QComboBox(layoutWidget1);
+        comboBox_speakerDevice->setObjectName(QString::fromUtf8("comboBox_speakerDevice"));
+        comboBox_speakerDevice->setMinimumSize(QSize(200, 0));
+
+        horizontalLayout_3->addWidget(comboBox_speakerDevice);
+
+        pushButton = new QPushButton(layoutWidget1);
+        pushButton->setObjectName(QString::fromUtf8("pushButton"));
+        sizePolicy.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
+        pushButton->setSizePolicy(sizePolicy);
+        pushButton->setMaximumSize(QSize(116, 16777215));
+
+        horizontalLayout_3->addWidget(pushButton);
+
+        stackedWidget->addWidget(audioPage);
+        videoPage = new QWidget();
+        videoPage->setObjectName(QString::fromUtf8("videoPage"));
+        label_cameraDevice = new QLabel(videoPage);
+        label_cameraDevice->setObjectName(QString::fromUtf8("label_cameraDevice"));
+        label_cameraDevice->setGeometry(QRect(20, 20, 91, 16));
+        comboBox_cameraDevice = new QComboBox(videoPage);
+        comboBox_cameraDevice->setObjectName(QString::fromUtf8("comboBox_cameraDevice"));
+        comboBox_cameraDevice->setGeometry(QRect(120, 20, 361, 22));
+        label_videoPicture = new QLabel(videoPage);
+        label_videoPicture->setObjectName(QString::fromUtf8("label_videoPicture"));
+        label_videoPicture->setGeometry(QRect(20, 62, 91, 20));
+        openGLWidget = new QMediaPlayer(videoPage);
+        openGLWidget->setObjectName(QString::fromUtf8("openGLWidget"));
+        openGLWidget->setGeometry(QRect(120, 90, 361, 261));
+        stackedWidget->addWidget(videoPage);
+        virtualBGpage = new QWidget();
+        virtualBGpage->setObjectName(QString::fromUtf8("virtualBGpage"));
+        stackedWidget->addWidget(virtualBGpage);
+        networkPage = new QWidget();
+        networkPage->setObjectName(QString::fromUtf8("networkPage"));
+        verticalLayout_3 = new QVBoxLayout(networkPage);
+        verticalLayout_3->setObjectName(QString::fromUtf8("verticalLayout_3"));
+        verticalLayout_2 = new QVBoxLayout();
+        verticalLayout_2->setObjectName(QString::fromUtf8("verticalLayout_2"));
+        verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_2->addItem(verticalSpacer);
+
+        horizontalLayout_7 = new QHBoxLayout();
+        horizontalLayout_7->setObjectName(QString::fromUtf8("horizontalLayout_7"));
+        horizontalSpacer_2 = new QSpacerItem(88, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_7->addItem(horizontalSpacer_2);
+
+        label_networkShow = new QLabel(networkPage);
+        label_networkShow->setObjectName(QString::fromUtf8("label_networkShow"));
+        sizePolicy.setHeightForWidth(label_networkShow->sizePolicy().hasHeightForWidth());
+        label_networkShow->setSizePolicy(sizePolicy);
+        label_networkShow->setMinimumSize(QSize(200, 200));
+        label_networkShow->setPixmap(QPixmap(QString::fromUtf8(":/res/icon/stream.svg")));
+        label_networkShow->setScaledContents(false);
+        label_networkShow->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_7->addWidget(label_networkShow);
+
+        horizontalSpacer_3 = new QSpacerItem(108, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_7->addItem(horizontalSpacer_3);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_7);
+
+        label = new QLabel(networkPage);
+        label->setObjectName(QString::fromUtf8("label"));
+        label->setAlignment(Qt::AlignCenter);
+
+        verticalLayout_2->addWidget(label);
+
+        horizontalLayout_8 = new QHBoxLayout();
+        horizontalLayout_8->setObjectName(QString::fromUtf8("horizontalLayout_8"));
+        horizontalSpacer_4 = new QSpacerItem(78, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_8->addItem(horizontalSpacer_4);
+
+        pushButton_2 = new QPushButton(networkPage);
+        pushButton_2->setObjectName(QString::fromUtf8("pushButton_2"));
+        sizePolicy.setHeightForWidth(pushButton_2->sizePolicy().hasHeightForWidth());
+        pushButton_2->setSizePolicy(sizePolicy);
+
+        horizontalLayout_8->addWidget(pushButton_2);
+
+        horizontalSpacer_5 = new QSpacerItem(68, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_8->addItem(horizontalSpacer_5);
+
+
+        verticalLayout_2->addLayout(horizontalLayout_8);
+
+        verticalSpacer_2 = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
+
+        verticalLayout_2->addItem(verticalSpacer_2);
+
+
+        verticalLayout_3->addLayout(verticalLayout_2);
+
+        stackedWidget->addWidget(networkPage);
+        aboutPage = new QWidget();
+        aboutPage->setObjectName(QString::fromUtf8("aboutPage"));
+        verticalLayout_4 = new QVBoxLayout(aboutPage);
+        verticalLayout_4->setObjectName(QString::fromUtf8("verticalLayout_4"));
+        horizontalLayout_12 = new QHBoxLayout();
+        horizontalLayout_12->setObjectName(QString::fromUtf8("horizontalLayout_12"));
+        horizontalSpacer_6 = new QSpacerItem(48, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_12->addItem(horizontalSpacer_6);
+
+        label_about = new QLabel(aboutPage);
+        label_about->setObjectName(QString::fromUtf8("label_about"));
+        sizePolicy.setHeightForWidth(label_about->sizePolicy().hasHeightForWidth());
+        label_about->setSizePolicy(sizePolicy);
+        label_about->setMinimumSize(QSize(200, 200));
+
+        horizontalLayout_12->addWidget(label_about);
+
+        horizontalSpacer_7 = new QSpacerItem(48, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout_12->addItem(horizontalSpacer_7);
+
+
+        verticalLayout_4->addLayout(horizontalLayout_12);
+
+        horizontalLayout_11 = new QHBoxLayout();
+        horizontalLayout_11->setObjectName(QString::fromUtf8("horizontalLayout_11"));
+        label_author = new QLabel(aboutPage);
+        label_author->setObjectName(QString::fromUtf8("label_author"));
+        label_author->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_11->addWidget(label_author);
+
+        label_2 = new QLabel(aboutPage);
+        label_2->setObjectName(QString::fromUtf8("label_2"));
+        label_2->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_11->addWidget(label_2);
+
+
+        verticalLayout_4->addLayout(horizontalLayout_11);
+
+        horizontalLayout_10 = new QHBoxLayout();
+        horizontalLayout_10->setObjectName(QString::fromUtf8("horizontalLayout_10"));
+        label_email = new QLabel(aboutPage);
+        label_email->setObjectName(QString::fromUtf8("label_email"));
+        label_email->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_10->addWidget(label_email);
+
+        label_emailAddress = new QLabel(aboutPage);
+        label_emailAddress->setObjectName(QString::fromUtf8("label_emailAddress"));
+        label_emailAddress->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_10->addWidget(label_emailAddress);
+
+
+        verticalLayout_4->addLayout(horizontalLayout_10);
+
+        horizontalLayout_9 = new QHBoxLayout();
+        horizontalLayout_9->setObjectName(QString::fromUtf8("horizontalLayout_9"));
+        label_github = new QLabel(aboutPage);
+        label_github->setObjectName(QString::fromUtf8("label_github"));
+        label_github->setAlignment(Qt::AlignCenter);
+
+        horizontalLayout_9->addWidget(label_github);
+
+        pushButton_github = new QPushButton(aboutPage);
+        pushButton_github->setObjectName(QString::fromUtf8("pushButton_github"));
+        sizePolicy.setHeightForWidth(pushButton_github->sizePolicy().hasHeightForWidth());
+        pushButton_github->setSizePolicy(sizePolicy);
+        pushButton_github->setMaximumSize(QSize(225, 45));
+
+        horizontalLayout_9->addWidget(pushButton_github);
+
+
+        verticalLayout_4->addLayout(horizontalLayout_9);
+
+        stackedWidget->addWidget(aboutPage);
+
+        horizontalLayout_2->addWidget(stackedWidget);
+
+
+        verticalLayout->addLayout(horizontalLayout_2);
+
+        horizontalLayout = new QHBoxLayout();
+        horizontalLayout->setObjectName(QString::fromUtf8("horizontalLayout"));
+        horizontalSpacer = new QSpacerItem(228, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        horizontalLayout->addItem(horizontalSpacer);
+
+        pushButton_OK = new QPushButton(QSettings);
+        pushButton_OK->setObjectName(QString::fromUtf8("pushButton_OK"));
+        pushButton_OK->setMinimumSize(QSize(81, 0));
+
+        horizontalLayout->addWidget(pushButton_OK);
+
+        pushButton_Cancel = new QPushButton(QSettings);
+        pushButton_Cancel->setObjectName(QString::fromUtf8("pushButton_Cancel"));
+
+        horizontalLayout->addWidget(pushButton_Cancel);
+
+        pushButton_Applay = new QPushButton(QSettings);
+        pushButton_Applay->setObjectName(QString::fromUtf8("pushButton_Applay"));
+
+        horizontalLayout->addWidget(pushButton_Applay);
+
+
+        verticalLayout->addLayout(horizontalLayout);
 
 
         retranslateUi(QSettings);
 
-        tabWidget->setCurrentIndex(1);
+        listWidget->setCurrentRow(-1);
+        stackedWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(QSettings);
@@ -1091,8 +1493,44 @@ public:
     void retranslateUi(QDialog *QSettings)
     {
         QSettings->setWindowTitle(QCoreApplication::translate("QSettings", "Dialog", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab), QCoreApplication::translate("QSettings", "Tab 1", nullptr));
-        tabWidget->setTabText(tabWidget->indexOf(tab_2), QCoreApplication::translate("QSettings", "Tab 2", nullptr));
+
+        const bool __sortingEnabled = listWidget->isSortingEnabled();
+        listWidget->setSortingEnabled(false);
+        QListWidgetItem *___qlistwidgetitem = listWidget->item(0);
+        ___qlistwidgetitem->setText(QCoreApplication::translate("QSettings", "Basic.Settings.Nomal", nullptr));
+        QListWidgetItem *___qlistwidgetitem1 = listWidget->item(1);
+        ___qlistwidgetitem1->setText(QCoreApplication::translate("QSettings", "Basic.Settings.Audio", nullptr));
+        QListWidgetItem *___qlistwidgetitem2 = listWidget->item(2);
+        ___qlistwidgetitem2->setText(QCoreApplication::translate("QSettings", "Basic.Settings.Video", nullptr));
+        QListWidgetItem *___qlistwidgetitem3 = listWidget->item(3);
+        ___qlistwidgetitem3->setText(QCoreApplication::translate("QSettings", "Basic.Settings.VirtualBG", nullptr));
+        QListWidgetItem *___qlistwidgetitem4 = listWidget->item(4);
+        ___qlistwidgetitem4->setText(QCoreApplication::translate("QSettings", "Basic.Settings.Network", nullptr));
+        QListWidgetItem *___qlistwidgetitem5 = listWidget->item(5);
+        ___qlistwidgetitem5->setText(QCoreApplication::translate("QSettings", "Basic.Settings.About", nullptr));
+        listWidget->setSortingEnabled(__sortingEnabled);
+
+        label_volume->setText(QCoreApplication::translate("QSettings", "Volume:", nullptr));
+        labelMicrophone->setText(QCoreApplication::translate("QSettings", "Microphone\357\274\232", nullptr));
+        pushButton_Microphone->setText(QCoreApplication::translate("QSettings", "Test Speaker", nullptr));
+        label_volume_Microphone->setText(QCoreApplication::translate("QSettings", "Volume:", nullptr));
+        label_speaker->setText(QCoreApplication::translate("QSettings", "Speaker:", nullptr));
+        pushButton->setText(QCoreApplication::translate("QSettings", "Test Speaker", nullptr));
+        label_cameraDevice->setText(QCoreApplication::translate("QSettings", "Choose Device:", nullptr));
+        label_videoPicture->setText(QCoreApplication::translate("QSettings", "Video picture:", nullptr));
+        label_networkShow->setText(QString());
+        label->setText(QCoreApplication::translate("QSettings", "Network Test", nullptr));
+        pushButton_2->setText(QCoreApplication::translate("QSettings", "Begin Test", nullptr));
+        label_about->setText(QCoreApplication::translate("QSettings", "TextLabel", nullptr));
+        label_author->setText(QCoreApplication::translate("QSettings", "Author:", nullptr));
+        label_2->setText(QCoreApplication::translate("QSettings", "GhostChen", nullptr));
+        label_email->setText(QCoreApplication::translate("QSettings", "Email:", nullptr));
+        label_emailAddress->setText(QCoreApplication::translate("QSettings", "cxx2020@outlook.com", nullptr));
+        label_github->setText(QCoreApplication::translate("QSettings", "Github:", nullptr));
+        pushButton_github->setText(QCoreApplication::translate("QSettings", "https://github.com/Ghost2020", nullptr));
+        pushButton_OK->setText(QCoreApplication::translate("QSettings", "OK", nullptr));
+        pushButton_Cancel->setText(QCoreApplication::translate("QSettings", "Cancel", nullptr));
+        pushButton_Applay->setText(QCoreApplication::translate("QSettings", "Applay", nullptr));
     } // retranslateUi
 
 };

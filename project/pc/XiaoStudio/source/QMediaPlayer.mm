@@ -69,9 +69,9 @@ void QMediaPlayer::openStream()
 #if defined(Q_OS_WIN32)
     this->m_pCorePlayer = std::make_unique<FMediaPlayer>(HWND(this->winId()));
 #elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
-    NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
+//    NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
     //NSWindow* wnd = [view window];
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(reinterpret_cast<void*>(view.window));
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->winId()/*reinterpret_cast<void*>(view.window)*/);
 
 #elif defined(Q_OS_LINUX)
     ;
@@ -144,6 +144,16 @@ void QMediaPlayer::ON_TEST()
     SDL_Event event;
     if(this->m_pCorePlayer)
         this->m_pCorePlayer->refresh_loop_wait_event(event);
+}
+
+bool QMediaPlayer::event(QEvent *event)
+{
+    if(event->type() == QEvent::WinIdChange)
+    {
+        std::cout << "Window ID is changed!currentID<" << this->winId() << '>' << std::endl;
+    }
+
+    return QWidget::event(event);
 }
 
 void QMediaPlayer::keyPressEvent(QKeyEvent* event)

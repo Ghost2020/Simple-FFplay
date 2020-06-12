@@ -45,7 +45,7 @@ win32{
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/include
     SOURCES += source/QMediaPlayer.cpp
 }
-unix{
+linux{
     #GTK 库相关
     DEFINES += __GTK_H_INSIDE__    
     QMAKE_CFLAGS += `pkg-config --cflags glib-2.0`
@@ -73,11 +73,9 @@ mac{
     SOURCES += source/QMediaPlayer.mm
 }
 
-LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale #-lavcodec -lavformat -lavfilter -lavutil -lavdevice -lswresample -lswscale -lpostproc -lswresample
-win32{
+LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale
 LIBS += -L$$SDL_LIB_PATH -lSDL2 -lSDL2main
-}
-unix{
+linux{
 LIBS += -L./usr/lib/x86_64-linux-gnu/ -lz -lm -lvdpau -lva -lx264 -lx265 -lSDL2 -lSDL2main -llzma -lva-drm  -lX11 -lva-x11
 }
 

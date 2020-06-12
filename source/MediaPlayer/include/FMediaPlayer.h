@@ -29,7 +29,7 @@ extern "C"
 # include "libavfilter/buffersrc.h"
 #endif
 
-#ifdef __linux__
+#ifdef __APPLE__
 #include <SDL2/SDL.h>
 #elif defined _WIN32
 #include "SDL.h"
