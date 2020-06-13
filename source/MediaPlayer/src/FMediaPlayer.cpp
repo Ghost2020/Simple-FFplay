@@ -203,10 +203,13 @@ bool FMediaPlayer::initRender()
     //SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, "");
     if(m_nWindowID)
     {
-#elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
-    NSView* view = reinterpret_cast<NSView*>(m_nWindowID);
-    //NSWindow* wnd = [view window];
+#if defined(__APLLE__) // Q_MAC_USE_COCOA
+        NSView* view = reinterpret_cast<NSView*>(m_nWindowID);
+        //NSWindow* wnd = [view window];
+        pWindow = SDL_CreateWindowFrom((void*)(view.window));
+#elif defined(__WIN32__)
         pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
+#endif
     }
     else
     {

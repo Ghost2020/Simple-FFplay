@@ -48,7 +48,7 @@ public:
     QHBoxLayout *horizontalLayout_6;
     QLabel *label_volume_Microphone;
     QSlider *horizontalSlider_volume_Microphone;
-    QWidget *widget;
+    QWidget *layoutWidget1;
     QHBoxLayout *horizontalLayout_3;
     QLabel *label_speaker;
     QComboBox *comboBox_speakerDevice;
@@ -1255,13 +1255,13 @@ public:
 
         horizontalLayout_6->addWidget(horizontalSlider_volume_Microphone);
 
-        widget = new QWidget(audioPage);
-        widget->setObjectName(QString::fromUtf8("widget"));
-        widget->setGeometry(QRect(70, 30, 401, 30));
-        horizontalLayout_3 = new QHBoxLayout(widget);
+        layoutWidget1 = new QWidget(audioPage);
+        layoutWidget1->setObjectName(QString::fromUtf8("layoutWidget1"));
+        layoutWidget1->setGeometry(QRect(70, 30, 401, 30));
+        horizontalLayout_3 = new QHBoxLayout(layoutWidget1);
         horizontalLayout_3->setObjectName(QString::fromUtf8("horizontalLayout_3"));
         horizontalLayout_3->setContentsMargins(0, 0, 0, 0);
-        label_speaker = new QLabel(widget);
+        label_speaker = new QLabel(layoutWidget1);
         label_speaker->setObjectName(QString::fromUtf8("label_speaker"));
         sizePolicy.setHeightForWidth(label_speaker->sizePolicy().hasHeightForWidth());
         label_speaker->setSizePolicy(sizePolicy);
@@ -1269,13 +1269,13 @@ public:
 
         horizontalLayout_3->addWidget(label_speaker);
 
-        comboBox_speakerDevice = new QComboBox(widget);
+        comboBox_speakerDevice = new QComboBox(layoutWidget1);
         comboBox_speakerDevice->setObjectName(QString::fromUtf8("comboBox_speakerDevice"));
         comboBox_speakerDevice->setMinimumSize(QSize(200, 0));
 
         horizontalLayout_3->addWidget(comboBox_speakerDevice);
 
-        pushButton = new QPushButton(widget);
+        pushButton = new QPushButton(layoutWidget1);
         pushButton->setObjectName(QString::fromUtf8("pushButton"));
         sizePolicy.setHeightForWidth(pushButton->sizePolicy().hasHeightForWidth());
         pushButton->setSizePolicy(sizePolicy);
@@ -1484,7 +1484,7 @@ public:
         retranslateUi(QSettings);
 
         listWidget->setCurrentRow(-1);
-        stackedWidget->setCurrentIndex(5);
+        stackedWidget->setCurrentIndex(1);
 
 
         QMetaObject::connectSlotsByName(QSettings);
