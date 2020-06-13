@@ -66,8 +66,8 @@ void QMediaPlayer::openStream()
 #if defined(__WIN32__)
     const auto winID = this->winId();
 #elif defined(__APPLE__)
-    const auto windID = this->effectiveWinId();
-#endif;
+    const auto winID = this->effectiveWinId();
+#endif
     this->m_pCorePlayer = std::make_unique<FMediaPlayer>(winID);
 
     if (this->m_pCorePlayer && !this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))

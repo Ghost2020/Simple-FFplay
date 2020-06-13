@@ -211,8 +211,7 @@ bool FMediaPlayer::initRender()
         pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
 #elif defined(__APPLE__) // Q_MAC_USE_COCOA
         NSView* view = reinterpret_cast<NSView*>(m_nWindowID);
-        //NSWindow* wnd = [view window];
-        pWindow = SDL_CreateWindowFrom((void*)(view.wind));
+        pWindow = SDL_CreateWindowFrom((void*)(view.window));
 #endif
     }
     else
