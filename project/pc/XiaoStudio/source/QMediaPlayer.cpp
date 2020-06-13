@@ -6,11 +6,6 @@
 #include <QFileInfo>
 #include <iostream>
 
-#if defined(Q_OS_MACOS)
-//#import<cocoa/cocoa.h>
-#import <Appkit/NSWindow.h>
-#endif
-
 QMediaPlayer::QMediaPlayer(QWidget* parent)
 //#if defined(Q_OS_WIN32)
     :  QOpenGLWidget(parent)
@@ -68,19 +63,7 @@ void QMediaPlayer::openStream()
 {
     onStopPlay();
 
-#if defined(Q_OS_WIN32)
-    std::cout << "Window Type" << this->windowType() << std::endl;
-    //this->windowHandle()
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->winId());
-#elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
-    NSView* view = reinterpret_cast<NSView*>(this->effectiveWinId());
-    //NSWindow* wnd = [view window];
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(reinterpret_cast<void*>(view.window));
-#elif defined(Q_OS_LINUX)
-//#if defined(Q_GTK)
-    //auto winID = ;
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->winId());
-#endif
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(this->effectiveWinId());
 
     if (!this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
     {

@@ -22,7 +22,11 @@ extern "C"
 {
     #include "gtk/gtk.h"
 }
+#elif defined(__APPLE__)
+//#import<cocoa/cocoa.h>
+#import <Appkit/NSWindow.h>
 #endif
+
 
 constexpr uint32_t MAX_QUEUE_SIZE = (15 * 1024 * 1024);
 constexpr uint32_t MIN_FRAMES = 25;
@@ -203,10 +207,13 @@ bool FMediaPlayer::initRender()
     //SDL_SetHint(SDL_HINT_VIDEO_WINDOW_SHARE_PIXEL_FORMAT, "");
     if(m_nWindowID)
     {
-#elif defined(Q_OS_MACOS) // Q_MAC_USE_COCOA
-    NSView* view = reinterpret_cast<NSView*>(m_nWindowID);
-    //NSWindow* wnd = [view window];
+#if defined(_WIN32_)
         pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
+#elif defined(__APPLE__) // Q_MAC_USE_COCOA
+        NSView* view = reinterpret_cast<NSView*>(m_nWindowID);
+        //NSWindow* wnd = [view window];
+        pWindow = SDL_CreateWindowFrom((void*)(view.wind));
+#endif
     }
     else
     {

@@ -273,3 +273,7 @@
 /thirdparty/SDL2/README-SDL.txt
 /thirdparty/SDL2/COPYING.txt
 /thirdparty/SDL2/BUGS.txt
+*.o
+*.o
+*.o
+*.o

@@ -122,7 +122,7 @@ public:
     * \@brief construction
     * \@param windowID[in]:window ID
     */
-    explicit FMediaPlayer(const uint64_t& windowID = 0);
+    explicit FMediaPlayer(uint64_t windowID = 0);
     ~FMediaPlayer();
 
     FMediaPlayer(const FMediaPlayer&) = delete;

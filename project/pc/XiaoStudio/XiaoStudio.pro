@@ -43,7 +43,7 @@ win32{
     SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2/lib/win32/x64
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/include
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/include
-    SOURCES += source/QMediaPlayer.cpp
+    SOURCES += ../../../source/MediaPlayer/src/FMediaPlayer.cpp
 }
 linux{
     #GTK 库相关
@@ -62,7 +62,7 @@ linux{
     INCLUDEPATH += /usr/include/gdk-pixbuf-2.0
     INCLUDEPATH += /usr/include/atk-1.0
     INCLUDEPATH += /usr/include/glib-2.0
-    SOURCES += source/QMediaPlayer.cpp
+    SOURCES += ../../../source/MediaPlayer/src/FMediaPlayer.cpp
 }
 mac{
     THIRD_PARTY_PATH = $$/usr/local/Cellar
@@ -70,7 +70,7 @@ mac{
     SDL_LIB_PATH = $$THIRD_PARTY_PATH/SDL2/2.0.12_1/lib
     INCLUDEPATH += $$THIRD_PARTY_PATH/ffmpeg/4.2.3_1/include
     INCLUDEPATH += $$THIRD_PARTY_PATH/SDL2/2.0.12_1/include
-    SOURCES += source/QMediaPlayer.mm
+    SOURCES += ../../../source/MediaPlayer/src/FMediaPlayer.mm
 }
 
 LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale
@@ -81,10 +81,10 @@ LIBS += -L./usr/lib/x86_64-linux-gnu/ -lz -lm -lvdpau -lva -lx264 -lx265 -lSDL2 
 
 SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
-    ../../../source/MediaPlayer/src/FMediaPlayer.cpp \
     main.cpp \
     mainwindow.cpp \
-    ui/QSettings.cpp
+    ui/QSettings.cpp \
+    source/QMediaPlayer.cpp
 
 HEADERS += \
     ../../../source/MediaPlayer/include/FMediaPlayer.h \
