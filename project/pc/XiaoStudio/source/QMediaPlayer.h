@@ -8,6 +8,8 @@
 #ifndef QMEDIAPLAYER_H
 #define QMEDIAPLAYER_H
 
+#include <QtWidgets/QOpenGLWidget>
+
 #include <QKeyEvent>
 #include <QDragEnterEvent>
 #include <QDropEvent>
@@ -17,8 +19,7 @@
 
 #include "FMediaPlayer.h"
 
-#include <QtWidgets/QOpenGLWidget>
-class QMediaPlayer : public  QOpenGLWidget
+class QMediaPlayer : public QOpenGLWidget
 {
 Q_OBJECT
 public :
@@ -57,4 +58,4 @@ private:
     std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
 };
 
-#endif // QMEDIAPLAYER_H
+#endif // QMEDIAPLAYER_H 

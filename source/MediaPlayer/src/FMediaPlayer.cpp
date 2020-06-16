@@ -125,6 +125,7 @@ void SClock::SetSpeed(double speed)
 }
 
 uint8_t FMediaPlayer::g_nInstance = 0;
+std::mutex FMediaPlayer::g_mutex;
 static FMediaPlayer::ESyncType g_av_sync_type = FMediaPlayer::ESyncType::AV_SYNC_AUDIO_MASTER;
 
 FMediaPlayer::EShowMode FMediaPlayer::eShow_mode = FMediaPlayer::EShowMode::SHOW_MODE_VIDEO;
@@ -132,6 +133,7 @@ FMediaPlayer::EShowMode FMediaPlayer::eShow_mode = FMediaPlayer::EShowMode::SHOW
 FMediaPlayer::FMediaPlayer(uint64_t windowID)
     :m_nWindowID(windowID)
 {
+    std::lock_guard<std::mutex> lock(g_mutex);
     if (++g_nInstance == 1)
         initContext();
 };
@@ -347,6 +349,11 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
     int ret = -1;
     Uint32 sdl_pix_fmt;
     SDL_BlendMode sdl_blendmode;
+
+    /*if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
+        m_Rendercallback(frame->data, frame->width, frame->height);
+
+    return true;*/
     get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
     if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))
         return false;
@@ -360,8 +367,7 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
             uint8_t* pixels[4];
             int pitch[4];
             if (!SDL_LockTexture(*tex, nullptr, (void**)pixels, pitch)) {
-                sws_scale(*img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize,
-                    0, frame->height, pixels, pitch);
+                sws_scale(*img_convert_ctx, (const uint8_t* const*)frame->data, frame->linesize, 0, frame->height, pixels, pitch);
                 SDL_UnlockTexture(*tex);
             }
         }
@@ -372,14 +378,14 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
         break;
     case SDL_PIXELFORMAT_IYUV:
         if (frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0) {
-            ret = SDL_UpdateYUVTexture(*tex, nullptr, frame->data[0], frame->linesize[0],
-                frame->data[1], frame->linesize[1],
-                frame->data[2], frame->linesize[2]);
+            ret = SDL_UpdateYUVTexture(*tex, nullptr,   frame->data[0], frame->linesize[0],
+                                                        frame->data[1], frame->linesize[1],
+                                                        frame->data[2], frame->linesize[2]);
         }
         else if (frame->linesize[0] < 0 && frame->linesize[1] < 0 && frame->linesize[2] < 0) {
-            ret = SDL_UpdateYUVTexture(*tex, nullptr, frame->data[0] + frame->linesize[0] * (frame->height - 1), -frame->linesize[0],
-                frame->data[1] + frame->linesize[1] * (AV_CEIL_RSHIFT(frame->height, 1) - 1), -frame->linesize[1],
-                frame->data[2] + frame->linesize[2] * (AV_CEIL_RSHIFT(frame->height, 1) - 1), -frame->linesize[2]);
+            ret = SDL_UpdateYUVTexture(*tex, nullptr,   frame->data[0] + frame->linesize[0] * (frame->height - 1), -frame->linesize[0],
+                                                        frame->data[1] + frame->linesize[1] * (AV_CEIL_RSHIFT(frame->height, 1) - 1), -frame->linesize[1],
+                                                        frame->data[2] + frame->linesize[2] * (AV_CEIL_RSHIFT(frame->height, 1) - 1), -frame->linesize[2]);
         }
         else {
             av_log(nullptr, AV_LOG_ERROR, "Mixed negative and positive linesizes are not supported.\n");
@@ -2420,7 +2426,6 @@ int FMediaPlayer::stream_component_open(int stream_index)
     AVCodecContext* avctx = nullptr;
     AVCodec* codec = nullptr;
     AVDictionary* opts = nullptr;
-    //AVDictionaryEntry* t = nullptr;
     int sample_rate, nb_channels;
     int64_t channel_layout;
     int ret = 0;
@@ -2748,6 +2753,11 @@ void FMediaPlayer::OnToggleAudioDisplay()
         this->force_refresh = true;
         this->eShow_mode = FMediaPlayer::EShowMode(next);
     }
+}
+
+void FMediaPlayer::RegisterRenderCallbck(const std::function<void(uint8_t ** buffer, int width, int height)>& renderFunctor)
+{
+    m_Rendercallback = renderFunctor;
 }
 
 void FMediaPlayer::refresh_loop_wait_event(SDL_Event& event)

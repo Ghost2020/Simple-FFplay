@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include "FDecoder.h"
 
@@ -131,6 +132,8 @@ public:
 private:
     /* 被实例化的数量 用于自动管理核心资源*/
     static uint8_t g_nInstance;
+    /* @TODO */
+    static std::mutex g_mutex;
 
     /*  */
 
@@ -249,6 +252,10 @@ public:
     * \@param event[in, out]
     */
     void refresh_loop_wait_event(SDL_Event& event);
+
+    /*
+    */
+    void RegisterRenderCallbck(const std::function<void(uint8_t** buffer, int width, int height)>& renderFunctor);
 
 private:
     /*
@@ -700,4 +707,7 @@ private:
     int last_video_stream = -1, last_audio_stream = -1, last_subtitle_stream = -1;
 
     std::shared_ptr<std::condition_variable> continue_read_thread = nullptr;
+
+    /* 回调函数 */
+    std::function<void(uint8_t** buffer, int width, int height)> m_Rendercallback;
 };

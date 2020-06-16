@@ -7,12 +7,10 @@
 #include <iostream>
 
 QMediaPlayer::QMediaPlayer(QWidget* parent)
-//#if defined(Q_OS_WIN32)
     :  QOpenGLWidget(parent)
-//#elif defined(Q_OS_MAC64)
-//    : QMacNativeWidget(reinterpret_cast<NSView*>(parent))
-//#endif
-{
+{    
+    this->makeCurrent();
+
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     /* Set Accpet drop event */
@@ -81,7 +79,12 @@ void QMediaPlayer::openStream()
         if (this->m_pTimer->isActive())
             this->m_pTimer->stop();
 
+        /*auto functor = std::bind(reinterpret_cast<void(*)(uint8_t*, int, int)>(&QYUV420P_Render::Render), this, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);*/
+        /*std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        m_pCorePlayer->RegisterRenderCallbck(renderFunc);*/
         this->m_pTimer->start();
+
+        //initializeGL();
 
         /* Need to force refresh */
         resizeEvent(nullptr);
@@ -271,7 +274,6 @@ void QMediaPlayer::mousePressEvent(QMouseEvent *event)
     }
 
     event->ignore();
-    //QOpenGLWidget::mousePressEvent(event);
 }
 
 void QMediaPlayer::mouseMoveEvent(QMouseEvent* event)
@@ -335,8 +337,9 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
     this->m_pProgressSlider->show();*/
 
     /* resize the status picture */
-    this->m_pStatusPic->move(size.width() / 2, size.height() / 2);
-    //this->m_pStatusPic->setGeometry(size.width() / 2,);
+    auto statusPicSize = m_pStatusPic->size();
+    this->m_pStatusPic->move( (size.width() / 2) - (statusPicSize.width() / 2),
+                              (size.height() / 2) - (statusPicSize.height() / 2));
     this->m_pStatusPic->show();
 
     if(event)

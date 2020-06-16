@@ -1,4 +1,4 @@
-QT       += core gui
+QT       += core gui opengl
 
 greaterThan(QT_MAJOR_VERSION, 4): QT += widgets
 
@@ -75,6 +75,7 @@ mac{
 
 LIBS += -L$$FFMPEG_LIB_PATH -lavformat -lavcodec -lavutil -lswresample -lswscale
 LIBS += -L$$SDL_LIB_PATH -lSDL2 -lSDL2main
+LIBS += -lopengl32 -glu32
 linux{
 LIBS += -L./usr/lib/x86_64-linux-gnu/ -lz -lm -lvdpau -lva -lx264 -lx265 -lSDL2 -lSDL2main -llzma -lva-drm  -lX11 -lva-x11
 }
@@ -83,6 +84,7 @@ SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
     main.cpp \
     mainwindow.cpp \
+    source/QYUV420p_Render.cpp \
     ui/QSettings.cpp \
     source/QMediaPlayer.cpp
 
@@ -90,6 +92,7 @@ HEADERS += \
     ../../../source/MediaPlayer/include/FMediaPlayer.h \
     mainwindow.h \
     source/QMediaPlayer.h \
+    source/QYUV420p_Render.h \
     ui/QSettings.h
 
 FORMS += \

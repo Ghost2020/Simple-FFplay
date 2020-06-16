@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.14.0
+** Created by: Qt User Interface Compiler version 5.14.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -40,7 +40,6 @@ public:
     QPushButton *pushButton_Exit;
     QGridLayout *gridLayout;
     QMediaPlayer *screen;
-    QSpacerItem *verticalSpacer;
     QWidget *Toolbar;
     QHBoxLayout *horizontalLayout;
     QSpacerItem *horizontalSpacer;
@@ -1117,7 +1116,6 @@ public:
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
         verticalLayout_10 = new QVBoxLayout(centralwidget);
         verticalLayout_10->setObjectName(QString::fromUtf8("verticalLayout_10"));
-        verticalLayout_10->setContentsMargins(5, 1, 5, -1);
         MainBar = new QWidget(centralwidget);
         MainBar->setObjectName(QString::fromUtf8("MainBar"));
         QSizePolicy sizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
@@ -1208,10 +1206,6 @@ public:
 
 
         verticalLayout_10->addLayout(gridLayout);
-
-        verticalSpacer = new QSpacerItem(20, 1, QSizePolicy::Minimum, QSizePolicy::Fixed);
-
-        verticalLayout_10->addItem(verticalSpacer);
 
         Toolbar = new QWidget(centralwidget);
         Toolbar->setObjectName(QString::fromUtf8("Toolbar"));
