@@ -127,6 +127,12 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
     }
 }
 
+void MainWindow::moveEvent(QMoveEvent* event)
+{
+    
+    QWidget::moveEvent(event);
+}
+
 void MainWindow::on_pushButton_Invite_clicked()
 {
     const auto rowCount = ui->gridLayout->rowCount();

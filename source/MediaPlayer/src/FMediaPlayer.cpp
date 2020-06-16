@@ -347,6 +347,11 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
     int ret = -1;
     Uint32 sdl_pix_fmt;
     SDL_BlendMode sdl_blendmode;
+
+    /*if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
+        m_renderFunc(frame->data, frame->width, frame->height);
+    return true;*/
+
     get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
     if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))
         return false;
@@ -779,6 +784,11 @@ void FMediaPlayer::OnExit()
 void FMediaPlayer::sigterm_handler(int sig)
 {
     exit(123);
+}
+
+void FMediaPlayer::RegisterRenderCallbck(const std::function<void(uint8_t**, int, int)>& func)
+{
+    m_renderFunc = func;
 }
 
 bool FMediaPlayer::video_open()

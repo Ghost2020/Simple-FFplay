@@ -24,6 +24,7 @@ QT_END_NAMESPACE
 
 class MainWindow : public QMainWindow
 {
+    friend class QMediaPlayer;
 Q_OBJECT
 
 public:
@@ -40,6 +41,8 @@ protected:
     void mouseReleaseEvent(QMouseEvent* event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
     void mouseDoubleClickEvent(QMouseEvent* event) override;
+
+    void moveEvent(QMoveEvent* event) override;
 
 private slots:
     void on_pushButton_Invite_clicked();

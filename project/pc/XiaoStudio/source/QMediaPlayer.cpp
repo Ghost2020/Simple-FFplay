@@ -6,12 +6,10 @@
 #include <QFileInfo>
 #include <iostream>
 
+#include "qmainwindow.h"
+
 QMediaPlayer::QMediaPlayer(QWidget* parent)
-//#if defined(Q_OS_WIN32)
-    :  QOpenGLWidget(parent)
-//#elif defined(Q_OS_MAC64)
-//    : QMacNativeWidget(reinterpret_cast<NSView*>(parent))
-//#endif
+    : QWidget(parent)
 {
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
@@ -52,6 +50,9 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     static QPixmap pixmap("../../ui/res/icon/AnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
     this->m_pStatusPic->setPixmap(pixmap);
     this->m_pStatusPic->showNormal();
+
+    m_pWindow = new QWindow(this->screen());
+    //connect((QMainWindow*)(this->parentWidget()->parent()), &QMainWindow::moveEvent, this, moveEVENT);
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -68,7 +69,7 @@ void QMediaPlayer::openStream()
 #elif defined(__APPLE__)
     const auto winID = this->effectiveWinId();
 #endif
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(winID);
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*winID*/m_pWindow->winId());
 
     if (this->m_pCorePlayer && !this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
     {
@@ -81,7 +82,11 @@ void QMediaPlayer::openStream()
         if (this->m_pTimer->isActive())
             this->m_pTimer->stop();
 
+       /* std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &m_render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        m_pCorePlayer->RegisterRenderCallbck(renderFunc);*/
         this->m_pTimer->start();
+
+       /* initializeGL();*/
 
         /* Need to force refresh */
         resizeEvent(nullptr);
@@ -137,6 +142,11 @@ void QMediaPlayer::ON_TEST()
     SDL_Event event;
     if(this->m_pCorePlayer)
         this->m_pCorePlayer->refresh_loop_wait_event(event);
+}
+
+void QMediaPlayer::moveEVENT()
+{
+    qDebug() << "QMediaPlayer::moveEVENT()";
 }
 
 bool QMediaPlayer::event(QEvent *event)
@@ -359,3 +369,20 @@ void QMediaPlayer::dropEvent(QDropEvent *event)
 
     event->accept();
 }
+
+void QMediaPlayer::moveEvent(QMoveEvent* event)
+{
+    m_pWindow->setPosition(this->pos());
+
+    QWidget::moveEvent(event);
+}
+
+//void QMediaPlayer::initializeGL()
+//{
+//    m_render.initialize();
+//}
+//
+//void QMediaPlayer::paintGL()
+//{
+//    qDebug() << "QMediaPlayer::paintGL()";
+//}

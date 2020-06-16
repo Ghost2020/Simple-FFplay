@@ -8,6 +8,7 @@
 #pragma once
 
 #include <string>
+#include <functional>
 
 #include "FDecoder.h"
 
@@ -243,6 +244,8 @@ public:
     * \@brief @TODO
     */
     static void sigterm_handler(int sig);
+
+    void RegisterRenderCallbck(const std::function<void(uint8_t**, int, int)>& func);
 
     /*
     * \@brief 刷新交互事件,以获取事件类型
@@ -700,4 +703,6 @@ private:
     int last_video_stream = -1, last_audio_stream = -1, last_subtitle_stream = -1;
 
     std::shared_ptr<std::condition_variable> continue_read_thread = nullptr;
+
+    std::function<void(uint8_t**, int, int)> m_renderFunc;
 };
