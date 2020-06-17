@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'mainwindow.ui'
 **
-** Created by: Qt User Interface Compiler version 5.14.0
+** Created by: Qt User Interface Compiler version 5.14.2
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -1203,6 +1203,7 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(screen->sizePolicy().hasHeightForWidth());
         screen->setSizePolicy(sizePolicy2);
+        screen->setStyleSheet(QString::fromUtf8(""));
 
         gridLayout->addWidget(screen, 0, 0, 1, 1);
 

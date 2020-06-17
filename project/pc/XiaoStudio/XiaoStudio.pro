@@ -83,6 +83,7 @@ SOURCES += \
     ../../../source/MediaPlayer/src/FDecoder.cpp \
     main.cpp \
     mainwindow.cpp \
+    source/QYUV420p_Render.cpp \
     ui/QSettings.cpp \
     source/QMediaPlayer.cpp
 
@@ -90,6 +91,7 @@ HEADERS += \
     ../../../source/MediaPlayer/include/FMediaPlayer.h \
     mainwindow.h \
     source/QMediaPlayer.h \
+    source/QYUV420p_Render.h \
     ui/QSettings.h
 
 FORMS += \

@@ -17,12 +17,13 @@
 
 #include "FMediaPlayer.h"
 
-#include <QtWidgets/QOpenGLWidget>
+//#include <QtWidgets/>
 #include "QYUV420p_Render.h"
 
-#include <QWindow>
+class QPlayer
 
-class QMediaPlayer : public QWidget/*QOpenGLWidget*/
+
+class QMediaPlayer : public QLabel
 {
 Q_OBJECT
 public :
@@ -45,7 +46,6 @@ public slots:
     void moveEVENT();
 
 protected:
-    bool event(QEvent *event) override;
     void keyPressEvent(QKeyEvent* event) override;
     void mousePressEvent(QMouseEvent *event) override;
     void mouseMoveEvent(QMouseEvent* event) override;
@@ -65,10 +65,9 @@ private:
     QMenu* m_pMenu = nullptr;
     QTimer* m_pTimer = nullptr;
     QLabel* m_pStatusPic = nullptr;
-    QYUV420P_Render m_render;
-    std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
 
-    QWindow* m_pWindow;
+    std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
+    //QYUV420P_Render m_render;
 };
 
 #endif // QMEDIAPLAYER_H

@@ -25,7 +25,7 @@ MainWindow::MainWindow(QWidget *parent)
     connect(ui->pushButton_Minmum, SIGNAL(clicked(bool)), this, SLOT(showMinimized()));
     connect(ui->pushButton_Maxmum, SIGNAL(clicked(bool)), this, SLOT(on_pushButton_ShowMaxMin()));
     connect(ui->pushButton_Exit, SIGNAL(clicked(bool)), this, SLOT(close()));
-   
+
     ui->pushButton_Minmum->setStyleSheet("QPushButton{background-color:black;\
         color: white;   border - radius: 10px;  border: 2px groove gray; \
         border - style: outset;}" \
@@ -98,7 +98,7 @@ void MainWindow::mousePressEvent(QMouseEvent* event)
     {
         mouse_press = true;
 
-        //鼠标相对于窗体的位置（或者使用 event->globalPos() - this->pos()）
+        //???????????????λ?????????? event->globalPos() - this->pos()??
         move_point = event->pos();
     }
 }
@@ -129,7 +129,7 @@ void MainWindow::mouseDoubleClickEvent(QMouseEvent* event)
 
 void MainWindow::moveEvent(QMoveEvent* event)
 {
-    
+
     QWidget::moveEvent(event);
 }
 
@@ -146,7 +146,7 @@ void MainWindow::on_pushButton_Invite_clicked()
         lastRow = item.first / 10;
         lastCol = item.first % 10;
     }
-    
+
     if (rowCount == colCount)
     {
         if (lastRow == lastCol)

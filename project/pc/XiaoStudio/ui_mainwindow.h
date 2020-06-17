@@ -1112,6 +1112,18 @@ public:
 "QPushButton#extraPanelDelete:pressed {\n"
 "    background-color: #161f41;\n"
 "}\n"
+"\n"
+"QMediaPlayer \n"
+"{\n"
+"   background-color: rgb(0, 0, 0);\n"
+"   gridline-color: rgb(255, 85, 255);\n"
+"   border - radius: 10px;  border: 2px groove gray;\n"
+"   border - style: outset;\n"
+"   hover\n"
+"   {\n"
+"       background-color:white; color: black;\n"
+"   }\n"
+"}\n"
 ""));
         centralwidget = new QWidget(MainWindow);
         centralwidget->setObjectName(QString::fromUtf8("centralwidget"));
@@ -1203,6 +1215,7 @@ public:
         sizePolicy2.setVerticalStretch(0);
         sizePolicy2.setHeightForWidth(screen->sizePolicy().hasHeightForWidth());
         screen->setSizePolicy(sizePolicy2);
+        screen->setStyleSheet(QString::fromUtf8("background-color: rgb(0, 0, 0);"));
 
         gridLayout->addWidget(screen, 0, 0, 1, 1);
 

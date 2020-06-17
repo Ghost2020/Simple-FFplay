@@ -348,9 +348,9 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
     Uint32 sdl_pix_fmt;
     SDL_BlendMode sdl_blendmode;
 
-    /*if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
-        m_renderFunc(frame->data, frame->width, frame->height);
-    return true;*/
+//    if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
+//        m_renderFunc(frame->data, frame->width, frame->height);
+//    return true;
 
     get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
     if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))

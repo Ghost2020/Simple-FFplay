@@ -9,9 +9,22 @@
 #include "qmainwindow.h"
 
 QMediaPlayer::QMediaPlayer(QWidget* parent)
-    : QWidget(parent)
+    : QLabel(parent)
 {
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
+
+    this->setStyleSheet("QMediaPlayer \n"
+                        "{"
+                        "   background-color: rgb(0, 0, 0);"
+                        "   gridline-color: rgb(255, 85, 255);"
+                        "   border - radius: 10px;  border: 2px groove gray;"
+                        "   border - style: outset;"
+                        "   hover"
+                        "   {"
+                        "       background-color:white; color: black;"
+                        "   }"
+                        "}"
+                        );
 
     /* Set Accpet drop event */
     this->setAcceptDrops(true);
@@ -41,18 +54,16 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onShowMenu()));
 
+    QWidget::
     this->m_pTimer = new QTimer(this);
     this->m_pTimer->setInterval(20);
     connect(this->m_pTimer, SIGNAL(timeout()), this, SLOT(ON_TEST()));
 
     /* @TODO 设置播放器状态图片 */
     this->m_pStatusPic = new QLabel(this);
-    static QPixmap pixmap("../../ui/res/icon/AnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
-    this->m_pStatusPic->setPixmap(pixmap);
-    this->m_pStatusPic->showNormal();
-
-    m_pWindow = new QWindow(this->screen());
-    //connect((QMainWindow*)(this->parentWidget()->parent()), &QMainWindow::moveEvent, this, moveEVENT);
+    static QPixmap pixmap("../../ui/res/iconAnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
+    this->/*m_pStatusPic->*/setPixmap(pixmap);
+    this->/*m_pStatusPic->*/showNormal();
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -69,7 +80,7 @@ void QMediaPlayer::openStream()
 #elif defined(__APPLE__)
     const auto winID = this->effectiveWinId();
 #endif
-    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(/*winID*/m_pWindow->winId());
+    this->m_pCorePlayer = std::make_unique<FMediaPlayer>(winID);
 
     if (this->m_pCorePlayer && !this->m_pCorePlayer->OnStreamOpen(this->m_sURL.toStdString()))
     {
@@ -82,11 +93,12 @@ void QMediaPlayer::openStream()
         if (this->m_pTimer->isActive())
             this->m_pTimer->stop();
 
-       /* std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &m_render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-        m_pCorePlayer->RegisterRenderCallbck(renderFunc);*/
+//        std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &m_render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+//        m_pCorePlayer->RegisterRenderCallbck(renderFunc);
         this->m_pTimer->start();
 
-       /* initializeGL();*/
+        //m_render.initialize();
+        //m_pWindow
 
         /* Need to force refresh */
         resizeEvent(nullptr);
@@ -147,16 +159,6 @@ void QMediaPlayer::ON_TEST()
 void QMediaPlayer::moveEVENT()
 {
     qDebug() << "QMediaPlayer::moveEVENT()";
-}
-
-bool QMediaPlayer::event(QEvent *event)
-{
-    if(event->type() == QEvent::WinIdChange)
-    {
-        std::cout << "Window ID is changed!currentID<" << this->winId() << '>' << std::endl;
-    }
-
-    return QWidget::event(event);
 }
 
 void QMediaPlayer::keyPressEvent(QKeyEvent* event)
@@ -346,7 +348,6 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
 
     /* resize the status picture */
     this->m_pStatusPic->move(size.width() / 2, size.height() / 2);
-    //this->m_pStatusPic->setGeometry(size.width() / 2,);
     this->m_pStatusPic->show();
 
     if(event)
@@ -372,7 +373,7 @@ void QMediaPlayer::dropEvent(QDropEvent *event)
 
 void QMediaPlayer::moveEvent(QMoveEvent* event)
 {
-    m_pWindow->setPosition(this->pos());
+//    m_pWindow->setPosition(this->pos());
 
     QWidget::moveEvent(event);
 }
