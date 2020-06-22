@@ -1029,6 +1029,19 @@ QPushButton#extraPanelDelete:hover {
 QPushButton#extraPanelDelete:pressed {
     background-color: #161f41;
 }
+
+QMediaPlayer {
+   background-color: rgb(0, 0, 0);
+   gridline-color: rgb(255, 85, 255);
+   border - radius: 10px; 
+	border: 2px groove;
+   border - style: outset;
+}
+
+QMediaPlaye : hover{
+	background-color:green; 
+	color: black;
+}
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
@@ -1209,6 +1222,9 @@ QPushButton#extraPanelDelete:pressed {
           <horstretch>0</horstretch>
           <verstretch>0</verstretch>
          </sizepolicy>
+        </property>
+        <property name="styleSheet">
+         <string notr="true"/>
         </property>
        </widget>
       </item>

@@ -54,7 +54,6 @@ SOURCES       = F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FDecoder.cpp \
 		..\..\main.cpp \
 		..\..\mainwindow.cpp \
-		..\..\source\QYUV420p_Render.cpp \
 		..\..\ui\QSettings.cpp \
 		..\..\source\QMediaPlayer.cpp debug\qrc_Xiao.cpp \
 		debug\moc_mainwindow.cpp \
@@ -64,7 +63,6 @@ OBJECTS       = debug\FMediaPlayer.obj \
 		debug\FDecoder.obj \
 		debug\main.obj \
 		debug\mainwindow.obj \
-		debug\QYUV420p_Render.obj \
 		debug\QSettings.obj \
 		debug\QMediaPlayer.obj \
 		debug\qrc_Xiao.obj \
@@ -80,12 +78,10 @@ DIST          = ui/res/icon/ic_lock_ringer_off_alpha.png \
 		ui/res/icon/ic_settings.png F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\include\FMediaPlayer.h \
 		..\..\mainwindow.h \
 		..\..\source\QMediaPlayer.h \
-		..\..\source\QYUV420p_Render.h \
 		..\..\ui\QSettings.h F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FMediaPlayer.cpp \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FDecoder.cpp \
 		..\..\main.cpp \
 		..\..\mainwindow.cpp \
-		..\..\source\QYUV420p_Render.cpp \
 		..\..\ui\QSettings.cpp \
 		..\..\source\QMediaPlayer.cpp
 QMAKE_TARGET  = XiaoStudio
@@ -224,7 +220,7 @@ all: Makefile.Debug  debug\XiaoStudio.exe
 
 debug\XiaoStudio.exe: F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5OpenGLd.lib F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Widgetsd.lib F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Guid.lib F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Cored.lib F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\qtmaind.lib ui_mainwindow.h ui_QSettings.h $(OBJECTS) 
 	$(LINKER) $(LFLAGS) /MANIFEST:embed /OUT:$(DESTDIR_TARGET) @<<
-debug\FMediaPlayer.obj debug\FDecoder.obj debug\main.obj debug\mainwindow.obj debug\QYUV420p_Render.obj debug\QSettings.obj debug\QMediaPlayer.obj debug\qrc_Xiao.obj debug\moc_mainwindow.obj debug\moc_QMediaPlayer.obj debug\moc_QSettings.obj
+debug\FMediaPlayer.obj debug\FDecoder.obj debug\main.obj debug\mainwindow.obj debug\QSettings.obj debug\QMediaPlayer.obj debug\qrc_Xiao.obj debug\moc_mainwindow.obj debug\moc_QMediaPlayer.obj debug\moc_QSettings.obj
 $(LIBS)
 <<
 
@@ -234,10 +230,10 @@ qmake: FORCE
 qmake_all: FORCE
 
 dist:
-	$(ZIP) XiaoStudio.zip $(SOURCES) $(DIST) ..\..\XiaoStudio.pro F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\spec_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\angle.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\windows-desktop.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\windows_vulkan_sdk.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\windows-vulkan.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\msvc-desktop.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\qconfig.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_core.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_datavisualization.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_datavisualization_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designer.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gui.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_help.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_location.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_network.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioningquick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioningquick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlmodels.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlmodels_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlworkerscript.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3d.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3d_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dassetimport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3drender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3drender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3druntimerender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dutils.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dutils_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickshapes_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sql.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_svg.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webview.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt_functions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt_config.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\win32-msvc\qmake.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\spec_post.prf ..\..\.qmake.stash F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exclusive_builds.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\msvc-version.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\toolchain.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\default_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\default_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resolve_config.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exclusive_builds_post.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\default_post.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\build_pass.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qml_debug.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\precompile_header.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\warn_on.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resources_functions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resources.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\moc.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\opengl.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\uic.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qmake_use.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\file_copies.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\windows.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\testcase_targets.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exceptions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\yacc.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\lex.prf ..\..\XiaoStudio.pro ..\..\ui\Xiao.qrc F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5OpenGLd.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Widgetsd.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Guid.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Cored.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\qtmaind.prl   ..\..\ui\Xiao.qrc F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\data\dummy.cpp F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\include\FMediaPlayer.h ..\..\mainwindow.h ..\..\source\QMediaPlayer.h ..\..\source\QYUV420p_Render.h ..\..\ui\QSettings.h  F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FMediaPlayer.cpp F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FDecoder.cpp ..\..\main.cpp ..\..\mainwindow.cpp ..\..\source\QYUV420p_Render.cpp ..\..\ui\QSettings.cpp ..\..\source\QMediaPlayer.cpp ..\..\mainwindow.ui ..\..\ui\QSettings.ui    
+	$(ZIP) XiaoStudio.zip $(SOURCES) $(DIST) ..\..\..\..\XiaoStudio.pro F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\spec_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\angle.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\windows-desktop.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\windows_vulkan_sdk.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\windows-vulkan.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\msvc-desktop.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\qconfig.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3danimation.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3danimation_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dcore.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dcore_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dinput.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dinput_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dlogic.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dlogic_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickanimation_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickinput_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickrender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3dquickscene2d_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3drender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_3drender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_accessibility_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axbase.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axbase_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axcontainer.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axcontainer_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axserver.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_axserver_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bluetooth.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bluetooth_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_bootstrap_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_concurrent.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_concurrent_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_core.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_core_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_datavisualization.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_datavisualization_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_dbus.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_dbus_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designer.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designer_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_designercomponents_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_devicediscovery_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_edid_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_egl_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_eventdispatcher_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_fb_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_fontdatabase_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gamepad.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gamepad_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gui.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_gui_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_help.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_help_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_location.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_location_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimedia.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimedia_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_multimediawidgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_network.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_network_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_nfc.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_nfc_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_opengl.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_opengl_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_openglextensions.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_openglextensions_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_packetprotocol_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_platformcompositor_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioning.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioning_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioningquick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_positioningquick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_printsupport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_printsupport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmldebug_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmldevtools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlmodels.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlmodels_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmltest.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmltest_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlworkerscript.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qmlworkerscript_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_qtmultimediaquicktools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3d.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3d_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dassetimport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dassetimport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3drender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3drender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3druntimerender.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3druntimerender_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dutils.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick3dutils_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quick_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickcontrols2_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickparticles_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickshapes_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quicktemplates2_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_quickwidgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_remoteobjects_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_repparser.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_repparser_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_scxml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_scxml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sensors.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sensors_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialbus.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialbus_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialport.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_serialport_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sql.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_sql_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_svg.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_svg_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_testlib.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_testlib_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_texttospeech.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_texttospeech_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_theme_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uiplugin.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uitools.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_uitools_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_vulkan_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webchannel.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webchannel_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_websockets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_websockets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webview.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_webview_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_widgets.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_widgets_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_windowsuiautomation_support_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_winextras.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_winextras_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xml.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xml_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_xmlpatterns_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\modules\qt_lib_zlib_private.pri F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt_functions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt_config.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\win32-msvc\qmake.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\spec_post.prf ..\..\.qmake.stash F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exclusive_builds.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\common\msvc-version.conf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\toolchain.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\default_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\default_pre.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resolve_config.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exclusive_builds_post.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\default_post.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\build_pass.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qml_debug.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\precompile_header.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\warn_on.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qt.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resources_functions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\resources.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\moc.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\opengl.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\uic.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\qmake_use.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\file_copies.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\win32\windows.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\testcase_targets.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\exceptions.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\yacc.prf F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\lex.prf ..\..\XiaoStudio.pro ..\..\ui\Xiao.qrc F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5OpenGLd.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Widgetsd.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Guid.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\Qt5Cored.prl F:\CXX\app\Qt\5.14.2\msvc2017_64\lib\qtmaind.prl   ..\..\ui\Xiao.qrc F:\CXX\app\Qt\5.14.2\msvc2017_64\mkspecs\features\data\dummy.cpp F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\include\FMediaPlayer.h ..\..\mainwindow.h ..\..\source\QMediaPlayer.h ..\..\ui\QSettings.h  F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FMediaPlayer.cpp F:\CXX\project\github\Ghost2020\Simple-FFplay\source\MediaPlayer\src\FDecoder.cpp ..\..\main.cpp ..\..\mainwindow.cpp ..\..\ui\QSettings.cpp ..\..\source\QMediaPlayer.cpp ..\..\mainwindow.ui ..\..\ui\QSettings.ui    
 
 clean: compiler_clean 
-	-$(DEL_FILE) debug\FMediaPlayer.obj debug\FDecoder.obj debug\main.obj debug\mainwindow.obj debug\QYUV420p_Render.obj debug\QSettings.obj debug\QMediaPlayer.obj debug\qrc_Xiao.obj debug\moc_mainwindow.obj debug\moc_QMediaPlayer.obj debug\moc_QSettings.obj
+	-$(DEL_FILE) debug\FMediaPlayer.obj debug\FDecoder.obj debug\main.obj debug\mainwindow.obj debug\QSettings.obj debug\QMediaPlayer.obj debug\qrc_Xiao.obj debug\moc_mainwindow.obj debug\moc_QMediaPlayer.obj debug\moc_QSettings.obj
 	-$(DEL_FILE) debug\XiaoStudio.vc.pdb debug\XiaoStudio.ilk debug\XiaoStudio.idb
 
 distclean: clean 
@@ -527,20 +523,6 @@ debug\moc_mainwindow.cpp: ..\..\mainwindow.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		..\..\ui\QSettings.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QDialog \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qdialog.h \
@@ -767,20 +749,6 @@ debug\moc_QMediaPlayer.cpp: ..\..\source\QMediaPlayer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		debug\moc_predefs.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\bin\moc.exe
 	F:\CXX\app\Qt\5.14.2\msvc2017_64\bin\moc.exe $(DEFINES) --compiler-flavor=msvc --include F:/CXX/project/github/Ghost2020/Simple-FFplay/project/pc/XiaoStudio/build/Qt_5_14_0_MSVC2017_64bit-Debug/debug/moc_predefs.h -IF:/CXX/app/Qt/5.14.2/msvc2017_64/mkspecs/win32-msvc -IF:/CXX/project/github/Ghost2020/Simple-FFplay/project/pc/XiaoStudio -IF:/CXX/project/github/Ghost2020/Simple-FFplay/source/MediaPlayer/include -IF:/CXX/project/github/Ghost2020/Simple-FFplay/project/pc/XiaoStudio/source -IF:/CXX/project/github/Ghost2020/Simple-FFplay/thirdparty/ffmpeg/include -IF:/CXX/project/github/Ghost2020/Simple-FFplay/thirdparty/SDL2/include -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include/QtOpenGL -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include/QtWidgets -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include/QtGui -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include/QtANGLE -IF:/CXX/app/Qt/5.14.2/msvc2017_64/include/QtCore -I. -I"C:\Program Files (x86)\Microsoft Visual Studio\2017\BuildTools\VC\Tools\MSVC\14.16.27023\include" -I"C:\Program Files (x86)\Windows Kits\NETFXSDK\4.6.1\include\um" -I"D:\Windows Kits\10\include\10.0.17763.0\ucrt" -I"D:\Windows Kits\10\include\10.0.17763.0\shared" -I"D:\Windows Kits\10\include\10.0.17763.0\um" -I"D:\Windows Kits\10\include\10.0.17763.0\winrt" -I"D:\Windows Kits\10\include\10.0.17763.0\cppwinrt" ..\..\source\QMediaPlayer.h -o debug\moc_QMediaPlayer.cpp
@@ -1122,21 +1090,7 @@ ui_mainwindow.h: ..\..\mainwindow.ui \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_shape.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
-		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h
+		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h
 	F:\CXX\app\Qt\5.14.2\msvc2017_64\bin\uic.exe ..\..\mainwindow.ui -o ui_mainwindow.h
 
 ui_QSettings.h: ..\..\ui\QSettings.ui \
@@ -1359,21 +1313,7 @@ ui_QSettings.h: ..\..\ui\QSettings.ui \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_shape.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
-		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h
+		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h
 	F:\CXX\app\Qt\5.14.2\msvc2017_64\bin\uic.exe ..\..\ui\QSettings.ui -o ui_QSettings.h
 
 compiler_yacc_decl_make_all:
@@ -1728,20 +1668,6 @@ debug\main.obj: ..\..\main.cpp ..\..\mainwindow.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		..\..\ui\QSettings.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QDialog \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qdialog.h \
@@ -1978,20 +1904,6 @@ debug\mainwindow.obj: ..\..\mainwindow.cpp ..\..\mainwindow.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		..\..\ui\QSettings.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QDialog \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qdialog.h \
@@ -2020,103 +1932,6 @@ debug\mainwindow.obj: ..\..\mainwindow.cpp ..\..\mainwindow.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qmessagebox.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QStatusBar \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qstatusbar.h
-
-debug\QYUV420p_Render.obj: ..\..\source\QYUV420p_Render.cpp ..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qtguiglobal.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qglobal.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qconfig-bootstrapped.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qconfig.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qtcore-config.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qsystemdetection.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qprocessordetection.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qcompilerdetection.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qtypeinfo.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qsysinfo.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qlogging.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qflags.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qatomic.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qbasicatomic.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qatomic_bootstrap.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qgenericatomic.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qatomic_cxx11.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qatomic_msvc.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qglobalstatic.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qmutex.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qnumeric.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qversiontagging.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qtgui-config.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopengl.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qt_windows.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtANGLE\GLES3\gl3.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtANGLE\GLES3\gl3platform.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtANGLE\KHR\khrplatform.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtANGLE\GLES2\gl2.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtANGLE\GLES2\gl2platform.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopengles2ext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qnamespace.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qobject.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qobjectdefs.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qobjectdefs_impl.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstring.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qchar.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qbytearray.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qrefcount.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qarraydata.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringliteral.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringalgorithms.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringview.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringbuilder.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qlist.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qalgorithms.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qiterator.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qhashfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qpair.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qvector.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qcontainertools_impl.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qpoint.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qbytearraylist.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringlist.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qregexp.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qstringmatcher.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qcoreevent.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qscopedpointer.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qmetatype.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qvarlengtharray.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qcontainerfwd.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qobject_impl.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QSurfaceFormat \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qsurfaceformat.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qhash.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qvariant.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qmap.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qdebug.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qtextstream.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qiodevice.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qlocale.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qshareddata.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qset.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qcontiguouscache.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qsharedpointer.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qsharedpointer_impl.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector2d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qdatastream.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qrect.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qmargins.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\qsize.h
 
 debug\QSettings.obj: ..\..\ui\QSettings.cpp ..\..\ui\QSettings.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QDialog \
@@ -2341,20 +2156,6 @@ debug\QSettings.obj: ..\..\ui\QSettings.cpp ..\..\ui\QSettings.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QVariant \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QApplication \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qapplication.h \
@@ -2619,20 +2420,6 @@ debug\QMediaPlayer.obj: ..\..\source\QMediaPlayer.cpp ..\..\source\QMediaPlayer.
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_system.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_timer.h \
 		F:\CXX\project\github\Ghost2020\Simple-FFplay\thirdparty\SDL2\include\SDL_version.h \
-		..\..\source\QYUV420p_Render.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLFunctions \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglcontext.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QObject \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtCore\QScopedPointer \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglversionfunctions.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\QOpenGLShaderProgram \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qopenglshaderprogram.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector3d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qvector4d.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qmatrix4x4.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qquaternion.h \
-		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtGui\qgenericmatrix.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\QMessageBox \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qmessagebox.h \
 		F:\CXX\app\Qt\5.14.2\msvc2017_64\include\QtWidgets\qdialog.h \

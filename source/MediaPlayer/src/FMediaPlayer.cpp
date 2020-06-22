@@ -56,7 +56,8 @@ constexpr uint32_t AUDIO_DIFF_AVG_NB = 20;
 
 constexpr uint32_t USE_ONEPASS_SUBTITLE_RENDER = 1;
 
-static const struct TextureFormatEntry {
+static const struct TextureFormatEntry
+{
     enum AVPixelFormat format;
     int texture_fmt;
 } sdl_texture_format_map[] = {
@@ -333,7 +334,8 @@ void FMediaPlayer::get_sdl_pix_fmt_and_blendmode(int format, Uint32* sdl_pix_fmt
     if (format == AV_PIX_FMT_RGB32 ||
         format == AV_PIX_FMT_RGB32_1 ||
         format == AV_PIX_FMT_BGR32 ||
-        format == AV_PIX_FMT_BGR32_1)
+        format == AV_PIX_FMT_BGR32_1
+       )
         *sdl_blendmode = SDL_BLENDMODE_BLEND;
 
     for (uint32_t i = 0; i < FF_ARRAY_ELEMS(sdl_texture_format_map) - 1; i++) {

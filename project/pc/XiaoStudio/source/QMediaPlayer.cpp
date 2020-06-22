@@ -7,10 +7,8 @@
 #include <iostream>
 
 QMediaPlayer::QMediaPlayer(QWidget* parent)
-    :  QOpenGLWidget(parent)
+    :  QLabel(parent)
 {    
-    this->makeCurrent();
-
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
     /* Set Accpet drop event */
@@ -46,10 +44,10 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     connect(this->m_pTimer, SIGNAL(timeout()), this, SLOT(ON_TEST()));
 
     /* @TODO 设置播放器状态图片 */
-    this->m_pStatusPic = new QLabel(this);
-    static QPixmap pixmap("../../ui/res/icon/AnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
-    this->m_pStatusPic->setPixmap(pixmap);
-    this->m_pStatusPic->showNormal();
+    static QPixmap pixmap("ui/res/icon/AnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
+    this->setAlignment(Qt::AlignCenter);
+    this->setPixmap(pixmap);
+    this->showNormal();
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -337,10 +335,10 @@ void QMediaPlayer::resizeEvent(QResizeEvent *event)
     this->m_pProgressSlider->show();*/
 
     /* resize the status picture */
-    auto statusPicSize = m_pStatusPic->size();
-    this->m_pStatusPic->move( (size.width() / 2) - (statusPicSize.width() / 2),
-                              (size.height() / 2) - (statusPicSize.height() / 2));
-    this->m_pStatusPic->show();
+//    auto statusPicSize = m_pStatusPic->size();
+//    this/*->m_pStatusPic*/->move( (size.width() / 2) - (statusPicSize.width() / 2),
+//                              (size.height() / 2) - (statusPicSize.height() / 2));
+//    this/*->m_pStatusPic*/->show();
 
     if(event)
         QWidget::resizeEvent(event);

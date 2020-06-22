@@ -19,7 +19,7 @@
 
 #include "FMediaPlayer.h"
 
-class QMediaPlayer : public QOpenGLWidget
+class QMediaPlayer : public QLabel
 {
 Q_OBJECT
 public :
@@ -54,7 +54,6 @@ private:
     QString m_sURL = "";
     QMenu* m_pMenu = nullptr;
     QTimer* m_pTimer = nullptr;
-    QLabel* m_pStatusPic = nullptr;
     std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
 };
 

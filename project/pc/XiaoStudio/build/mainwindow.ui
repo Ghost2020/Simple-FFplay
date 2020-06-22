@@ -1029,6 +1029,10 @@ QPushButton#extraPanelDelete:hover {
 QPushButton#extraPanelDelete:pressed {
     background-color: #161f41;
 }
+
+QMediaPlayer{
+	background-color: rgb(0, 0, 0);
+}
 </string>
   </property>
   <widget class="QWidget" name="centralwidget">
