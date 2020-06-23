@@ -208,16 +208,16 @@ bool FMediaPlayer::initRender()
         //NSWindow* wnd = [view window];
         pWindow = SDL_CreateWindowFrom((void*)(view.window));
 #elif defined(__WIN32__)
-        pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
+        //pWindow = SDL_CreateWindowFrom((void*)(m_nWindowID));
 #endif
     }
     else
     {
-        pWindow = SDL_CreateWindow((std::string("FFmplay") + std::to_string(g_nInstance)).c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
+        //pWindow = SDL_CreateWindow((std::string("FFmplay") + std::to_string(g_nInstance)).c_str(), SDL_WINDOWPOS_UNDEFINED, SDL_WINDOWPOS_UNDEFINED, default_width, default_height, flags);
     }
 
 
-    if (pWindow)
+   /* if (pWindow)
     {
         pRenderer = SDL_CreateRenderer(pWindow, -1, SDL_RENDERER_ACCELERATED | SDL_RENDERER_PRESENTVSYNC);
         if (!pRenderer) {
@@ -233,7 +233,7 @@ bool FMediaPlayer::initRender()
     {
         av_log(nullptr, AV_LOG_FATAL, "Failed to create window or renderer: %s", SDL_GetError());
         return false;
-    }
+    }*/
     return true;
 }
 
@@ -348,9 +348,9 @@ bool FMediaPlayer::upload_texture(SDL_Texture** tex, AVFrame* frame, struct SwsC
     Uint32 sdl_pix_fmt;
     SDL_BlendMode sdl_blendmode;
 
-//    if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
-//        m_renderFunc(frame->data, frame->width, frame->height);
-//    return true;
+    if(frame->linesize[0] > 0 && frame->linesize[1] > 0 && frame->linesize[2] > 0)
+        m_renderFunc(frame->data, frame->width, frame->height);
+    return true;
 
     get_sdl_pix_fmt_and_blendmode(frame->format, &sdl_pix_fmt, &sdl_blendmode);
     if (!realloc_texture(tex, sdl_pix_fmt == SDL_PIXELFORMAT_UNKNOWN ? SDL_PIXELFORMAT_ARGB8888 : sdl_pix_fmt, frame->width, frame->height, sdl_blendmode, false))
@@ -482,7 +482,7 @@ void FMediaPlayer::video_image_display()
 
     /* ??????????? */
     set_sdl_yuv_conversion_mode(vp->frame);
-    SDL_RenderCopyEx(pRenderer, this->vid_texture, nullptr, &rect, 0, nullptr, static_cast<SDL_RendererFlip>(vp->flip_v ? SDL_FLIP_VERTICAL : 0));
+    //SDL_RenderCopyEx(pRenderer, this->vid_texture, nullptr, &rect, 0, nullptr, static_cast<SDL_RendererFlip>(vp->flip_v ? SDL_FLIP_VERTICAL : 0));
     set_sdl_yuv_conversion_mode(nullptr);
 
     /* ??????????? */

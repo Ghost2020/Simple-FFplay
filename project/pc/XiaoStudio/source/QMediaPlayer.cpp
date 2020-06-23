@@ -9,7 +9,7 @@
 #include "qmainwindow.h"
 
 QMediaPlayer::QMediaPlayer(QWidget* parent)
-    : QLabel(parent)
+    : QOpenGLWidget(parent)
 {
     this->setSizePolicy(QSizePolicy::Policy::Expanding, QSizePolicy::Policy::Expanding);
 
@@ -54,7 +54,6 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     setContextMenuPolicy(Qt::CustomContextMenu);
     connect(this, SIGNAL(customContextMenuRequested(const QPoint&)), this, SLOT(onShowMenu()));
 
-    QWidget::
     this->m_pTimer = new QTimer(this);
     this->m_pTimer->setInterval(20);
     connect(this->m_pTimer, SIGNAL(timeout()), this, SLOT(ON_TEST()));
@@ -62,8 +61,8 @@ QMediaPlayer::QMediaPlayer(QWidget* parent)
     /* @TODO 设置播放器状态图片 */
     this->m_pStatusPic = new QLabel(this);
     static QPixmap pixmap("../../ui/res/iconAnswerWithVideo.scale-150.png", nullptr, Qt::ThresholdAlphaDither);
-    this->/*m_pStatusPic->*/setPixmap(pixmap);
-    this->/*m_pStatusPic->*/showNormal();
+    this->m_pStatusPic->setPixmap(pixmap);
+    this->m_pStatusPic->showNormal();
 }
 
 QMediaPlayer::~QMediaPlayer()
@@ -93,12 +92,11 @@ void QMediaPlayer::openStream()
         if (this->m_pTimer->isActive())
             this->m_pTimer->stop();
 
-//        std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &m_render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
-//        m_pCorePlayer->RegisterRenderCallbck(renderFunc);
+        std::function<void(uint8_t**, int ,int)> renderFunc = std::bind(&QYUV420P_Render::Render, &m_render, std::placeholders::_1, std::placeholders::_2, std::placeholders::_3);
+        m_pCorePlayer->RegisterRenderCallbck(renderFunc);
         this->m_pTimer->start();
 
-        //m_render.initialize();
-        //m_pWindow
+        m_render.initialize();
 
         /* Need to force refresh */
         resizeEvent(nullptr);
@@ -378,12 +376,12 @@ void QMediaPlayer::moveEvent(QMoveEvent* event)
     QWidget::moveEvent(event);
 }
 
-//void QMediaPlayer::initializeGL()
-//{
-//    m_render.initialize();
-//}
-//
-//void QMediaPlayer::paintGL()
-//{
-//    qDebug() << "QMediaPlayer::paintGL()";
-//}
+void QMediaPlayer::initializeGL()
+{
+    m_render.initialize();
+}
+
+void QMediaPlayer::paintGL()
+{
+    qDebug() << "QMediaPlayer::paintGL()";
+}

@@ -43,9 +43,9 @@ void QYUV420P_Render::initialize()
             YUV.x = texture2D(tex_y, texture_Out).r;\
             YUV.y = texture2D(tex_u, texture_Out).r - 0.5;\
             YUV.z = texture2D(tex_v, texture_Out).r - 0.5;\
-            RGB = mat3(1.0,		1.0,		1.0,\
-					   0.0,		-0.39465,	2.03211,\
-					   1.13983, -0.58060,	0.0		) * YUV;\
+            RGB =  mat3(1.0,		1.0,		1.0,\
+					   0.0,		-0.34414,	1.772,\
+					   1.402, -0.71414,	0.0		) * YUV;\
             gl_FragColor = vec4(RGB, 1.0);\
         }";
 
@@ -103,6 +103,8 @@ void QYUV420P_Render::initialize()
 	//放大过滤，线性插值   GL_NEAREST(效率高，但马赛克严重)
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	//U
 	glGenTextures(1, &m_idu);
@@ -110,6 +112,8 @@ void QYUV420P_Render::initialize()
 	//放大过滤，线性插值
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
 
 	//V
 	glGenTextures(1, &m_idv);
@@ -117,6 +121,10 @@ void QYUV420P_Render::initialize()
 	//放大过滤，线性插值
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_CLAMP_TO_EDGE);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_CLAMP_TO_EDGE);
+
+	glEnable(GL_BLEND);
 
 	glClearColor(0.0f, 0.0f, 0.0f, 0.0f);
 	glClear(GL_COLOR_BUFFER_BIT);
@@ -162,7 +170,7 @@ void QYUV420P_Render::Render(uchar** ptr, int width, int height/*,int type*/)
 	glActiveTexture(GL_TEXTURE0);
 	glBindTexture(GL_TEXTURE_2D, m_idy);
 	//修改纹理内容(复制内存内容)
-	glTexImage2D(GL_TEXTURE_2D, 0, GL_RED, width, height, 0, GL_RED, GL_UNSIGNED_BYTE, ptr[0]);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_LUMINANCE, width, height, 0, GL_LUMINANCE, GL_UNSIGNED_BYTE, ptr[0]);
 	//与shader 关联
 	glUniform1i(m_textureUniformY, 0);
 
@@ -180,9 +188,8 @@ void QYUV420P_Render::Render(uchar** ptr, int width, int height/*,int type*/)
 	//与shader 关联
 	glUniform1i(m_textureUniformV, 2);
 
-	glDrawArrays(GL_TRIANGLES, 0, 6);
+	glDrawArrays(GL_TRIANGLE_STRIP, 0, 6);
 	qDebug() << "paintGL";
-
 }
 
 

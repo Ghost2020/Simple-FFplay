@@ -17,13 +17,12 @@
 
 #include "FMediaPlayer.h"
 
-//#include <QtWidgets/>
 #include "QYUV420p_Render.h"
 
-class QPlayer
+#include <QOpenGLWidget>
 
 
-class QMediaPlayer : public QLabel
+class QMediaPlayer : public QOpenGLWidget
 {
 Q_OBJECT
 public :
@@ -55,9 +54,9 @@ protected:
 
     virtual void moveEvent(QMoveEvent* event) override;
 
-    /*virtual void initializeGL() override;
+    virtual void initializeGL() override;
 
-    virtual void paintGL() override;*/
+    virtual void paintGL() override;
 
 private:
     int64_t m_nLast_mouse_left_click = 0;
@@ -67,7 +66,7 @@ private:
     QLabel* m_pStatusPic = nullptr;
 
     std::unique_ptr<FMediaPlayer> m_pCorePlayer = nullptr;
-    //QYUV420P_Render m_render;
+    QYUV420P_Render m_render;
 };
 
 #endif // QMEDIAPLAYER_H
