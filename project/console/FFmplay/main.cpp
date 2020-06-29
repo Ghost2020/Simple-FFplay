@@ -1,6 +1,8 @@
 
 #include "FMediaPlayer.h"
 
+#include <iostream>
+
 #ifdef _WIN32
 #include <windows.h>
 #endif
@@ -22,23 +24,36 @@ void init_dynload(void)
 }
 
 /*
-ʹ�÷�������:
-    ��ʽһ:����ý���ļ�·��
+*读取摄像头数据，并播放
+使用接口 av_find_input_format
+* /
+//Winows
+//{
+//  设备列表获取 = ./ffmpeg -f dshow -list_devices true -i dummy
+//    videoCapture = "Logitech HD Webcam C270"
+//    audioDevice = "DirectShow audio devices"
 
-    ��ʽ��:ֱ����ַ����:
+//    摄像头采集播放 = ./ffplay -f dshow -i video="Logitech HD Webcam C270"
+//}
+//Linux
+/*{
+    设备列表获取 = ./ffmpeg -hided_banner -devices
+    摄像头采集播放 =
+}*/
+//Mac
+/*{
+    设备列表获取 = ./ffmpeg -f avfoundation -list_edvices true -i ""
+    摄像头采集播放 = ./ffplay -f avfoundatin -video_size 640x480 -framerate 30 -i "视频采集设备名称"
+}*/
 
-        �������� rtmp://58.200.131.2:1935/livetv/hunantv
-        �������� ��rtmp://58.200.131.2:1935/livetv/gxtv
-        �㶫���ӣ�rtmp://58.200.131.2:1935/livetv/gdtv
-        �������ӣ�rtmp://58.200.131.2:1935/livetv/dftv
-
-    ��ʽ��:��ȡ�����豸
-        ./ffmpeg -f dshow -list_devices true -i dummy
-
-        ���������豸: "Logitech HD Webcam C270"
-
-        ����cameraͼ����Ϣ������
-        -f dshow -i video="Logitech HD Webcam C270"
+/*
+    直播地址
+*/
+/*
+    湖南卫视: rtmp://58.200.131.2:1935/livetv/hunantv
+    广西卫视：rtmp://58.200.131.2:1935/livetv/gxtv
+    广东卫视：rtmp://58.200.131.2:1935/livetv/gdtv
+    东方卫视：rtmp://58.200.131.2:1935/livetv/dftv
 */
 
 /* Called from the main */
@@ -48,6 +63,11 @@ int main(int argc, char** argv)
     {
         show_usage();
         return -1;
+    }
+
+    for (int i = 0; i < argc; i++)
+    {
+        std::cout << argv[i] << std::endl;
     }
         
     const std::string input_filename = argv[1];
@@ -71,6 +91,12 @@ int main(int argc, char** argv)
 
     signal(SIGINT, FMediaPlayer::sigterm_handler);  /* Interrupt (ANSI).    */
     signal(SIGTERM, FMediaPlayer::sigterm_handler); /* Termination (ANSI).  */
+
+    AVInputFormat* iformat = nullptr;
+    if (std::string(argv[1]) == "-f")
+    {
+        iformat = av_find_input_format("dshow");
+    }
 
     if (!pPlayer1->OnStreamOpen(input_filename))
     {
